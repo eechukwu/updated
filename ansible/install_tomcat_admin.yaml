@@ -1,0 +1,32 @@
+- name: Delayed Installing Admin with Timer
+  hosts: localhost
+  gather_facts: false
+  become: true
+  vars:
+    tomcat_version: 9.0.52
+    tomcat_install_dir: /opt/tomcat
+    delay_minutes: 10  # Adjust the delay time as needed
+
+  tasks:
+    - name: Pause execution for specified time
+      pause:
+        minutes: "{{ delay_minutes }}"
+
+    - name: Extract Tomcat archive
+      unarchive:
+        src: /tmp/apache-tomcat-{{ tomcat_version }}.tar.gz
+        dest: "{{ tomcat_install_dir }}"
+        remote_src: yes
+        creates: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
+        mode: '0755'
+
+    - name: Set executable permission on digest.sh
+      file:
+        path: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}/bin/digest.sh"
+        mode: '0755'
+
+    - name: Create admin user
+      shell: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}/bin/digest.sh -a md5 admin admin"
+      register: admin_user_output
+      changed_when: admin_user_output.stdout != ''
+      failed_when: admin_user_output.stdout == ''

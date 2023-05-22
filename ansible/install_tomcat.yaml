@@ -1,0 +1,69 @@
+---
+- name: Install Tomcat on Amazon Linux 2
+  hosts: localhost
+  become: true
+  vars:
+    tomcat_version: 9.0.52
+    tomcat_install_dir: /opt/tomcat
+
+  tasks:
+    - name: Install Java Development Kit (JDK)
+      yum:
+        name: java-1.8.0-openjdk-devel
+        state: present
+
+    - name: Create Tomcat group
+      group:
+        name: tomcat
+        state: present
+
+    - name: Create Tomcat user
+      user:
+        name: tomcat
+        group: tomcat
+        shell: /bin/nologin
+        home: "{{ tomcat_install_dir }}"
+        system: true
+        state: present
+
+    - name: Download Tomcat archive
+      get_url:
+        url: "https://archive.apache.org/dist/tomcat/tomcat-{{ tomcat_version.split('.')[0] }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        dest: /tmp/apache-tomcat-{{ tomcat_version }}.tar.gz
+
+    - name: Extract Tomcat archive
+      unarchive:
+        src: /tmp/apache-tomcat-{{ tomcat_version }}.tar.gz
+        dest: "{{ tomcat_install_dir }}"
+        remote_src: yes
+        creates: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
+
+    - name: Update Tomcat ownership
+      file:
+        path: "{{ tomcat_install_dir }}"
+        owner: tomcat
+        group: tomcat
+        recurse: yes
+
+    - name: Configure Tomcat systemd service
+      template:
+        src: tomcat.service.j2
+        dest: /etc/systemd/system/tomcat.service
+      notify:
+        - Reload systemd
+
+    - name: Start and enable Tomcat service
+      systemd:
+        name: tomcat
+        state: started
+        enabled: yes
+
+    - name: Install tomcat-admin-webapps package
+      yum:
+        name: tomcat-admin-webapps
+        state: present
+
+  handlers:
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
