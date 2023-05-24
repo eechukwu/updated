@@ -59,7 +59,6 @@ locals {
       new_path="PATH=$PATH:$HOME/.local/bin:$HOME/bin:\$M2_HOME:\$M2:\$JAVA_HOME"
       updated_path="\$PATH:$HOME/bin:$new_path"
       sed -i "s#^PATH=.*#PATH=$updated_path#" ~/.bash_profile
-      sudo shutdown -r now
   EOT
     },
     {
