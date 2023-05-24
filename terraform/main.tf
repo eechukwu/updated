@@ -31,10 +31,11 @@ locals {
 
   instances = [
     {
-      name      = "jenkins-instance"
+      name      = "jenkins-server"
       user_data = <<-EOT
       #!/bin/bash
       sudo yum update –y
+      sudo amazon-linux-extras install epel -y
       sudo amazon-linux-extras install java-openjdk11 -y
       sudo wget -O /etc/yum.repos.d/jenkins.repo \
         https://pkg.jenkins.io/redhat-stable/jenkins.repo
@@ -42,13 +43,23 @@ locals {
       sudo yum upgrade -y 
       sudo yum install git -y
       sudo yum install jenkins -y
-      sudo systemctl start jenkins
-      sudo amazon-linux-extras install epel -y
-      sudo yum install ansible -y
+      sudo sudo service jenkins start
+      echo "jenkins-server" > /etc/hostname && hostnamectl set-hostname "jenkins-server"
+      sudo sudo service jenkins restart
       sudo yum install git -y
-      sudo wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
-      sudo sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
-      sudo yum install -y apache-maven
+      sudo mkdir /opt/maven
+      sudo wget -O /opt/maven/apache-maven-3.9.2-bin.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.2/binaries/apache-maven-3.9.2-bin.tar.gz
+      sudo tar -xvzf /opt/maven/apache-maven-3.9.2-bin.tar.gz -C /opt/maven
+      sudo mv /opt/maven/apache-maven-3.9.2 /opt/maven/apache-maven      
+      sudo rm /opt/maven/apache-maven-3.9.2-bin.tar.gz
+      existing_path=$(grep -oP '(?<=^PATH=).+' ~/.bash_profile)
+      echo "M2_HOME=/opt/maven/apache-maven" | sudo tee -a ~/.bash_profile >/dev/null
+      echo "M2=\$M2_HOME/bin" | sudo tee -a ~/.bash_profile >/dev/null
+      echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.18.0.10-1.amzn2.0.1.x86_64" | sudo tee -a ~/.bash_profile >/dev/null
+      new_path="PATH=$PATH:$HOME/.local/bin:$HOME/bin:\$M2_HOME:\$M2:\$JAVA_HOME"
+      updated_path="\$PATH:$HOME/bin:$new_path"
+      sed -i "s#^PATH=.*#PATH=$updated_path#" ~/.bash_profile
+      sudo shutdown -r now
   EOT
     },
     {
