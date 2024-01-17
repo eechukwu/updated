@@ -1,0 +1,1 @@
+kubectl get pods --all-namespaces -o json | jq -r '.items[] | select(.spec.volumes[].secret.secretName == "vsphere-dynamic-credentials") | "\(.metadata.namespace)/\(.metadata.name)"'
