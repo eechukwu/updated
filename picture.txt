@@ -1,0 +1,183 @@
+# CloudFront Distribution
+resource "aws_cloudfront_distribution" "s3_distribution" {
+  enabled = true
+
+  # Match these settings with your specific CloudFront configuration needs
+  default_cache_behavior {
+    target_origin_id       = "ImageBucketOrigin"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+    min_ttl                = 315360000
+    default_ttl            = 3153600000
+    max_ttl                = 3153600000
+    compress               = true
+
+    forwarded_values {
+      query_string = true
+      cookies {
+        forward = "none"
+      }
+      query_string_cache_keys = ["maxWidth", "maxHeight"]
+    }
+
+    # Lambda@Edge configuration
+    lambda_function_association {
+      event_type   = "origin-request"
+      lambda_arn   = aws_lambda_function.resize_edge_version.qualified_arn
+    }
+  }
+
+  price_class = "PriceClass_All"
+  http_version = "http2"
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
+  origin {
+    domain_name = var.image_bucket
+    origin_id   = "ImageBucketOrigin"
+    s3_origin_config {}
+
+    custom_origin_config {
+      origin_protocol_policy = "http-only"
+      http_port              = 80
+      https_port             = 443
+      origin_ssl_protocols   = ["TLSv1", "TLSv1.1", "TLSv1.2"]
+    }
+  }
+
+  # Additional CloudFront configuration options can be added here
+}
+
+
+...............................................................
+
+
+resource "aws_iam_role" "lambda" {
+  name = "lambda_execution_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        },
+      },
+    ],
+  })
+}
+
+resource "aws_iam_policy" "s3_get_object" {
+  name        = "s3_get_object"
+  description = "Policy to access specific S3 bucket"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action   = ["s3:GetObject"],
+        Effect   = "Allow",
+        Resource = "${aws_s3_bucket.image_bucket.arn}/*"
+      },
+    ],
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_s3_access" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = aws_iam_policy.s3_get_object.arn
+}
+
+
+
+...............................................................
+
+
+# Lambda Function for 'resize'
+# Note: Ensure that this Lambda function is compatible with Lambda@Edge.
+# Lambda@Edge requires the function to be in the us-east-1 region.
+resource "aws_lambda_function" "resize" {
+  function_name = "resize"
+  handler       = "handler.resize"
+  role          = aws_iam_role.lambda.arn
+  runtime       = "nodejs6.10" # Consider updating to a more recent runtime
+
+  environment {
+    variables = {
+      # Define necessary environment variables
+    }
+  }
+
+  # Specify the source code & deployment package configuration
+
+  # Important: Lambda@Edge requires publishing a version
+  publish = true
+}
+
+# Create a Lambda function version for Lambda@Edge.
+# Lambda@Edge uses a specific version of your Lambda function, not the $LATEST version.
+resource "aws_lambda_function" "resize_edge_version" {
+  function_name = aws_lambda_function.resize.function_name
+  s3_bucket     = aws_lambda_function.resize.s3_bucket
+  s3_key        = aws_lambda_function.resize.s3_key
+  publish       = true
+
+  # Source code hash, runtime, role, and handler should match the original Lambda function
+  source_code_hash = aws_lambda_function.resize.source_code_hash
+  runtime          = aws_lambda_function.resize.runtime
+  role             = aws_lambda_function.resize.role
+  handler          = aws_lambda_function.resize.handler
+
+  # Use the qualified_arn of this resource for Lambda@Edge association in CloudFront
+}
+
+# Adjust the CloudFront Distribution to include Lambda@Edge association
+# Ensure this is within the same aws_cloudfront_distribution resource configuration
+resource "aws_cloudfront_distribution" "s3_distribution" {
+  # Existing CloudFront configuration...
+
+  default_cache_behavior {
+    # Existing configuration...
+
+    lambda_function_association {
+      event_type   = "origin-request"
+      lambda_arn   = aws_lambda_function.resize_edge_version.qualified_arn
+      include_body = false
+    }
+  }
+
+  # Rest of the CloudFront distribution configuration...
+}
+
+
+................................................................
+
+output "cloudfront_distribution_domain" {
+  value = aws_cloudfront_distribution.s3_distribution.domain_name
+}
+
+# You can add more outputs as required
+
+
+
+
+......................................................................
+
+provider "aws" {
+  # Specify your AWS region here
+}
+
+
+..............................................
+
+resource "aws_s3_bucket" "image_bucket" {
+  bucket = var.image_bucket
+  acl    = "private"
+
+  # Additional S3 bucket configurations can be added here
+}
