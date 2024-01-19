@@ -1,3 +1,7 @@
 terraform apply -target=data.archive_file.lambda_zip
 terraform apply -target=module.iam_role
 terraform apply -target=aws_lambda_function.fd-cf-s3-image-resizer
+
+
+So, I have completed the refactoring of the serverless module. The PR can be found here:
+The next phase is to build a Buildkite pipeline for the service and debug accordingly.
