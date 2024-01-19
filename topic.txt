@@ -6,8 +6,8 @@ provider "aws" {
 # Data source for the Lambda function's ZIP file
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_dir  = "${path.module}/../lambda/resize"
-  output_path = "${path.module}/../build/resize.zip"
+  source_dir  = "${path.module}/.." # Pointing to the project root directory
+  output_path = "${path.module}/../build/fd-cf-s3-image-resizer-master.zip"
 }
 
 # IAM role for the Lambda function
@@ -52,9 +52,9 @@ resource "aws_iam_role_policy" "lambda_policy" {
 
 # Define the AWS Lambda function for Lambda@Edge
 resource "aws_lambda_function" "lambda_at_edge" {
-  function_name = "lambda_at_edge_function"
-  handler       = "index.handler" # Update with your handler
-  runtime       = "nodejs14.x"    # Use a supported Node.js runtime
+  function_name = "fd-cf-s3-image-resizer-master"
+  handler       = "handler.resize" # Assuming your Lambda handler is defined in handler.js
+  runtime       = "nodejs16.x"    # Using the latest Node.js runtime supported by AWS Lambda
   memory_size   = 128             # Adjust based on your requirements
 
   filename         = data.archive_file.lambda_zip.output_path
@@ -66,8 +66,6 @@ resource "aws_lambda_function" "lambda_at_edge" {
 
   # Lambda@Edge does not support environment variables
   # Omit the 'environment' block
-
-  # Add any other configuration required for your Lambda function
 }
 
 # Outputs
