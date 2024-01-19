@@ -10,27 +10,10 @@ data "archive_file" "lambda_zip" {
   output_path = "${path.module}/../build/fd-cf-s3-image-resizer-master.zip"
 }
 
-# IAM role for the Lambda function
-resource "aws_iam_role" "lambda_exec_role" {
-  name = "lambda_exec_role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = "sts:AssumeRole",
-        Effect = "Allow",
-        Principal = {
-          Service = ["lambda.amazonaws.com", "edgelambda.amazonaws.com"]
-        },
-      },
-    ],
-  })
-}
 
 # Attach necessary policies to the IAM role
 resource "aws_iam_role_policy" "lambda_policy" {
-  role   = aws_iam_role.lambda_exec_role.id
+  role = aws_iam_role.lambda_exec_role.id
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -43,36 +26,75 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "logs:PutLogEvents",
           "cloudfront:UpdateDistribution" # For Lambda@Edge
         ],
-        Effect = "Allow",
+        Effect   = "Allow",
         Resource = "*"
       },
     ],
   })
 }
 
-# Define the AWS Lambda function for Lambda@Edge
-resource "aws_lambda_function" "lambda_at_edge" {
-  function_name = "fd-cf-s3-image-resizer-master"
-  handler       = "handler.resize" # Assuming your Lambda handler is defined in handler.js
-  runtime       = "nodejs16.x"    # Using the latest Node.js runtime supported by AWS Lambda
-  memory_size   = 128             # Adjust based on your requirements
+module "iam_role" {
+  source    = "git@github.com:fanduel/tf-module-aws-iam-role.git?ref=v2.1.0"
+  role_name = "fd-cf-s3-image-resizer-role"
+  service_principals = [
+    "lambda.amazonaws.com",
+    "edgelambda.amazonaws.com"
+  ]
+}
 
+# Define the AWS Lambda function for Lambda@Edge
+resource "aws_lambda_function" "fd-cf-s3-image-resizer" {
+  function_name    = "fd-cf-s3-image-resizer-master"
+  handler          = "handler.resize"
+  runtime          = "nodejs16.x"
+  memory_size      = 128
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = filebase64sha256(data.archive_file.lambda_zip.output_path)
-
-  role = aws_iam_role.lambda_exec_role.arn
-
-  publish = true # Necessary for Lambda@Edge
-
-  # Lambda@Edge does not support environment variables
-  # Omit the 'environment' block
+  role             = aws_iam_role.lambda_exec_role.arn
+  publish          = true
 }
 
-# Outputs
-output "lambda_at_edge_function_name" {
-  value = aws_lambda_function.lambda_at_edge.function_name
-}
 
-output "lambda_at_edge_function_arn" {
-  value = aws_lambda_function.lambda_at_edge.arn
-}
+.
+├── Dockerfile
+├── Makefile
+├── README.md
+├── ci
+│   └── deploy.jf
+├── handler.js
+├── infrastructures
+│   ├── aws
+│   │   ├── cloudfront.tf
+│   │   ├── environments
+│   │   │   ├── awdevelopment
+│   │   │   │   ├── main.tf
+│   │   │   │   └── variables.tf
+│   │   │   ├── base
+│   │   │   │   ├── dev.yml
+│   │   │   │   └── local.yml
+│   │   │   ├── devstack.yml
+│   │   │   ├── perftest.yml
+│   │   │   └── production.yml
+│   │   ├── lambda.tf
+│   │   ├── main.tf
+│   │   ├── modules
+│   │   │   └── cloudfront
+│   │   │       ├── main.tf
+│   │   │       └── variables.tf
+│   │   ├── outputs.tf
+│   │   ├── s3.tf
+│   │   ├── variables
+│   │   │   └── awdevelopment.tfvars
+│   │   └── variables.tf
+│   └── deploy-service.yaml
+├── misc
+│   ├── cloudFront.tf
+│   ├── iam.tf
+│   ├── lambda.tf
+│   ├── output.tf
+│   ├── provider.tf
+│   └── s3.tf
+├── package.json
+├── serverless.yml
+└── test
+    └── handlerTest.js
