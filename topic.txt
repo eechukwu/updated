@@ -22,3 +22,22 @@ curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
 echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
 sudo apt-get update
 sudo apt-get install helm
+
+
+gcloud config set project corp-test-mgmt-anthos-3578
+gcloud container fleet memberships get-credentials non-prod-ecommerce-internal
+helm repo add honeycomb https://honeycombio.github.io/helm-charts
+helm repo update refinery honeycomb/refinery
+helm repo update refinery honeycomb/refinery
+helm repo update refinery honeycomb
+helm repo update honeycomb
+helm repo update
+helm list -A
+helm search repo honeycomb
+helm install honeycomb-refinery honeycomb/refinery --namespace honeycomb
+kubectl create namespace honeycomb
+kubectl get ns
+helm install refinery honeycomb/refinery --namespace honeycomb
+helm uninstall honeycomb-refinery --namespace honeycomb
+helm list -A
+
