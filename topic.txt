@@ -44,10 +44,4 @@ helm list -A
 
 
 
-Hi Team,
-
-Honeycomb Refinery is now installed on the internal Ecom cluster. Next steps:
-
-We need to know how you're currently using Honeycomb.
-We'll set up one of our apps to use the new Refinery.
-Who is the best person from your side to collaborate on this?
+For testing purposes, we have manually installed Refinery on the Ecom Internal Clusters by executing the following components. Once the testing phase is complete, a subsequent ticket will be issued to automate the deployment process.
