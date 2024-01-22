@@ -9,3 +9,6 @@ kubectl port-forward new-nginx 10081:80
 curl http://127.0.0.1:10081/test.html
 source <(kubectl completion bash)
 kubectl cp ~/test.html $my_nginx_pod:/usr/share/nginx/html/test.html
+
+
+https://docs.honeycomb.io/manage-data-volume/refinery/set-up/
