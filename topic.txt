@@ -41,6 +41,7 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 helm list -A
 
+Good morning, Steven. I might not be able to make the standup today because my internet connection will be down for some repairs, due to issues caused by the recent wind. However, my tickets are up to date, and Shaun is also aware of what I am working on. Here are the links to my tickets:
 
 
 
