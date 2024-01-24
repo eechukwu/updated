@@ -43,6 +43,8 @@ helm list -A
 
 Good morning, Steven. I might not be able to make the standup today because my internet connection will be down for some repairs, due to issues caused by the recent wind. However, my tickets are up to date, and Shaun is also aware of what I am working on. Here are the links to my tickets:
 
+helm install harbor harbor/harbor -n harbor -f my-harbor-values.yaml
+
 
 
 For testing purposes, we have manually installed Refinery on the Ecom Internal Clusters by executing the following components. Once the testing phase is complete, a subsequent ticket will be issued to automate the deployment process.
