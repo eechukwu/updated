@@ -53,6 +53,10 @@ Hi Team,
 🔔 Alert from PagerDuty: We've detected an issue with [App Name] on [Cluster Name]. 🛠️ Can someone investigate this ASAP?
 
 Thanks,
+
+
+scp /gcp-report/gcp_report_final_copy.tar.gz ubuntu@172.16.177.22:/tmp/
+
 [Your Name] 🌟
 
 
