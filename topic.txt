@@ -55,7 +55,29 @@ Hi Team,
 Thanks,
 
 
-scp -i /path/to/ssh-key /gcp-report/gcp_report_final_copy.tar.gz ubuntu@172.16.177.22:/tmp/
+# Download NGINX from Docker Hub
+docker pull nginx
+
+# Tag the NGINX image for your Harbor registry
+docker tag nginx <your-harbor-registry>/te-core-harbor-xxxx.com/nginx
+
+# Log in to your Harbor registry
+docker login <your-harbor-registry> -u admin -p <your-harbor-admin-password>
+
+# Push the tagged NGINX image to your Harbor registry
+docker push <your-harbor-registry>/te-core-harbor-xxxx.com/nginx
+
+# Deploy NGINX from your Harbor registry into your GCP cluster
+kubectl create deployment nginx-deployment --image=<your-harbor-registry>/te-core-harbor-xxxx.com/nginx
+
+# Expose NGINX using a LoadBalancer service
+kubectl expose deployment nginx-deployment --name=nginx-service --type=LoadBalancer --port=80 --target-port=80
+
+# Wait for the external IP to be provisioned
+kubectl get svc nginx-service
+
+# Access NGINX using the external IP
+
 
 
 
