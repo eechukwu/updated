@@ -46,5 +46,11 @@ Good morning, Steven. I might not be able to make the standup today because my i
 helm install harbor harbor/harbor -n harbor -f my-harbor-values.yaml
 
 
+Subject: 🚨 Urgent: [App Name] on [Cluster Name] Error Alert 🚨
 
-For testing purposes, we have manually installed Refinery on the Ecom Internal Clusters by executing the following components. Once the testing phase is complete, a subsequent ticket will be issued to automate the deployment process.
+Hi Team,
+
+🔔 Alert from PagerDuty: We've detected an issue with [App Name] on [Cluster Name]. 🛠️ Can someone investigate this ASAP?
+
+Thanks,
+[Your Name] 🌟
