@@ -56,12 +56,4 @@ Thanks,
 [Your Name] 🌟
 
 
-I am currently here: and@non-prod-jump-box:~$ 
-I want to copy file from this machine ubuntu@non-prod-gke-admin-ws-230210-132552:~$ sudo ls /gcp-report/gcp_report_final_copy.tar.gz
-over to ubuntu@172.16.177.22:/tmp/
 
-Can you amend this command to fix this: and@non-prod-jump-box:~$ scp -i  /home/and/.ssh/gke-admin-workstation  ubuntu@172.16.177.22:/tmp/admin-cluster-backup-2024-01-11.tar.gz .
-
-
-
-scp -i  /home/and/.ssh/gke-admin-workstation  ubuntu@172.16.177.22:/tmp/admin-cluster-backup-2024-01-11.tar.gz .
