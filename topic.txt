@@ -55,9 +55,8 @@ Hi Team,
 Thanks,
 
 
-scp -i /home/and/.ssh/gke-admin-workstation /gcp-report/gcp_report_final_copy.tar.gz ubuntu@172.16.177.22:/tmp/
-find / -name id_rsa 2>/dev/null
-cat ~/.ssh/config
+scp -i /path/to/ssh-key /gcp-report/gcp_report_final_copy.tar.gz ubuntu@172.16.177.22:/tmp/
+
 
 
 [Your Name] 🌟
