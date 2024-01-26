@@ -77,7 +77,21 @@ kubectl expose deployment nginx-deployment --name=nginx-service --type=LoadBalan
 kubectl get svc nginx-service
 
 # Access NGINX using the external IP
-
+{
+  "builder": {
+    "gc": {
+      "defaultKeepStorage": "20GB",
+      "enabled": true
+    }
+  },
+  "experimental": false,
+  "features": {
+    "buildkit": true
+  },
+  "insecure-registries": [
+    "te-core-harbor-anthos.sportski.com"
+  ]
+}
 
 
 
