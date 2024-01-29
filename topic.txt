@@ -94,6 +94,12 @@ kubectl get svc nginx-service
 }
 
 
+resource "aws_sns_topic_subscription" "trusted_ledger_sqs_target" {
+  topic_arn = "arn:aws:sns:us-east-1:${var.deploy_environment_id}:${local.trust_score_context}payments-user-trust-score-trusted-sns"
+  protocol  = "sqs"
+  endpoint  = module.sqs.sqs_topic_arn
+}
+
 
 [Your Name] 🌟
 
