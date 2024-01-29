@@ -100,6 +100,8 @@ resource "aws_sns_topic_subscription" "trusted_ledger_sqs_target" {
   endpoint  = module.sqs.sqs_topic_arn
 }
 
+During deployment and testing, we discovered that this service relies on the 'payments user trust score' SNS service, which in turn depends on another service. To maintain progress, we've decided to temporarily bypass this dependency in our code. So, I will be updating the Terraform code tomorrow morning to fix that.
+
 
 [Your Name] 🌟
 
