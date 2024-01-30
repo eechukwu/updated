@@ -158,10 +158,18 @@ Variables would be my go-to.
 
 
 
+variable "create_subscription" {
+  description = "Set to true to create the SNS topic subscription"
+  type        = bool
+  default     = false # Set this to false since the SNS topic does not exist
+}
 
-13:28
-Also bear in mind that if you’re using counts/for_Each loops, you’re ultimately changing the resources, so they’ll want to recreate
-13:30
-So, something like aws_sns_topic.blahblah will ultimately become something like aws_sns_topic.blahblakh[0] if using a count, and aws_sns_topic.blahblah["blahblah_from_for_each"] for for_each loops.
-13:30
-You’re ultimately going to have to use terraform move blocks as well if that’s the case.
+# SNS Topic Subscription Resource
+resource "aws_sns_topic_subscription" "trusted_ledger_sqs_target" {
+  count     = var.create_subscription ? 1 : 0
+  topic_arn = "arn:aws:sns:your-region:${var.deploy_environment_id}:${var.sns_topic_name}"
+  protocol  = "sqs"
+  endpoint  = module.sqs.sqs_topic_arn
+}
+
+
