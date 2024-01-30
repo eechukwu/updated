@@ -107,3 +107,4 @@ During deployment and testing, we discovered that this service relies on the 'pa
 
 Good morning everyone. Sorry I missed the standup; I was deep into figuring out a Terraform issue. I'm still deploying the Lambda service to the Canada account. In testing yesterday, I found it depends on services B and C. I'm now adding code to Terraform to bypass these dependencies and get the deployment done.
 
+Had a session with Gus, one of the developers who owns the services, yesterday. We agreed to proceed with this approach to at least get the app deployed. We'll come back to test the app once the other Lambdas are deployed.
