@@ -100,6 +100,10 @@ resource "aws_sns_topic_subscription" "trusted_ledger_sqs_target" {
   endpoint  = module.sqs.sqs_topic_arn
 }
 
+
+
+
+
 # Variable Definitions
 
 # Deployment environment ID - used to identify different environments like dev, staging, or prod
@@ -110,11 +114,16 @@ variable "deploy_environment_id" {
 
 # Local Values
 
-# Trust score context - a specific identifier related to the trust score functionality
+# Local variables for easy management and readability
 locals {
+  # Trust score context - a specific identifier related to the trust score functionality
   trust_score_context = "your_trust_score_context" # Replace with your actual context
+
   # Constructing the SNS topic ARN dynamically based on the environment and context
   sns_topic_arn = "arn:aws:sns:us-east-1:${var.deploy_environment_id}:${local.trust_score_context}payments-user-trust-score-trusted-sns"
+
+  # Determine if the SNS topic exists using the 'can' function
+  sns_topic_exists = can(data.aws_sns_topic.existing_trusted_ledger_sns.arn)
 }
 
 # Data Sources
@@ -122,11 +131,6 @@ locals {
 # Attempt to fetch the existing SNS topic using the constructed ARN
 data "aws_sns_topic" "existing_trusted_ledger_sns" {
   arn = local.sns_topic_arn
-}
-
-# Determine if the SNS topic exists using the 'can' function
-locals {
-  sns_topic_exists = can(data.aws_sns_topic.existing_trusted_ledger_sns.arn)
 }
 
 # SQS Module/Resource (Placeholder)
@@ -147,4 +151,3 @@ resource "aws_sns_topic_subscription" "trusted_ledger_sqs_target" {
   protocol  = "sqs"  # Protocol for the subscription, here it's SQS
   endpoint  = module.sqs.sqs_topic_arn  # Endpoint ARN for the SQS queue
 }
-
