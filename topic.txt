@@ -65,4 +65,32 @@ resource "aws_sns_topic_subscription" "trusted_ledger_sqs_target" {
   endpoint  = module.sqs.sqs_topic_arn
 }
 
-
+├── CONTRIBUTING.md
+├── Dockerfile
+├── Makefile
+├── README.md
+├── catalog-info.yaml
+├── infrastructure
+│   ├── deploy-service.yaml
+│   ├── lambda.tf
+│   ├── main.tf
+│   ├── modules
+│   │   ├── kms
+│   │   │   ├── main.tf
+│   │   │   ├── output.tf
+│   │   │   └── variables.tf
+│   │   ├── sns
+│   │   │   ├── main.tf
+│   │   │   ├── output.tf
+│   │   │   └── variables.tf
+│   │   └── sqs
+│   │       ├── main.tf
+│   │       ├── output.tf
+│   │       └── variables.tf
+│   ├── variables
+│   │   ├── awdevelopment.tfvars
+│   │   ├── awproductionca.tfvars
+│   │   ├── development.tfvars
+│   │   ├── perftest.tfvars
+│   │   └── usdfs.tfvars
+│   └── variables.tf
