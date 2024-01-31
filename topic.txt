@@ -65,36 +65,10 @@ resource "aws_sns_topic_subscription" "trusted_ledger_sqs_target" {
   endpoint  = module.sqs.sqs_topic_arn
 }
 
-  # aws_sns_topic_subscription.trusted_ledger_sqs_target[0] will be destroyed
-  # (because index [0] is out of range for count)
-  # (moved from aws_sns_topic_subscription.trusted_ledger_sqs_target)
-  - resource "aws_sns_topic_subscription" "trusted_ledger_sqs_target" {
-      - arn                             = "arn:aws:sns:us-east-1:564588860590:perftest-payments-user-trust-score-trusted-sns:71503673-f8c2-487e-ab50-be477c632c89" -> null
-      - confirmation_timeout_in_minutes = 1 -> null
-      - confirmation_was_authenticated  = true -> null
-      - endpoint                        = "arn:aws:sqs:us-east-1:564588860590:us_perftest-auto-transition-withdrawal-queue" -> null
-      - endpoint_auto_confirms          = false -> null
-      - id                              = "arn:aws:sns:us-east-1:564588860590:perftest-payments-user-trust-score-trusted-sns:71503673-f8c2-487e-ab50-be477c632c89" -> null
-      - owner_id                        = "564588860590" -> null
-      - pending_confirmation            = false -> null
-      - protocol                        = "sqs" -> null
-      - raw_message_delivery            = false -> null
-      - topic_arn                       = "arn:aws:sns:us-east-1:564588860590:perftest-payments-user-trust-score-trusted-sns" -> null
-    }
+  # moved.tf - Documentation for state move commands
 
- # aws_sns_topic_subscription.trusted_ledger_sqs_target[0] will be destroyed
-  # (because index [0] is out of range for count)
-  # (moved from aws_sns_topic_subscription.trusted_ledger_sqs_target)
-  - resource "aws_sns_topic_subscription" "trusted_ledger_sqs_target" {
-      - arn                             = "arn:aws:sns:us-east-1:952224021780:devstack-uscentral1-payments-user-trust-score-trusted-sns:eb048756-0058-4aa0-b3fe-38ffe5420be2" -> null
-      - confirmation_timeout_in_minutes = 1 -> null
-      - confirmation_was_authenticated  = true -> null
-      - endpoint                        = "arn:aws:sqs:us-east-1:952224021780:devstack-uscentral1-auto-transition-withdrawal-queue" -> null
-      - endpoint_auto_confirms          = false -> null
-      - id                              = "arn:aws:sns:us-east-1:952224021780:devstack-uscentral1-payments-user-trust-score-trusted-sns:eb048756-0058-4aa0-b3fe-38ffe5420be2" -> null
-      - owner_id                        = "952224021780" -> null
-      - pending_confirmation            = false -> null
-      - protocol                        = "sqs" -> null
-      - raw_message_delivery            = false -> null
-      - topic_arn                       = "arn:aws:sns:us-east-1:952224021780:devstack-uscentral1-payments-user-trust-score-trusted-sns" -> null
-    }
+# Command to move the aws_sns_topic_subscription resource from an indexed form to a non-indexed form
+# Run this command in the terminal
+
+# Moving the SNS topic subscription from indexed to non-indexed form
+terraform state mv "aws_sns_topic_subscription.trusted_ledger_sqs_target[0]" "aws_sns_topic_subscription.trusted_ledger_sqs_target"
