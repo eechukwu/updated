@@ -41,198 +41,40 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 helm list -A
 
-ion, here it's SQS
-  endpoint  = module.sqs.sqs_topic_arn  # Endpoint ARN for the SQS queue
-}
+Due to the dependency issue we encountered, we have made the following changes to deploy into the Canada Account:
 
+In main.tf:
 
-Variables would be my go-to.
+Added a variable:
 
-
-
-
-variable "create_subscription" {
-  description = "Set to true to create the SNS topic subscription"
-  type        = bool
-  default     = false # Set this to false since the SNS topic does not exist
-}
-
-# SNS Topic Subscription Resource
-resource "aws_sns_topic_subscription" "trusted_ledger_sqs_target" {
-  count     = var.create_subscription ? 1 : 0
-  topic_arn = "arn:aws:sns:your-region:${var.deploy_environment_id}:${var.sns_topic_name}"
-  protocol  = "sqs"
-  endpoint  = module.sqs.sqs_topic_arn
-}
-
- # The `deploy_context` and `deploy_environment_id` variables are reserved for use by the deploy service itself
-# See https://github.com/fanduel/infrastructure-deploy/blob/master/docs/workflows/project-specific-infrastructure/README.md#deploy-workflow
-# for it's purpose and interface.
-variable "deploy_context" {}
-variable "deploy_environment_id" {}
-variable "environment" {}
-variable "deploy_environment" {}
-variable "sns_kms_policy_roles" {}
-variable "delay_seconds" {}
+hcl
+Copy code
 variable "trusted_ledger_sqs_target_subscription" {
   description = "Set to true to create the SNS topic subscription"
   type        = bool
-  default     = false # Set this to false since the SNS topic does not exist
+  default     = true
 }
+Added a moved block to retain the state file:
 
-locals {
-  project_name = "auto-tran-with-lambda"
-  product      = "aw"
-  origin_uri   = "https://github.com/fanduel/auto-transition-withdrawals-lambda/tree/main/infrastructure"
-
-  # We run TF from from infrastructure/
-  root_dir                     = "../"
-  region                       = "us-east-1"
-  project_resource_name_hyphen = "${local.project_name}-${var.deploy_context}"
-  devstack_prefix              = var.devstack_name != "" ? format("devstack-%s-", var.devstack_name) : format("%s-", var.environment)
-  trust_score_context          = var.devstack_name != "" ? format("devstack-%s-", var.devstack_name) : format("%s-", var.deploy_environment)
+hcl
+Copy code
+moved {
+  from = aws_sns_topic_subscription.trusted_ledger_sqs_target
+  to   = aws_sns_topic_subscription.trusted_ledger_sqs_target[0]
 }
+Modified the aws_sns_topic_subscription.trusted_ledger_sqs_target resource to include a condition:
 
-module "kms" {
-  source             = "./modules/kms"
-  deploy_environment = var.deploy_environment
-  account_id         = var.deploy_environment_id
-  key_name           = "${var.deploy_environment}_auto_trans_sns_topic"
-  key_description    = "This key is used for encryption of the auto transition sns topic"
-  policy_roles       = var.sns_kms_policy_roles
-}
-
-module "sqs" {
-  source              = "./modules/sqs"
-  account_id          = var.deploy_environment_id
-  deploy_environment  = var.deploy_environment
-  environment         = var.environment
-  devstack_name       = local.devstack_prefix
-  delay_seconds       = var.delay_seconds
-  trust_score_context = local.trust_score_context
-}
-
-module "sns" {
-  source             = "./modules/sns"
-  account_id         = var.deploy_environment_id
-  deploy_environment = var.deploy_environment
-  environment        = var.environment
-  devstack_name      = local.devstack_prefix
-  kms_encryption_key_arn = module.kms.auto_trans_kms_arn
-}
-
-# Event source from SQS
-resource "aws_lambda_event_source_mapping" "sqs" {
-  event_source_arn = module.sqs.sqs_topic_arn
-  function_name    = aws_lambda_function.atwl.arn
-  enabled          = var.sqs_event_source_enabled
-}
-
+hcl
+Copy code
 resource "aws_sns_topic_subscription" "trusted_ledger_sqs_target" {
   count     = var.trusted_ledger_sqs_target_subscription ? 1 : 0
   topic_arn = "arn:aws:sns:us-east-1:${var.deploy_environment_id}:${local.trust_score_context}payments-user-trust-score-trusted-sns"
   protocol  = "sqs"
   endpoint  = module.sqs.sqs_topic_arn
 }
+Set trusted_ledger_sqs_target_subscription to false in the relevant configuration file.
 
-moved {
-  from = aws_sns_topic_subscription.trusted_ledger_sqs_target[0]
-  to = aws_sns_topic_subscription.trusted_ledger_sqs_target
-}
+Additionally, we are currently using xxxxxxxxxxxx as the host, but we need to change this once we decide what to use for hosting.
 
-
- # aws_sns_topic_subscription.trusted_ledger_sqs_target[0] will be destroyed
-  # (because index [0] is out of range for count)
-  # (moved from aws_sns_topic_subscription.trusted_ledger_sqs_target)
-  - resource "aws_sns_topic_subscription" "trusted_ledger_sqs_target" {
-      - arn                             = "arn:aws:sns:us-east-1:952224021780:devstack-uscentral1-payments-user-trust-score-trusted-sns:eb048756-0058-4aa0-b3fe-38ffe5420be2" -> null
-      - confirmation_timeout_in_minutes = 1 -> null
-      - confirmation_was_authenticated  = true -> null
-      - endpoint                        = "arn:aws:sqs:us-east-1:952224021780:devstack-uscentral1-auto-transition-withdrawal-queue" -> null
-      - endpoint_auto_confirms          = false -> null
-      - id                              = "arn:aws:sns:us-east-1:952224021780:devstack-uscentral1-payments-user-trust-score-trusted-sns:eb048756-0058-4aa0-b3fe-38ffe5420be2" -> null
-      - owner_id                        = "952224021780" -> null
-      - pending_confirmation            = false -> null
-      - protocol                        = "sqs" -> null
-      - raw_message_delivery            = false -> null
-      - topic_arn                       = "arn:aws:sns:us-east-1:952224021780:devstack-uscentral1-payments-user-trust-score-trusted-sns" -> null
-    }
-
-.
-├── CONTRIBUTING.md
-├── Dockerfile
-├── Makefile
-├── README.md
-├── catalog-info.yaml
-├── infrastructure
-│   ├── deploy-service.yaml
-│   ├── lambda.tf
-│   ├── main.tf
-│   ├── modules
-│   │   ├── kms
-│   │   │   ├── main.tf
-│   │   │   ├── output.tf
-│   │   │   └── variables.tf
-│   │   ├── sns
-│   │   │   ├── main.tf
-│   │   │   ├── output.tf
-│   │   │   └── variables.tf
-│   │   └── sqs
-│   │       ├── main.tf
-│   │       ├── output.tf
-│   │       └── variables.tf
-│   ├── variables
-│   │   ├── awdevelopment.tfvars
-│   │   ├── awproductionca.tfvars
-│   │   ├── development.tfvars
-│   │   ├── perftest.tfvars
-│   │   └── usdfs.tfvars
-│   └── variables.tf
-├── pyproject.toml
-├── pytest.ini
-
-
-lambda_name_prefix = "fd-sls-"
-environment = "production"
-settings = "event_handler.settings.production"
-
-log_level = "INFO"
-
-vpc_sg_ids = [
-  # Lambda Service SG - Allows access to Backend Services SG (Finance-Payments / Eligibility)
-  "sg-09afadfab2ca50fcc"
-]
-
-vpc_subnet_ids = [
-  # Main - Production - Private (us-east-1b)
-  "subnet-04f925d8e3d5fd8a2",    
-  # Main - Production - Private (us-east-1d)
-  "subnet-0274de200dffdc283",    
-  # Main - Production - Private (us-east-1e)
-  "subnet-03cf5c5138aba38aa",    
-]
-
-
-
-datadog_forwarder_arn = "arn:aws:lambda:us-east-1:990163193419:function:datadog-forwarder"    # Confirm with Shaun
-datadog_layer_arn = "arn:aws:lambda:us-east-1:464622532012:layer:Datadog-Python37:46"         # Seems to be the same in all env
-
-sns_kms_policy_roles = ["root"]
-
-user_info_host = "userinfo.service.int.use1.cpeca-prd.io"
-user_info_port = 59995
-withdrawals_host = "withdrawals-elb.int.use1.cpeca-prd.io"
-withdrawals_port = 60000
-finance_payments_host = "finance-payments-elb.int.use1.cpeca-prd.io"
-finance_payments_port = 64823
-
-process_event = "True"
-delay_seconds = 10
-message_delay_seconds = 900
-sqs_event_source_enabled = true
-number_of_concurrent_executions = 50
-trusted_ledger_sqs_target_subscription = "False"
-
-
-terraform plan -var-file="awproductionca.tfvars"
+We are waiting for confirmation from xxxxxxxxxx regarding the service. Unfortunately, we won't be able to test it until the dependencies are deployed. However, from the link provided, we can see that the pipeline is not destroying any Terraform resources in the other AWS accounts.
 
