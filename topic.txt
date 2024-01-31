@@ -157,3 +157,36 @@ moved {
       - raw_message_delivery            = false -> null
       - topic_arn                       = "arn:aws:sns:us-east-1:952224021780:devstack-uscentral1-payments-user-trust-score-trusted-sns" -> null
     }
+
+.
+├── CONTRIBUTING.md
+├── Dockerfile
+├── Makefile
+├── README.md
+├── catalog-info.yaml
+├── infrastructure
+│   ├── deploy-service.yaml
+│   ├── lambda.tf
+│   ├── main.tf
+│   ├── modules
+│   │   ├── kms
+│   │   │   ├── main.tf
+│   │   │   ├── output.tf
+│   │   │   └── variables.tf
+│   │   ├── sns
+│   │   │   ├── main.tf
+│   │   │   ├── output.tf
+│   │   │   └── variables.tf
+│   │   └── sqs
+│   │       ├── main.tf
+│   │       ├── output.tf
+│   │       └── variables.tf
+│   ├── variables
+│   │   ├── awdevelopment.tfvars
+│   │   ├── awproductionca.tfvars
+│   │   ├── development.tfvars
+│   │   ├── perftest.tfvars
+│   │   └── usdfs.tfvars
+│   └── variables.tf
+├── pyproject.toml
+├── pytest.ini
