@@ -232,3 +232,7 @@ message_delay_seconds = 900
 sqs_event_source_enabled = true
 number_of_concurrent_executions = 50
 trusted_ledger_sqs_target_subscription = "False"
+
+
+terraform plan -var-file="awproductionca.tfvars"
+
