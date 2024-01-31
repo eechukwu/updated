@@ -78,3 +78,4 @@ Additionally, we are currently using xxxxxxxxxxxx as the host, but we need to ch
 
 We are waiting for confirmation from xxxxxxxxxx regarding the service. Unfortunately, we won't be able to test it until the dependencies are deployed. However, from the link provided, we can see that the pipeline is not destroying any Terraform resources in the other AWS accounts.
 
+Modified the aws_sns_topic_subscription.trusted_ledger_sqs_target resource to include a condition:
