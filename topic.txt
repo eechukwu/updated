@@ -190,3 +190,45 @@ moved {
 │   └── variables.tf
 ├── pyproject.toml
 ├── pytest.ini
+
+
+lambda_name_prefix = "fd-sls-"
+environment = "production"
+settings = "event_handler.settings.production"
+
+log_level = "INFO"
+
+vpc_sg_ids = [
+  # Lambda Service SG - Allows access to Backend Services SG (Finance-Payments / Eligibility)
+  "sg-09afadfab2ca50fcc"
+]
+
+vpc_subnet_ids = [
+  # Main - Production - Private (us-east-1b)
+  "subnet-04f925d8e3d5fd8a2",    
+  # Main - Production - Private (us-east-1d)
+  "subnet-0274de200dffdc283",    
+  # Main - Production - Private (us-east-1e)
+  "subnet-03cf5c5138aba38aa",    
+]
+
+
+
+datadog_forwarder_arn = "arn:aws:lambda:us-east-1:990163193419:function:datadog-forwarder"    # Confirm with Shaun
+datadog_layer_arn = "arn:aws:lambda:us-east-1:464622532012:layer:Datadog-Python37:46"         # Seems to be the same in all env
+
+sns_kms_policy_roles = ["root"]
+
+user_info_host = "userinfo.service.int.use1.cpeca-prd.io"
+user_info_port = 59995
+withdrawals_host = "withdrawals-elb.int.use1.cpeca-prd.io"
+withdrawals_port = 60000
+finance_payments_host = "finance-payments-elb.int.use1.cpeca-prd.io"
+finance_payments_port = 64823
+
+process_event = "True"
+delay_seconds = 10
+message_delay_seconds = 900
+sqs_event_source_enabled = true
+number_of_concurrent_executions = 50
+trusted_ledger_sqs_target_subscription = "False"
