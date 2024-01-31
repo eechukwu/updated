@@ -72,3 +72,8 @@ resource "aws_sns_topic_subscription" "trusted_ledger_sqs_target" {
 
 # Moving the SNS topic subscription from indexed to non-indexed form
 terraform state mv "aws_sns_topic_subscription.trusted_ledger_sqs_target[0]" "aws_sns_topic_subscription.trusted_ledger_sqs_target"
+
+moved {
+  from = aws_sns_topic_subscription.trusted_ledger_sqs_target[0]
+  to = aws_sns_topic_subscription.trusted_ledger_sqs_target
+}
