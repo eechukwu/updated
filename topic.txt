@@ -41,41 +41,4 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 helm list -A
 
-Due to the dependency issue we encountered, we have made the following changes to deploy into the Canada Account:
-
-In main.tf:
-
-Added a variable:
-
-hcl
-Copy code
-variable "trusted_ledger_sqs_target_subscription" {
-  description = "Set to true to create the SNS topic subscription"
-  type        = bool
-  default     = true
-}
-Added a moved block to retain the state file:
-
-hcl
-Copy code
-moved {
-  from = aws_sns_topic_subscription.trusted_ledger_sqs_target
-  to   = aws_sns_topic_subscription.trusted_ledger_sqs_target[0]
-}
-Modified the aws_sns_topic_subscription.trusted_ledger_sqs_target resource to include a condition:
-
-hcl
-Copy code
-resource "aws_sns_topic_subscription" "trusted_ledger_sqs_target" {
-  count     = var.trusted_ledger_sqs_target_subscription ? 1 : 0
-  topic_arn = "arn:aws:sns:us-east-1:${var.deploy_environment_id}:${local.trust_score_context}payments-user-trust-score-trusted-sns"
-  protocol  = "sqs"
-  endpoint  = module.sqs.sqs_topic_arn
-}
-Set trusted_ledger_sqs_target_subscription to false in the relevant configuration file.
-
-Additionally, we are currently using xxxxxxxxxxxx as the host, but we need to change this once we decide what to use for hosting.
-
-We are waiting for confirmation from xxxxxxxxxx regarding the service. Unfortunately, we won't be able to test it until the dependencies are deployed. However, from the link provided, we can see that the pipeline is not destroying any Terraform resources in the other AWS accounts.
-
-Modified the aws_sns_topic_subscription.trusted_ledger_sqs_target resource to include a condition:
+I spoke to Matthew Murray, who is part of the Odin team that owns the xxxxxx services. He confirmed that the services are working fine, but they encountered some issues during testing, which can be found at the link below:
