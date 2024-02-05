@@ -41,13 +41,9 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 helm list -A
 
-I spoke to Matthew Murray, who is part of the Odin team that owns the xxxxxx services. He confirmed that the services are working fine, but they encountered some issues during testing, which can be found at the link below:
+IGood morning, everyone,
 
-Good morning Steven,
-
-Could you please help me get Kerberos access? Thanks!
-
-Best, [Your Name]
+I am looking to deploy the application xxxxxx into the new Canada account but am currently encountering a permission error. Could someone kindly assist me with this?
 
 
 
