@@ -41,11 +41,26 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 helm list -A
 
-IGood morning, everyone,
+PIR - Investigate more reliable remote container registries
 
-I am looking to deploy the application xxxxxx into the new Canada account but am currently encountering a permission error. Could someone kindly assist me with this?
+Attach
+
+Create subtask
+
+Link issue
 
 
+Create
+
+Description
+
+Problem Statement
+We have lost faith in certain remote container registries and there is not too much trust in Github. We need to look at alternatives
+
+It probably makes sense to put GCP container registry at the top of this list
+
+Work Involved
+Look at SLAs and historical availability of a number of external container registries and report back
 
 
 
