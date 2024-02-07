@@ -69,5 +69,10 @@ This table is a starting point for comparison. Each project's specific needs can
 
 Since we're already hosting most of our apps on GCP, we'll stick with it. But let's make sure to check their SLA, SLO, and SLI details to know what to expect.
 
+After looking at different options, we've decided to go with Google Container Registry (GCP) because we already use it for many of our apps, and it works well for what we need. Now, we'll take a closer look at what GCP promises us about their service to make sure it's the right choice for us.
+
+Moving forward, we will delve deeper into GCP's Service Level Agreements, Objectives, and Indicators to ensure they meet our standards for service quality and reliability.
+
+
 
 
