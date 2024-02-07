@@ -41,27 +41,33 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 helm list -A
 
-PIR - Investigate more reliable remote container registries
+Below is a simplified comparison table of some key features and considerations for Docker Hub, Google Container Registry (GCR), Amazon Elastic Container Registry (ECR), Microsoft Azure Container Registry (ACR), and GitHub Packages. Please note that specifics can change, so it's a good idea to check each service's current documentation for the latest details.
 
-Attach
+| Feature/Registry                  | Docker Hub | Google Container Registry (GCR) | Amazon Elastic Container Registry (ECR) | Microsoft Azure Container Registry (ACR) | GitHub Packages |
+|-----------------------------------|------------|---------------------------------|-----------------------------------------|------------------------------------------|-----------------|
+| **Hosting Type**                  | Public     | Public/Private                  | Private                                 | Private                                  | Public/Private  |
+| **Integration**                   | Wide       | Google Cloud                    | AWS                                     | Azure                                    | GitHub CI/CD    |
+| **Image Vulnerability Scanning**  | Yes        | Yes                             | Yes                                     | Yes                                      | Yes             |
+| **Automated Builds**              | Yes        | No                              | No                                      | Yes                                      | Yes             |
+| **Geographic Replication**        | No         | Yes                             | Yes (via AWS services)                  | Yes                                      | No              |
+| **SLA Availability**              | No         | Yes                             | Yes                                     | Yes                                      | No              |
+| **Free Private Repositories**     | No         | No                              | No                                      | No                                       | Yes (Limited)   |
+| **Pricing**                       | Free tier + Paid plans | Based on usage               | Based on usage                          | Based on usage                           | Free for public repos, Paid for private |
 
-Create subtask
+### Key Points:
+- **Hosting Type**: Indicates whether the registry is primarily public (anyone can pull images), private (restricted access), or supports both.
+- **Integration**: Shows the cloud or platform services with which the registry has native integrations.
+- **Image Vulnerability Scanning**: Whether the service provides tools to scan container images for vulnerabilities.
+- **Automated Builds**: Support for automatically building container images from source code.
+- **Geographic Replication**: Whether the registry supports distributing images across different geographic regions for faster access.
+- **SLA Availability**: If the service offers a Service Level Agreement (SLA) for availability.
+- **Free Private Repositories**: Indicates the availability of free private repositories for storing images.
+- **Pricing**: General approach to pricing for the use of registry services.
 
-Link issue
+This table is a starting point for comparison. Each project's specific needs can make one service more appealing than another. Always refer to the latest documentation for each service for the most current features and pricing information.
 
 
-Create
-
-Description
-
-Problem Statement
-We have lost faith in certain remote container registries and there is not too much trust in Github. We need to look at alternatives
-
-It probably makes sense to put GCP container registry at the top of this list
-
-Work Involved
-Look at SLAs and historical availability of a number of external container registries and report back
-
+Since we're already hosting most of our apps on GCP, we'll stick with it. But let's make sure to check their SLA, SLO, and SLI details to know what to expect.
 
 
 
