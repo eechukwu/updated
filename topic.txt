@@ -74,5 +74,14 @@ After looking at different options, we've decided to go with Google Container Re
 Moving forward, we will delve deeper into GCP's Service Level Agreements, Objectives, and Indicators to ensure they meet our standards for service quality and reliability.
 
 
+|| Feature/Registry || Docker Hub || Google Container Registry (GCR) || Amazon Elastic Container Registry (ECR) || Microsoft Azure Container Registry (ACR) || GitHub Packages ||
+|| Hosting Type || Public || Public/Private || Private || Private || Public/Private ||
+|| Integration || Wide || Google Cloud || AWS || Azure || GitHub CI/CD ||
+|| Image Vulnerability Scanning || Yes || Yes || Yes || Yes || Yes ||
+|| Automated Builds || Yes || No || No || Yes || Yes ||
+|| Geographic Replication || No || Yes || Yes (via AWS services) || Yes || No ||
+|| SLA Availability || No || Yes || Yes || Yes || No ||
+|| Free Private Repositories || No || No || No || No || Yes (Limited) ||
+|| Pricing || Free tier + Paid plans || Based on usage || Based on usage || Based on usage || Free for public repos, Paid for private ||
 
 
