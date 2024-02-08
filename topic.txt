@@ -181,3 +181,21 @@ jobs:
           package-type: container
           min-versions-to-keep: ${{ inputs.MIN_
 
+name: Deploy CMS Service Anthos
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'sites/content-x/**'
+      - 'packages/**'
+
+  
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'sites/content-x/**'
+      - 'packages/**'
+
+
