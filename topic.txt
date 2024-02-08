@@ -41,140 +41,84 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 helm list -A
 
-name: Build and Push Container Image to Registry
-
+name: Deploy CMS Service Anthos
 on:
-  workflow_call:
-    outputs:
-      IMAGE_DIGEST:
-        description: Image digest of resulting docker image
-        value: ${{ jobs.build-and-push.outputs.digest }}
-    inputs:
-      DOCKER_IMAGE_NAME:
-        description: Name of Docker Image
-        type: string 
-        required: true 
-      DOCKER_IMAGE_TAG:
-        description: Tag of Docker Image
-        type: string 
-        required: true 
-      DOCKERFILE_PATH:
-        description: Path of Dockerfile
-        type: string 
-        required: true 
-      BUILD_CONTEXT:
-        description: Build Context
-        type: string 
-        default: .
-        required: false 
-      CLEAN_UP_IMAGES:
-        description: Set to true to clean up old images. The number of images to retain can be configured using the MIN_VERSION_TO_KEEP input variable.
-        type: boolean
-        default: true
-        required: false
-      MIN_VERSIONS_TO_KEEP:
-        description: The minimum number of image versions to keep starting with the latest version. To delete all versions set this to 0.
-        type: number
-        default: 50
-        required: false
-      TRIVYIGNORES:
-        description: Comma-separated list of relative paths in repository to one or more .trivyignore files
-        type: string
-        default: ""
-        required: false
-      INCLUDE_TEST:
-        description: Whether to execute test projects located in tests folder
-        type: boolean
-        default: true
-        required: false
+  push:
+    branches:
+      - main
+    paths:
+      - 'sites/content-x/**'
+      - 'packages/**'
 
-permissions: 
-  contents: read
-  packages: write
+  # pull_request:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'sites/content-x/**'
+  #     - 'packages/**'
 
-env: 
-  DOCKER_REGISTRY: ghcr.io
-  ORGANISATION_NAME: frasers-group
-  TEST_TAG: test
+  workflow_dispatch:
 
 jobs:
   build-and-push:
+    uses: frasers-group/te-reusable-workflows-devops/.github/workflows/build-and-push-container-registry.yml@main
+    with:
+      DOCKER_IMAGE_NAME: ec-cms-service
+      DOCKER_IMAGE_TAG: ${{ github.sha }}
+      DOCKERFILE_PATH: sites/content-x/Dockerfile
+      BUILD_CONTEXT: .
+      MIN_VERSIONS_TO_KEEP: 200
+
+  deploy:
     runs-on: ubuntu-latest
-    outputs:
-      digest: ${{ steps.push-image.outputs.digest }}
+    needs:
+      - build-and-push
+    if: github.ref == 'refs/heads/main'
+
+    permissions:
+      contents: read
+      id-token: write
+
+    env:
+      COMPONENT_NAME: cms-service
+      GCP_SERVICE_ACCOUNT_PREFIX: ec-argo
+      GCP_PROJECT_ID: ecom-dev-fgp-anthos-2885
+      GCP_PROJECT_NUMBER: '508929099641'
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2  # Updated to use a simpler tag reference for clarity
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1  # Updated to use a simpler tag reference for clarity
-
-      - name: Log in to GitHub container registry
-        uses: docker/login-action@v1  # Updated to use a simpler tag reference for clarity
+      - name: Authenticate with GCP
+        id: gcp-auth
+        uses: google-github-actions/auth@5a50e581162a13f4baa8916d01180d2acbc04363 # v2.1.0
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          workload_identity_provider: 'projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+          service_account: '${{ env.GCP_SERVICE_ACCOUNT_PREFIX }}-gh@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com'
 
-      - name: Add Source
-        if: ${{ inputs.INCLUDE_TEST }}
-        run: dotnet nuget add source --username 'github' --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name 'github' 'https://nuget.pkg.github.com/frasers-group/index.json'
-
-      - name: Run Tests
-        if: ${{ inputs.INCLUDE_TEST }}
-        run: |
-          for file in $(find . -type f -iname '*.tests.csproj' ! -path './packages/*' ! -path '*/obj/*' | grep -iv testadapter); do
-            echo Executing tests in found test library $file
-            dotnet test $file 
-          done
-
-      - name: Build Container Image 
-        uses: docker/build-push-action@v2  # Updated to use a simpler tag reference for clarity
+      - name: Obtain GitHub App information
+        id: obtain-secrets
+        uses: google-github-actions/get-secretmanager-secrets@61067887622dee4939d68e379b4264a57534fdf6 #v2.1.0
         with:
-          load: true
-          push: false
-          tags: ${{ env.TEST_TAG }}
-          file: ${{ inputs.DOCKERFILE_PATH }}
-          context: ${{ inputs.BUILD_CONTEXT }}
-          secrets: "github_token=${{ secrets.GITHUB_TOKEN }}"
+          secrets: |-
+            github-app-id:${{ env.GCP_PROJECT_ID }}/${{ env.GCP_SERVICE_ACCOUNT_PREFIX }}-github-app-id
+            github-app-installation-id:${{ env.GCP_PROJECT_ID }}/${{ env.GCP_SERVICE_ACCOUNT_PREFIX }}-github-app-installation-id
+            github-app-private-key:${{ env.GCP_PROJECT_ID }}/${{ env.GCP_SERVICE_ACCOUNT_PREFIX }}-github-app-private-key
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@v0.2  # Updated to use a simpler tag reference for clarity
+      - name: Retrieve app token
+        id: get-app-token
+        uses: frasers-group/ec-fx-github-action-get-token-action-devops@main
         with:
-          image-ref: ${{ env.TEST_TAG }}
-          format: table
-          exit-code: 0  # don't fail workflow if vulnerabilities found
-          ignore-unfixed: true
-          trivyignores: ${{ inputs.TRIVYIGNORES }}
-          vuln-type: os,library
-          severity: CRITICAL,HIGH
-          
-      - name: Run Checkov scan against Dockerfile
-        uses: bridgecrewio/checkov-action@v2  # Updated to use a simpler tag reference for clarity
-        if: always()
-        with:
-          quiet: true  # display only failed checks
-          soft_fail: true  # don't fail workflow if vulnerabilities found
-          file: ${{ inputs.DOCKERFILE_PATH }}
-          framework: dockerfile
-          skip_check: CKV_DOCKER_2
+          app-id: '${{ steps.obtain-secrets.outputs.github-app-id }}'
+          private-key: '${{ steps.obtain-secrets.outputs.github-app-private-key }}'
+          installation-id: '${{ steps.obtain-secrets.outputs.github-app-installation-id }}'
 
-      # Conditional push to registry only on push events
-      - name: Push container image to registry
-        if: github.event_name == 'push'  # Only execute this step if the workflow was triggered by a push event
-        id: push-image
-        uses: docker/build-push-action@v2  # Updated to use a simpler tag reference for clarity
+      - name: Trigger deploy workflow
+        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 #v3.0.0
         with:
-          push: true
-          tags: ${{ env.DOCKER_REGISTRY }}/${{ env.ORGANISATION_NAME }}/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.DOCKER_IMAGE_TAG }}
-          file: ${{ inputs.DOCKERFILE_PATH }}
-          context: ${{ inputs.BUILD_CONTEXT }}
-
-      - name: Clean-up old images
-        if: inputs.CLEAN_UP_IMAGES
-        uses: actions/delete-package-versions@v2  # Updated to use a simpler tag reference for clarity
-        with:
-          package-name: ${{ inputs.DOCKER_IMAGE_NAME }}
-          package-type: container
-          min-versions-to-keep: ${{ inputs.MIN_VERSIONS_TO_KEEP }}
+          token: ${{ steps.get-app-token.outputs.app-token }}
+          repository: frasers-group/ec-frasersgroupplatform-k8s
+          event-type: deploy-cms-service
+          client-payload: >
+            {
+              "IMAGE_TAG": "${{ github.sha }}",
+              "IMAGE_DIGEST": "${{ needs.build-and-push.outputs.IMAGE_DIGEST }}",
+              "COMPONENT_NAME": "${{ env.COMPONENT_NAME }}"
+            }
