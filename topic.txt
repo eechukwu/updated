@@ -43,44 +43,17 @@ helm list -A
 
 
 
-on:
-  workflow_call:
-    inputs:
-      # Existing inputs...
-      SHOULD_PUSH:
-        description: Whether to push the built image to the registry
-        required: true
-        type: boolean
-    outputs:
-      IMAGE_DIGEST:
-        description: Image digest of resulting docker image
-        value: ${{ jobs.build-and-push.outputs.digest }}
-
-
-
-      - name: Push container image to registry
-        if: inputs.SHOULD_PUSH  # Conditionally push based on the new input
-        id: push-image
-        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671  # Use the correct version
-        with:
-          push: true
-          tags: ${{ env.DOCKER_REGISTRY }}/${{ env.ORGANISATION_NAME }}/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.DOCKER_IMAGE_TAG }}
-          file: ${{ inputs.DOCKERFILE_PATH }}
-          context: ${{ inputs.BUILD_CONTEXT }}
-
-
-jobs:
-  build-and-push:
-    uses: frasers-group/te-reusable-workflows-devops/.github/workflows/build-and-push-container-registry.yml@main
-    with:
-      DOCKER_IMAGE_NAME: ec-cms-service
-      DOCKER_IMAGE_TAG: ${{ github.sha }}
-      DOCKERFILE_PATH: sites/content-x/Dockerfile
-      BUILD_CONTEXT: .
-      MIN_VERSIONS_TO_KEEP: 200
-      SHOULD_PUSH: ${{ github.event_name == 'push' }}  # Pass true if the event is a push, false otherwise
 
 
 
 
+module "db_timeout_error" {
+  source                  = "../modules/gcp_log_metric"
+  metric_name             = "db_timeout_error"
+  metric_description      = "Number of times that there has been an Oracle DB error"
+  log_filter              = ["resource.type=k8s_container", "jsonPayload.log:\"ORA-01013: user requested cancel of current operation\""]
+  label_name              = "container_name"
+  label_description       = "Which container/application the error occured on"
+  label_search_field_name = "EXTRACT(resource.labels.container_name)"
+}
 {
