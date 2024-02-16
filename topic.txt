@@ -47,13 +47,12 @@ helm list -A
 
 
 
-module "db_timeout_error" {
+module "db_init_string_error" {
   source                  = "../modules/gcp_log_metric"
-  metric_name             = "db_timeout_error"
-  metric_description      = "Number of times that there has been an Oracle DB error"
-  log_filter              = ["resource.type=k8s_container", "jsonPayload.log:\"ORA-01013: user requested cancel of current operation\""]
+  metric_name             = "db_init_string_error"
+  metric_description      = "Number of times the initialization string format error has occurred"
+  log_filter              = [ "resource.type=k8s_container","jsonPayload.Message=\"Format of the initialization string does not conform to specification starting at index 0.\"]
   label_name              = "container_name"
-  label_description       = "Which container/application the error occured on"
+  label_description       = "The container/application where the error occurred"
   label_search_field_name = "EXTRACT(resource.labels.container_name)"
 }
-{
