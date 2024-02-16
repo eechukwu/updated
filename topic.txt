@@ -81,23 +81,6 @@ jobs:
       SHOULD_PUSH: ${{ github.event_name == 'push' }}  # Pass true if the event is a push, false otherwise
 
 
-resource.type="k8s_container"
-resource.labels.cluster_name="prod-warehouse"
-resource.labels.namespace_name="prod-wh-highjump-goodsin-api"
-resource.labels.project_id="corp-prod-mgmt-anthos-9061"
-resource.labels.container_name="wh-highjump-goodsin-api"
-resource.labels.pod_name:"prod-wh-highjump-goodsin-api-" severity>=DEFAULT
-
-Please update this query to extract this message : "Message":"Format of the initialization string does not conform to specification starting at index 0. from the below log
 
 
-{"ActionId":"7692128f-1465-4380-b3c7-df49893c8d58", "ActionName":"HighJumpGoodsInApi.Controllers.ValidateController.ValidateAsn (HighJumpGoodsInApi)", "AppName":"HighJumpGoodsInApi", "ConnectionId":"0HN1DAGG3S6EF", "EnvironmentName":"Production", "EnvironmentUserName":"prod-wh-highjump-goodsin-api-95977fd58-lxzws\appuser", "Level":"Error", "MachineName":"prod-wh-highjump-goodsin-api-95977fd58-lxzws", "Message":"Format of the initialization string does not conform to specification starting at index 0.,    at System.Data.Common.DbConnectionOptions.GetKeyValuePair(String connectionString, Int32 currentPosition, StringBuilder buffer, Boolean useOdbcRules, String& keyname, String& keyvalue)
-   at System.Data.Common.DbConnectionOptions.ParseInternal(Dictionary`2 parsetable, String connectionString, Boolean buildChain, Dictionary`2 synonyms, Boolean firstKey)
-   at System.Data.Common.DbConnectionOptions..ctor(String connectionString, Dictionary`2 synonyms)
-   at System.Data.SqlClient.SqlConnectionString..ctor(String connectionString)
-   at System.Data.SqlClient.SqlConnectionFactory.CreateConnectionOptions(String connectionString, DbConnectionOptions previous)
-   at System.Data.ProviderBase.DbConnectionFactory.GetConnectionPoolGroup(DbConnectionPoolKey key, DbConnectionPoolGroupOptions poolOptions, DbConnectionOptions& userConnectionOptions)
-   at System.Data.SqlClient.SqlConnection.ConnectionString_Set(DbConnectionPoolKey key)
-   at System.Data.SqlClient.SqlConnection.set_ConnectionString(String value)
-   at HighJumpGoodsInApi.Data.Implementations.SqlRepository.HJValidateAsn(ValidationRequest validationData) in /src/HighJumpGoodsInApi.Data/Implementations/SqlRepository.cs:line 239
-   at HighJumpGoodsInApi.Business.Services.GoodsInService.Asn(ValidationRequest validationData) in /src/HighJumpGoodsInApi.Business/Services/GoodsInService.cs:line 134", "ParentId":"10633ce1c002a382", "RequestId":"0HN1DAGG3S6EF:000002D8", "RequestPath":"/api/Validate/Asn", "SourceContext":"HighJumpGoodsInApi.Business.Services.GoodsInService", "SpanId":"06705e678f1d22f1", "TS":"2024-02-14T12:15:23.4684474+00:00", "ThreadId":20, "TraceId":"91a68b2a8eb6439b61681ad7fb801cd7", "Uri":"/api/Validate/Asn", "log":"{"TS":"2024-02-14T12:15:23.4684474+00:00","Message":"Format of the initialization string does not conform to specification starting at index 0.,    at System.Data.Common.DbConnectionOptions.GetKeyValuePair(String connectionString, Int32 currentPosition, StringBuilder buffer, Boolean us… [message truncated due to size]
+{
