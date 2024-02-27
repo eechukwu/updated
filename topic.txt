@@ -43,16 +43,48 @@ helm list -A
 
 
 
+Give me an examples of how to configure this: In Account A (Image Source Account):
+
+Ensure the Artifact Registry repository containing the image is configured to allow access from Account B. You may need to grant the roles/artifactregistry.reader role to a service account in Account B that will be used to pull the image.
+ChatGPT
+To configure access permissions for sharing a container image from an Artifact Registry repository in Google Cloud Platform (GCP) Account A with Account B, you'll primarily work with IAM (Identity and Access Management) policies. Here's how to grant the roles/artifactregistry.reader role to a service account in Account B, allowing it to pull images from the Artifact Registry in Account A.
+
+Step 1: Identify the Service Account in Account B
+Determine the service account in Account B that needs access to pull the image. Service accounts are identified by an email address, typically in the format service-account-name@project-id.iam.gserviceaccount.com.
+Step 2: Grant Access to the Service Account
+You can grant access using the Google Cloud Console or the gcloud command-line tool.
+
+Using Google Cloud Console:
+Go to the Google Cloud Console: https://console.cloud.google.com/
+Navigate to Artifact Registry and select the repository containing the image in Account A.
+Go to the Permissions tab.
+Click on Add.
+In the New members field, enter the service account email from Account B.
+In the Role dropdown, select Artifact Registry Reader.
+Click Save to apply the changes.
+Using gcloud Command-Line Tool:
+Open your terminal.
+
+Use the gcloud projects add-iam-policy-binding command to add the roles/artifactregistry.reader role to the service account from Account B. Replace [PROJECT-ID] with the project ID of Account A, and [SERVICE-ACCOUNT-EMAIL] with the service account email from Account B.
+
+sh
+Copy code
+gcloud projects add-iam-policy-binding [PROJECT-ID] \
+  --member="serviceAccount:[SERVICE-ACCOUNT-EMAIL]" \
+  --role="roles/artifactregistry.reader"
+Example gcloud Command:
+Suppose your Account A's project ID is project-a and the service account from Account B is service-account-b@project-b.iam.gserviceaccount.com. The command would look like this:
+
+sh
+Copy code
+gcloud projects add-iam-policy-binding project-a \
+  --member="serviceAccount:service-account-b@project-b.iam.gserviceaccount.com" \
+  --role="roles/artifactregistry.reader"
+This command grants the Artifact Registry Reader role to the specified service account from Account B, allowing it to pull images from the Artifact Registry in Account A.
+
+Note:
+Ensure you have the necessary permissions in Account A to modify IAM policies.
+If you encounter permission issues, make sure the IAM policy has propagated, which might take a few minutes.
 
 
 
-
-module "db_init_string_error" {
-  source                  = "../modules/gcp_log_metric"
-  metric_name             = "db_init_string_error"
-  metric_description      = "Number of times the initialization string format error has occurred"
-  log_filter              = [ "resource.type=k8s_container","jsonPayload.Message=\"Format of the initialization string does not conform to specification starting at index 0.\"]
-  label_name              = "container_name"
-  label_description       = "The container/application where the error occurred"
-  label_search_field_name = "EXTRACT(resource.labels.container_name)"
-}
