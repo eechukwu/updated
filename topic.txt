@@ -117,4 +117,77 @@ gcloud container clusters create fusionauth-cluster \
 
 https://www.appsloveworld.com/google-cloud-platform/23/unable-to-pull-artifact-registry-private-images-in-newly-created-gke-cluster
 
+Sure, here's a streamlined version of the instructions and the deployment manifest:
 
+1. Grant Storage Object Viewer Role
+Grant the Storage Object Viewer role to the service account to access GCR in sandbox-dallen-9871.
+
+bash
+Copy code
+gcloud projects add-iam-policy-binding sandbox-dallen-9871 \
+  --member='serviceAccount:280411639986-compute@developer.gserviceaccount.com' \
+  --role='roles/storage.objectViewer'
+2. Enable Workload Identity on GKE Cluster
+Enable Workload Identity for your GKE cluster in corp-test-mgmt-anthos-3578.
+
+bash
+Copy code
+gcloud container clusters update [CLUSTER_NAME] \
+  --zone=[CLUSTER_ZONE] \
+  --workload-pool=corp-test-mgmt-anthos-3578.svc.id.goog
+Replace [CLUSTER_NAME] and [CLUSTER_ZONE] with your GKE cluster's name and zone.
+
+3. Create Google Service Account (GSA)
+Create a GSA in corp-test-mgmt-anthos-3578 for pulling images from GCR.
+
+bash
+Copy code
+gcloud iam service-accounts create gcr-image-puller \
+  --project=corp-test-mgmt-anthos-3578 \
+  --description="Service account to pull images from GCR" \
+  --display-name="GCR Image Puller"
+4. Bind GSA to Kubernetes Service Account (KSA)
+Create a KSA in the gcr-demo namespace and bind it to the GSA.
+
+bash
+Copy code
+kubectl create serviceaccount gcr-image-pull-demo-project --namespace gcr-demo
+bash
+Copy code
+gcloud iam service-accounts add-iam-policy-binding gcr-image-puller@corp-test-mgmt-anthos-3578.iam.gserviceaccount.com \
+  --project=corp-test-mgmt-anthos-3578 \
+  --role=roles/iam.workloadIdentityUser \
+  --member="serviceAccount:corp-test-mgmt-anthos-3578.svc.id.goog[gcr-demo/gcr-image-pull-demo-project]"
+Annotate KSA with GSA's email.
+
+bash
+Copy code
+kubectl annotate serviceaccount gcr-image-pull-demo-project \
+  --namespace gcr-demo \
+  iam.gke.io/gcp-service-account=gcr-image-puller@corp-test-mgmt-anthos-3578.iam.gserviceaccount.com
+5. Deployment Manifest
+Deployment YAML to use the KSA for pulling an image from GCR.
+
+yaml
+Copy code
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gcr-demo-app-ec
+  namespace: gcr-demo
+spec:
+  selector:
+    matchLabels:
+      app: gcr-demo-app-ec
+  template:
+    metadata:
+      labels:
+        app: gcr-demo-app-ec
+    spec:
+      serviceAccountName: gcr-image-pull-demo-project
+      containers:
+      - image: europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/olufemioyekanmifg/demo-image-gcr:latest
+        name: demo-image-gcr
+      imagePullSecrets:
+      - name: registry-secret-ec
+This streamlined process and manifest setup should enable your Kubernetes deployment in corp-test-mgmt-anthos-3578 to successfully pull an image from sandbox-dallen-9871.
