@@ -42,65 +42,77 @@ helm uninstall honeycomb-refinery --namespace honeycomb
 helm list -A
 
 
-
-Certainly! Sharing a container image from Google Cloud Platform (GCP) Artifact Registry in one account (Account A) to a Google Kubernetes Engine (GKE) cluster in another account (Account B) involves a few steps. This guide assumes you have the necessary permissions in both accounts and have installed and configured the Google Cloud SDK (gcloud command-line tool).
-
-Step 1: Configure IAM Permissions
-In Account A (Image Source Account):
-
-Ensure the Artifact Registry repository containing the image is configured to allow access from Account B. You may need to grant the roles/artifactregistry.reader role to a service account in Account B that will be used to pull the image.
-In Account B (Destination Account):
-
-Ensure the service account (or the account you are using) that will pull the image and deploy to GKE has the necessary permissions to interact with GKE and to pull images from Artifact Registry in another account.
-Step 2: Configure Service Account in Account B
-Create or use an existing service account in Account B that will be used to authenticate and pull the image.
-If not already done, grant this service account permission to pull images from the Artifact Registry in Account A.
-Create and download a JSON key for this service account.
-Step 3: Configure Docker to Authenticate Using the Service Account
-On your local machine or a CI/CD pipeline, configure Docker to authenticate to GCP using the service account key file:
-
-sh
-Copy code
-gcloud auth activate-service-account --key-file=[PATH-TO-SERVICE-ACCOUNT-KEY-FILE]
-gcloud auth configure-docker [REGION]-docker.pkg.dev
-Replace [PATH-TO-SERVICE-ACCOUNT-KEY-FILE] with the path to your service account key file and [REGION] with the region of your Artifact Registry.
-
-Step 4: Pull the Image from Account A
-Pull the image from the Artifact Registry repository in Account A:
-
-sh
-Copy code
-docker pull [REGION]-docker.pkg.dev/[PROJECT-ID]/[REPOSITORY-NAME]/[IMAGE]:[TAG]
-Replace [REGION], [PROJECT-ID], [REPOSITORY-NAME], [IMAGE], and [TAG] with the appropriate values for the image you want to pull.
-
-Step 5: Tag and Push the Image to a Repository Accessible by Account B
-Tag the image for a repository in Account B (optional if deploying directly to GKE without storing in Account B):
-
-sh
-Copy code
-docker tag [REGION]-docker.pkg.dev/[PROJECT-ID]/[REPOSITORY-NAME]/[IMAGE]:[TAG] [NEW-REGION]-docker.pkg.dev/[NEW-PROJECT-ID]/[NEW-REPOSITORY-NAME]/[IMAGE]:[TAG]
-Push the image to the new repository (optional):
-
-sh
-Copy code
-docker push [NEW-REGION]-docker.pkg.dev/[NEW-PROJECT-ID]/[NEW-REPOSITORY-NAME]/[IMAGE]:[TAG]
-Step 6: Deploy the Image to GKE in Account B
-Update your Kubernetes deployment YAML file to use the image from the Artifact Registry in Account A (if pulled directly) or the new image URL in Account B (if you pushed it to a repository in Account B).
-
-Apply the deployment using kubectl:
-
-sh
-Copy code
-kubectl apply -f [YOUR-DEPLOYMENT-YAML-FILE]
-Notes:
-Ensure that the GKE cluster in Account B has access to the service account key or is configured to authenticate to the Artifact Registry in Account A.
-You might need to adjust firewall or network policies to allow communication between the GKE cluster and the Artifact Registry, especially if they are in different projects or organizations.
-This guide provides a high-level overview. Depending on your specific setup, you might need to adjust permissions, roles, or network settings.
+gcloud config set project k8s-sample-project-415615
+gcloud services enable container.googleapis.com : Enable GKE API:
+gcloud container clusters create nginx-cluster --num-nodes=3 --zone=europe-west2-a : Create the cluster:
+gcloud container clusters get-credentials nginx-cluster --zone=europe-west2-a : Get cluster credentials:
 
 
 
+gcloud services enable artifactregistry.googleapis.com
+gcloud artifacts repositories create nginx-repo --repository-format=docker --location=europe-west2 --description="Nginx Docker repository"
+gcloud auth configure-docker europe-west2-docker.pkg.dev : Configure Docker for GCP:
+
+
+docker pull nginx : Pull docker image
+docker tag nginx europe-west2-docker.pkg.dev/k8s-sample-project-415615/nginx-repo/nginx:latest : Tag the image
+docker push europe-west2-docker.pkg.dev/k8s-sample-project-415615/nginx-repo/nginx:latest : Push the Image
+
+
+gcloud artifacts repositories create httpd-repo --repository-format=docker --location=europe-west2 --description="HTTPD Docker repository"
+docker pull httpd:latest
+docker tag httpd:latest europe-west2-docker.pkg.dev/k8s-sample-project-415615/httpd-repo/httpd:latest
+docker push europe-west2-docker.pkg.dev/k8s-sample-project-415615/httpd-repo/httpd:latest
 
 
 
+gcloud iam service-accounts create k8s-artifact-registry-reader --display-name="Service account for Kubernetes Artifact Registry" : Create service account
+gcloud projects add-iam-policy-binding k8s-sample-project-415615 --member="serviceAccount:k8s-artifact-registry-reader@k8s-sample-project-415615.iam.gserviceaccount.com" --role="roles/artifactregistry.reader" : Grant Permission to Pull Image
+gcloud iam service-accounts keys create /Users/chukwuemmanuel/Desktop/k8s-artifact-registry-reader-key.json --iam-account=k8s-artifact-registry-reader@k8s-sample-project-415615.iam.gserviceaccount.com : Generate the JSON Key for the Service Account
 
 
+kubectl create secret docker-registry gcr-json-key \
+  --docker-server=europe-west2-docker.pkg.dev \
+  --docker-username=_json_key \
+  --docker-password="$(cat /Users/chukwuemmanuel/Desktop/k8s-artifact-registry-reader-key.json)" \
+  --docker-email=280411639986-compute@developer.gserviceaccount.com
+
+kubectl get secret gcr-json-key -o json | jq '.data[".dockerconfigjson"]' -r | base64 --decode | jq .
+
+kubectl apply -f - <<EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: europe-west2-docker.pkg.dev/k8s-sample-project-415615/nginx-repo/nginx:latest
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: gcr-json-key
+EOF
+
+
+
+gcloud container clusters delete fusionauth-cluster --zone europe-west2-a
+
+gcloud container clusters create fusionauth-cluster \
+  --num-nodes=1 \
+  --region=europe-west2-a \
+  --enable-ip-alias \
+  --cluster-ipv4-cidr=10.44.0.0/14 \
+  --services-ipv4-cidr=10.48.0.0/20
+
+
+https://www.appsloveworld.com/google-cloud-platform/23/unable-to-pull-artifact-registry-private-images-in-newly-created-gke-cluster
