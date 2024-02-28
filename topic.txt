@@ -116,3 +116,13 @@ gcloud container clusters create fusionauth-cluster \
 
 
 https://www.appsloveworld.com/google-cloud-platform/23/unable-to-pull-artifact-registry-private-images-in-newly-created-gke-cluster
+
+
+  ----     ------     ----                 ----               -------
+  Normal   Scheduled  2m27s                default-scheduler  Successfully assigned gcr-demo/gcr-demo-app-ec-655c86fdd4-jmpj4 to non-prod-tech-enablement-worker-host-02
+  Normal   Pulling    60s (x4 over 2m25s)  kubelet            Pulling image "europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/olufemioyekanmifg/demo-image-gcr:latest"
+  Warning  Failed     59s (x4 over 2m25s)  kubelet            Failed to pull image "europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/olufemioyekanmifg/demo-image-gcr:latest": rpc error: code = Unknown desc = failed to pull and unpack image "europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/olufemioyekanmifg/demo-image-gcr:latest": failed to resolve reference "europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/olufemioyekanmifg/demo-image-gcr:latest": failed to authorize: failed to fetch oauth token: unexpected status: 404 Not Found
+  Warning  Failed     59s (x4 over 2m25s)  kubelet            Error: ErrImagePull
+  Warning  Failed     31s (x6 over 2m25s)  kubelet            Error: ImagePullBackOff
+  Normal   BackOff    16s (x7 over 2m25s)  kubelet            Back-off pulling image "europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/olufemioyekanmifg/demo-image-gcr:latest"
+
