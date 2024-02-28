@@ -118,6 +118,51 @@ gcloud container clusters create fusionauth-cluster \
 https://www.appsloveworld.com/google-cloud-platform/23/unable-to-pull-artifact-registry-private-images-in-newly-created-gke-cluster
 
 
+Certainly, here are the concise steps and the manifest file:
+
+Grant Storage Object Viewer Role
+bash
+Copy code
+gcloud projects add-iam-policy-binding sandbox-dallen-9871 \
+    --member='serviceAccount:280411639986-compute@developer.gserviceaccount.com' \
+    --role='roles/storage.objectViewer'
+Enable Workload Identity on GKE Cluster
+bash
+Copy code
+gcloud container clusters update [CLUSTER_NAME] \
+    --zone=[CLUSTER_ZONE] \
+    --workload-pool=corp-test-mgmt-anthos-3578.svc.id.goog
+Create Google Service Account (GSA)
+bash
+Copy code
+gcloud iam service-accounts create gcr-image-puller \
+    --project=corp-test-mgmt-anthos-3578 \
+    --description="Service account to pull images from GCR" \
+    --display-name="GCR Image Puller"
+Bind GSA to Kubernetes Service Account (KSA)
+Create KSA:
+
+bash
+Copy code
+kubectl create serviceaccount gcr-image-pull-demo-project --namespace gcr-demo
+Bind GSA to KSA:
+
+bash
+Copy code
+gcloud iam service-accounts add-iam-policy-binding gcr-image-puller@corp-test-mgmt-anthos-3578.iam.gserviceaccount.com \
+    --project=corp-test-mgmt-anthos-3578 \
+    --role=roles/iam.workloadIdentityUser \
+    --member="serviceAccount:corp-test-mgmt-anthos-3578.svc.id.goog[gcr-demo/gcr-image-pull-demo-project]"
+Annotate KSA:
+
+bash
+Copy code
+kubectl annotate serviceaccount gcr-image-pull-demo-project \
+    --namespace gcr-demo \
+    iam.gke.io/gcp-service-account=gcr-image-puller@corp-test-mgmt-anthos-3578.iam.gserviceaccount.com
+Deployment Manifest
+yaml
+Copy code
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -132,9 +177,14 @@ spec:
       labels:
         app: gcr-demo-app-ec
     spec:
+      serviceAccountName: gcr-image-pull-demo-project
       containers:
       - image: europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/olufemioyekanmifg/demo-image-gcr:latest
         name: demo-image-gcr
       imagePullSecrets:
       - name: registry-secret-ec
+Replace [CLUSTER_NAME] and [CLUSTER_ZONE] with your cluster's name and zone respectively in the command for enabling Workload Identity. This setup should allow your deployment to pull the image from sandbox-dallen-9871 into your corp-test-mgmt-anthos-3578 cluster.
+
+
+
 
