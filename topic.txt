@@ -138,5 +138,3 @@ spec:
       imagePullSecrets:
       - name: registry-secret-ec
 
-280411639986-compute@developer.gserviceaccount.com
-corp-test-mgmt-anthos-3578
