@@ -43,44 +43,90 @@ helm list -A
 
 
 
-Google Artifact Registry Replication
+Create Google Artifact via terraform:
 
-Enable Artifact Registry API: Make sure the Artifact Registry API is enabled in your Google Cloud project.
-Identify Repositories: Decide which repository will be the source and which will be the target(s) for replication.
-Create Target Repository: Create the target repository in its region if it doesn't exist.
-Set Permissions: Grant the necessary read permissions on the source and write permissions on the target repository to the replication service account.
-Enable Replication: Through the Google Cloud Console or CLI, set up the source repository to replicate to the target repository.
+resource "google_artifact_registry_repository" "my_repository" {
+  provider      = google
+  location      = "<YOUR-REGION>"
+  repository_id = "my-artifact-repo"
+  description   = "My artifact repository"
+  format        = "DOCKER"
 
-Replace placeholders (e.g., your-google-cloud-project-id, source-region, target-region) with your actual project ID and the regions you're using for the source and target repositories.
-
-resource "google_artifact_registry_repository" "source_repo" {
-  name     = "source-repo"
-  location = "source-region" // Example: us-central1
-  format   = "DOCKER"
-  description = "Source repository for artifact replication"
+  labels = {
+    env = "test"
+  }
 }
 
-resource "google_artifact_registry_repository" "target_repo" {
-  name     = "target-repo"
-  location = "target-region" // Example: europe-west1
-  format   = "DOCKER"
-  description = "Target repository for artifact replication"
+
+# Step 2: Authenticate with GitHub Packages
+# Replace YOUR_GITHUB_PAT with your GitHub Personal Access Token
+# Replace YOUR_GITHUB_USERNAME with your GitHub username
+echo "YOUR_GITHUB_PAT" | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
+
+# Step 3: Pull the Docker Image from GitHub Packages
+# Replace YOUR_GITHUB_USERNAME with your GitHub username
+docker pull ghcr.io/YOUR_GITHUB_USERNAME/example-image:latest
+
+# Step 4: Authenticate with Google Artifact Registry
+# Configure Docker to authenticate with your Google Cloud project's Artifact Registry
+# Replace [REGION] with the Google Cloud region where you want to host your Artifact Registry repository
+gcloud auth configure-docker [REGION]-docker.pkg.dev
+
+# Step 5: Tag Your Docker Image for Google Artifact Registry
+# Replace:
+# - [REGION] with your Google Cloud region
+# - YOUR_PROJECT_ID with your Google Cloud project ID
+# - YOUR_ARTIFACT_REGISTRY_REPOSITORY with the name of your Artifact Registry repository
+docker tag ghcr.io/YOUR_GITHUB_USERNAME/example-image:latest [REGION]-docker.pkg.dev/YOUR_PROJECT_ID/YOUR_ARTIFACT_REGISTRY_REPOSITORY/example-image:latest
+
+# Step 6: Push the Docker Image to Google Artifact Registry
+docker push [REGION]-docker.pkg.dev/YOUR_PROJECT_ID/YOUR_ARTIFACT_REGISTRY_REPOSITORY/example-image:latest
+
+# After running these commands, verify the image has been successfully pushed
+# to your Google Artifact Registry by checking the Google Cloud Console.
+
+
+
+################# Bash Script to Pull and upload the images ###########################
+
+#!/bin/bash
+
+# Configuration variables
+GITHUB_USERNAME="YOUR_GITHUB_USERNAME"
+GITHUB_PAT="YOUR_GITHUB_PAT"
+GCP_REGION="[REGION]"
+GCP_PROJECT_ID="YOUR_PROJECT_ID"
+ARTIFACT_REGISTRY_REPOSITORY="YOUR_ARTIFACT_REGISTRY_REPOSITORY"
+
+# Authenticate with GitHub Packages
+echo "Authenticating with GitHub Packages..."
+echo "$GITHUB_PAT" | docker login ghcr.io -u "$GITHUB_USERNAME" --password-stdin
+
+# Authenticate with Google Artifact Registry
+echo "Authenticating with Google Artifact Registry..."
+gcloud auth configure-docker "$GCP_REGION"-docker.pkg.dev
+
+# Function to migrate a single image
+migrate_image() {
+    local image_name=$1
+    local tag=$2
+
+    # Pull the image from GitHub Packages
+    echo "Pulling $image_name:$tag from GitHub Packages..."
+    docker pull ghcr.io/"$GITHUB_USERNAME"/"$image_name":"$tag"
+
+    # Tag the image for Google Artifact Registry
+    echo "Tagging the image for Google Artifact Registry..."
+    docker tag ghcr.io/"$GITHUB_USERNAME"/"$image_name":"$tag" "$GCP_REGION"-docker.pkg.dev/"$GCP_PROJECT_ID"/"$ARTIFACT_REGISTRY_REPOSITORY"/"$image_name":"$tag"
+
+    # Push the image to Google Artifact Registry
+    echo "Pushing the image to Google Artifact Registry..."
+    docker push "$GCP_REGION"-docker.pkg.dev/"$GCP_PROJECT_ID"/"$ARTIFACT_REGISTRY_REPOSITORY"/"$image_name":"$tag"
 }
 
-resource "google_artifact_registry_repository_iam_binding" "source_repo_reader" {
-  repository = google_artifact_registry_repository.source_repo.name
-  location   = "source-region"
-  role       = "roles/artifactregistry.reader"
-  members = [
-    "serviceAccount:service-account-for-replication@your-google-cloud-project-id.iam.gserviceaccount.com",
-  ]
-}
+# Read each line in images.txt and migrate
+while IFS=: read -r image_name tag; do
+    migrate_image "$image_name" "$tag"
+done < images.txt
 
-resource "google_artifact_registry_repository_iam_binding" "target_repo_writer" {
-  repository = google_artifact_registry_repository.target_repo.name
-  location   = "target-region"
-  role       = "roles/artifactregistry.writer"
-  members = [
-    "serviceAccount:service-account-for-replication@your-google-cloud-project-id.iam.gserviceaccount.com",
-  ]
-}
+echo "Migration completed."
