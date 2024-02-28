@@ -118,5 +118,24 @@ gcloud container clusters create fusionauth-cluster \
 https://www.appsloveworld.com/google-cloud-platform/23/unable-to-pull-artifact-registry-private-images-in-newly-created-gke-cluster
 
 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gcr-demo-app-ec
+  namespace: gcr-demo
+spec:
+  selector:
+    matchLabels:
+      app: gcr-demo-app-ec
+  template:
+    metadata:
+      labels:
+        app: gcr-demo-app-ec
+    spec:
+      containers:
+      - image: europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/olufemioyekanmifg/demo-image-gcr:latest
+        name: demo-image-gcr
+      imagePullSecrets:
+      - name: registry-secret-ec
 
 
