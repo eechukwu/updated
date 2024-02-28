@@ -42,78 +42,45 @@ helm uninstall honeycomb-refinery --namespace honeycomb
 helm list -A
 
 
-gcloud config set project k8s-sample-project-415615
-gcloud services enable container.googleapis.com : Enable GKE API:
-gcloud container clusters create nginx-cluster --num-nodes=3 --zone=europe-west2-a : Create the cluster:
-gcloud container clusters get-credentials nginx-cluster --zone=europe-west2-a : Get cluster credentials:
 
+Google Artifact Registry Replication
 
+Enable Artifact Registry API: Make sure the Artifact Registry API is enabled in your Google Cloud project.
+Identify Repositories: Decide which repository will be the source and which will be the target(s) for replication.
+Create Target Repository: Create the target repository in its region if it doesn't exist.
+Set Permissions: Grant the necessary read permissions on the source and write permissions on the target repository to the replication service account.
+Enable Replication: Through the Google Cloud Console or CLI, set up the source repository to replicate to the target repository.
 
-gcloud services enable artifactregistry.googleapis.com
-gcloud artifacts repositories create nginx-repo --repository-format=docker --location=europe-west2 --description="Nginx Docker repository"
-gcloud auth configure-docker europe-west2-docker.pkg.dev : Configure Docker for GCP:
+Replace placeholders (e.g., your-google-cloud-project-id, source-region, target-region) with your actual project ID and the regions you're using for the source and target repositories.
 
+resource "google_artifact_registry_repository" "source_repo" {
+  name     = "source-repo"
+  location = "source-region" // Example: us-central1
+  format   = "DOCKER"
+  description = "Source repository for artifact replication"
+}
 
-docker pull nginx : Pull docker image
-docker tag nginx europe-west2-docker.pkg.dev/k8s-sample-project-415615/nginx-repo/nginx:latest : Tag the image
-docker push europe-west2-docker.pkg.dev/k8s-sample-project-415615/nginx-repo/nginx:latest : Push the Image
+resource "google_artifact_registry_repository" "target_repo" {
+  name     = "target-repo"
+  location = "target-region" // Example: europe-west1
+  format   = "DOCKER"
+  description = "Target repository for artifact replication"
+}
 
+resource "google_artifact_registry_repository_iam_binding" "source_repo_reader" {
+  repository = google_artifact_registry_repository.source_repo.name
+  location   = "source-region"
+  role       = "roles/artifactregistry.reader"
+  members = [
+    "serviceAccount:service-account-for-replication@your-google-cloud-project-id.iam.gserviceaccount.com",
+  ]
+}
 
-gcloud artifacts repositories create httpd-repo --repository-format=docker --location=europe-west2 --description="HTTPD Docker repository"
-docker pull httpd:latest
-docker tag httpd:latest europe-west2-docker.pkg.dev/k8s-sample-project-415615/httpd-repo/httpd:latest
-docker push europe-west2-docker.pkg.dev/k8s-sample-project-415615/httpd-repo/httpd:latest
-
-
-
-gcloud iam service-accounts create k8s-artifact-registry-reader --display-name="Service account for Kubernetes Artifact Registry" : Create service account
-gcloud projects add-iam-policy-binding k8s-sample-project-415615 --member="serviceAccount:k8s-artifact-registry-reader@k8s-sample-project-415615.iam.gserviceaccount.com" --role="roles/artifactregistry.reader" : Grant Permission to Pull Image
-gcloud iam service-accounts keys create /Users/chukwuemmanuel/Desktop/k8s-artifact-registry-reader-key.json --iam-account=k8s-artifact-registry-reader@k8s-sample-project-415615.iam.gserviceaccount.com : Generate the JSON Key for the Service Account
-
-
-kubectl create secret docker-registry gcr-json-key \
-  --docker-server=europe-west2-docker.pkg.dev \
-  --docker-username=_json_key \
-  --docker-password="$(cat /Users/chukwuemmanuel/Desktop/k8s-artifact-registry-reader-key.json)" \
-  --docker-email=280411639986-compute@developer.gserviceaccount.com
-
-kubectl get secret gcr-json-key -o json | jq '.data[".dockerconfigjson"]' -r | base64 --decode | jq .
-
-kubectl apply -f - <<EOF
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nginx-deployment
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: nginx
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-      - name: nginx
-        image: europe-west2-docker.pkg.dev/k8s-sample-project-415615/nginx-repo/nginx:latest
-        ports:
-        - containerPort: 80
-      imagePullSecrets:
-      - name: gcr-json-key
-EOF
-
-
-
-gcloud container clusters delete fusionauth-cluster --zone europe-west2-a
-
-gcloud container clusters create fusionauth-cluster \
-  --num-nodes=1 \
-  --region=europe-west2-a \
-  --enable-ip-alias \
-  --cluster-ipv4-cidr=10.44.0.0/14 \
-  --services-ipv4-cidr=10.48.0.0/20
-
-
-https://www.appsloveworld.com/google-cloud-platform/23/unable-to-pull-artifact-registry-private-images-in-newly-created-gke-cluster
-
+resource "google_artifact_registry_repository_iam_binding" "target_repo_writer" {
+  repository = google_artifact_registry_repository.target_repo.name
+  location   = "target-region"
+  role       = "roles/artifactregistry.writer"
+  members = [
+    "serviceAccount:service-account-for-replication@your-google-cloud-project-id.iam.gserviceaccount.com",
+  ]
+}
