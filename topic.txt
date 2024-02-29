@@ -40,3 +40,10 @@ kubectl get ns
 helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 helm list -A
+
+
+We need to ensure our image repository doesn't grow indefinetly: we should delete some
+
+We need to ensure our images that are deployed (running workloads), are not deleted as we need to be able to scale - image
+
+We need to ensure our previously deployed image is not deleted, as we need to be able to rollback - image-1
