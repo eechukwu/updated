@@ -41,37 +41,3 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 helm list -A
 
-
-To set the location of an Artifact Registry repository to be a multi-region in Terraform, you simply need to specify one of the multi-region identifiers (e.g., us, europe, asia) in the location field of your google_artifact_registry_repository resource definition. Here's how you can modify the previous example to use a multi-region location:
-
-hcl
-Copy code
-provider "google" {
-  // Specify your GCP provider configuration here
-  // For example, credentials and project
-}
-
-resource "google_artifact_registry_repository" "my_repository" {
-  // Replace "my-repo" with your repository name
-  name     = "my-repo"
-  // Set the location to a multi-region, e.g., "us" for the United States
-  location = "us"
-
-  // Define the repository format, e.g., "DOCKER"
-  format = "DOCKER"
-
-  // Optional: Specify a description for the repository
-  description = "My multi-region Artifact Registry Repository"
-
-  // You can add more configuration options if needed
-}
-
-output "repository_id" {
-  value = google_artifact_registry_repository.my_repository.id
-}
-In this example, the location is set to "us", which denotes a multi-region across the United States. This configuration ensures that the repository is distributed across multiple data centers within the United States, enhancing availability and resilience.
-
-Important Considerations for Multi-Region Repositories:
-Availability: Multi-region repositories offer higher availability by replicating artifacts across multiple data centers within the specified geographical area.
-Latency and Costs: While multi-region repositories can provide benefits in terms of availability and resilience, they may also lead to higher latency and costs for data consumers who are located far from the data centers. It's important to balance these factors based on your specific use case and user base.
-Compliance: Ensure that using a multi-region repository aligns with any regulatory or compliance requirements that your organization needs to adhere to.
