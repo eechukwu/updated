@@ -47,5 +47,11 @@ helm uninstall honeycomb-refinery --namespace honeycomb
           docker tag ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:active-image ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:rollback-image-${DATE_TAG}
           docker push ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:rollback-image-${DATE_TAG}
 
+Overview of the Steps
+Build and Push the Docker Image: This step involves building your Docker image and pushing it to your container registry (GCR/GHCR) with a unique tag (usually the commit SHA or a timestamp).
+Tag the New Image as active-image: After pushing, you tag the latest image as active-image. This tag will always point to the most recent successful build for a given environment.
+Fetch and Preserve the Previous active-image Tag: Before updating the active-image tag, you fetch the current active-image tag and re-tag it as old-active-image. This helps in maintaining a rollback point.
+Update Kustomize Configuration: Dynamically update your Kustomize manifest to use the new active-image for deployment.
+Deploy to GKE: Apply the updated Kustomize configuration to your GKE clusters.
 
 
