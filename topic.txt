@@ -40,3 +40,64 @@ kubectl get ns
 helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
+name: Build and deploy application
+
+on: 
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "k8s/**" # This workflow MUST NOT trigger when changes are made to the kubernetes manifests folder
+      - "**/kustomization.yaml"
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+env:
+  GCP_PROJECT_ID: your-gcp-project-id
+  GCP_REGION: your-gcp-region
+  IMAGE_NAME: wh-reform-api
+  REPO_NAME: your-repo-name # Example: "my-repo"
+
+jobs:
+  build-and-push:
+    uses: frasers-group/te-reusable-workflows-devops/.github/workflows/build-and-push-container-registry.yml@main
+    with:
+      DOCKER_IMAGE_NAME: ${{ env.IMAGE_NAME }}
+      DOCKER_IMAGE_TAG: ${{ github.sha }}
+      DOCKERFILE_PATH: ./Dockerfile
+
+  manage-image-tags:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Google Cloud
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Configure Docker for Google Artifact Registry
+        run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev
+
+      - name: Pull current active-image
+        run: docker pull ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:active-image || true
+
+      - name: Tag current active-image as old-active-image
+        run: |
+          docker tag ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:active-image ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:old-active-image
+          docker push ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:old-active-image || true
+
+      - name: Tag new image as active-image
+        run: |
+          docker tag ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:active-image
+          docker push ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:active-image
+
+
