@@ -39,6 +39,39 @@ kubectl create namespace honeycomb
 kubectl get ns
 helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+  - ./ssl-cert.yaml
+  - ./00-image-pull.yaml
+  - ./secrets/db-secrets.yaml
+  - ./ingress.yaml
+  - ./ingress-nginx.yaml
+namePrefix: dev-
+commonAnnotations:
+  environment: dev
+images:
+  - name: app
+    newName: ghcr.io/frasers-group/wh-reform-api
+    newTag: f71a681af844e4a8de5ad0671ad3212ec4653a94
+    digest: "sha256:228bc8a0e8d3090b17824631dbb1c6fed8666932a179864b06aa740a40b394c0"
+configMapGenerator:
+  - name: appsettings
+    files:
+      - appsettings.json
+patchesStrategicMerge:
+  - deployment.yaml
+  - service.yaml
+transformers:
+  - |-
+    apiVersion: builtin
+    kind: NamespaceTransformer
+    metadata:
+      name: notImportantHere
+      namespace: dev-wh-reform-api # set the namespace
+    unsetOnly: true
 helm list -A
 
 
