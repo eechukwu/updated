@@ -81,3 +81,23 @@ Rectangle 5: "5. Deploy to GKE"
 Description: "Apply Kustomize config to GKE clusters".
 This approach will help you create a clear and informative CI/CD pipeline diagram in draw.io, which can then be easily shared or included in your Confluence documentation.
 
+
+For a simplified and concise diagram representation for draw.io, you might prefer streamlined descriptions. Here’s how you can structure each step:
+
+Simplified Diagram Structure for draw.io
+Rectangle 1: Build and Push
+Label: "1. Build & Push"
+Description: "Build image. Push with SHA tag."
+Rectangle 2: Tag as Active
+Label: "2. Tag Active"
+Description: "Mark latest as 'active-image'."
+Rectangle 3: Preserve Old Tag
+Label: "3. Preserve Old"
+Description: "Old 'active' becomes 'old-active-date'."
+Rectangle 4: Update Kustomize
+Label: "4. Update Kustomize"
+Description: "Set 'active-image' in config."
+Rectangle 5: Deploy
+Label: "5. Deploy"
+Description: "Deploy to GKE."
+
