@@ -41,17 +41,43 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
 
-      - name: Tag current active-image for rollback with date
-        run: |
-          DATE_TAG=$(date +%Y-%m-%d)
-          docker tag ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:active-image ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:rollback-image-${DATE_TAG}
-          docker push ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:rollback-image-${DATE_TAG}
+Creating a visual representation of your CI/CD pipeline in draw.io (now diagrams.net) is a great way to illustrate the process clearly. While I can't directly create or export images in draw.io format or execute draw.io commands, I can guide you on how to represent each step of the CI/CD pipeline you've outlined in a diagrammatic format suitable for draw.io.
 
-Overview of the Steps
-Build and Push the Docker Image: This step involves building your Docker image and pushing it to your container registry (GCR/GHCR) with a unique tag (usually the commit SHA or a timestamp).
-Tag the New Image as active-image: After pushing, you tag the latest image as active-image. This tag will always point to the most recent successful build for a given environment.
-Fetch and Preserve the Previous active-image Tag: Before updating the active-image tag, you fetch the current active-image tag and re-tag it as old-active-image. This helps in maintaining a rollback point.
-Update Kustomize Configuration: Dynamically update your Kustomize manifest to use the new active-image for deployment.
-Deploy to GKE: Apply the updated Kustomize configuration to your GKE clusters.
+How to Create the CI/CD Pipeline Diagram in draw.io:
+Start with a Blank Canvas:
 
+Open draw.io and start with a blank canvas.
+Use Shapes for Each Step:
+
+For each of the CI/CD steps, use a rectangular shape to represent the action.
+Label each rectangle with the step number and name, e.g., "1. Build and Push the Docker Image".
+Add Descriptions:
+
+Use text boxes under or above each rectangle to briefly describe what happens in each step.
+For example, under the "Build and Push the Docker Image" rectangle, you could add, "Build Docker image and push to GCR/GHCR with unique tag".
+Show Progression:
+
+Use arrows to connect the rectangles in order, showing the flow from one step to the next.
+Highlight Tools:
+
+Optionally, include icons or small images next to each step to represent the tools used, such as Docker, Kubernetes, or Google Cloud.
+Additional Details:
+
+For steps involving decisions or branching (not explicitly mentioned but possible in CI/CD workflows), use diamond shapes to represent decision points.
+Finalize and Export:
+
+Once your diagram is complete, review it for accuracy and clarity.
+Export your diagram from draw.io in your preferred format (e.g., PNG, JPEG) to include it in your Confluence documentation.
+Example Diagram Structure:
+Rectangle 1: "1. Build and Push the Docker Image"
+Description: "Docker build and push to registry with commit SHA tag".
+Rectangle 2: "2. Tag the New Image as active-image"
+Description: "Tag latest image as 'active-image'".
+Rectangle 3: "3. Fetch and Preserve the Previous active-image Tag"
+Description: "Retag current 'active-image' as 'old-active-image-<date>'".
+Rectangle 4: "4. Update Kustomize Configuration"
+Description: "Update kustomization.yaml to use 'active-image'".
+Rectangle 5: "5. Deploy to GKE"
+Description: "Apply Kustomize config to GKE clusters".
+This approach will help you create a clear and informative CI/CD pipeline diagram in draw.io, which can then be easily shared or included in your Confluence documentation.
 
