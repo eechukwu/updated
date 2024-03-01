@@ -41,63 +41,43 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
 
-Creating a visual representation of your CI/CD pipeline in draw.io (now diagrams.net) is a great way to illustrate the process clearly. While I can't directly create or export images in draw.io format or execute draw.io commands, I can guide you on how to represent each step of the CI/CD pipeline you've outlined in a diagrammatic format suitable for draw.io.
-
-How to Create the CI/CD Pipeline Diagram in draw.io:
-Start with a Blank Canvas:
-
-Open draw.io and start with a blank canvas.
-Use Shapes for Each Step:
-
-For each of the CI/CD steps, use a rectangular shape to represent the action.
-Label each rectangle with the step number and name, e.g., "1. Build and Push the Docker Image".
-Add Descriptions:
-
-Use text boxes under or above each rectangle to briefly describe what happens in each step.
-For example, under the "Build and Push the Docker Image" rectangle, you could add, "Build Docker image and push to GCR/GHCR with unique tag".
-Show Progression:
-
-Use arrows to connect the rectangles in order, showing the flow from one step to the next.
-Highlight Tools:
-
-Optionally, include icons or small images next to each step to represent the tools used, such as Docker, Kubernetes, or Google Cloud.
-Additional Details:
-
-For steps involving decisions or branching (not explicitly mentioned but possible in CI/CD workflows), use diamond shapes to represent decision points.
-Finalize and Export:
-
-Once your diagram is complete, review it for accuracy and clarity.
-Export your diagram from draw.io in your preferred format (e.g., PNG, JPEG) to include it in your Confluence documentation.
-Example Diagram Structure:
-Rectangle 1: "1. Build and Push the Docker Image"
-Description: "Docker build and push to registry with commit SHA tag".
-Rectangle 2: "2. Tag the New Image as active-image"
-Description: "Tag latest image as 'active-image'".
-Rectangle 3: "3. Fetch and Preserve the Previous active-image Tag"
-Description: "Retag current 'active-image' as 'old-active-image-<date>'".
-Rectangle 4: "4. Update Kustomize Configuration"
-Description: "Update kustomization.yaml to use 'active-image'".
-Rectangle 5: "5. Deploy to GKE"
-Description: "Apply Kustomize config to GKE clusters".
-This approach will help you create a clear and informative CI/CD pipeline diagram in draw.io, which can then be easily shared or included in your Confluence documentation.
-
-
-For a simplified and concise diagram representation for draw.io, you might prefer streamlined descriptions. Here’s how you can structure each step:
-
-Simplified Diagram Structure for draw.io
-Rectangle 1: Build and Push
-Label: "1. Build & Push"
-Description: "Build image. Push with SHA tag."
-Rectangle 2: Tag as Active
-Label: "2. Tag Active"
-Description: "Mark latest as 'active-image'."
-Rectangle 3: Preserve Old Tag
-Label: "3. Preserve Old"
-Description: "Old 'active' becomes 'old-active-date'."
-Rectangle 4: Update Kustomize
-Label: "4. Update Kustomize"
-Description: "Set 'active-image' in config."
-Rectangle 5: Deploy
-Label: "5. Deploy"
-Description: "Deploy to GKE."
-
+Detailed Steps
+1. Build and Push the Docker Image
+Description: The Docker image is built from the source code and then pushed to a container registry (GCR/GHCR) with a unique tag, typically the commit SHA or a timestamp.
+Script:
+bash
+Copy code
+docker build -t [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:${{ github.sha }} .
+docker push [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:${{ github.sha }}
+2. Tag the New Image as active-image
+Description: After pushing, the latest image is tagged as active-image. This tag identifies the most recent successful build for a given environment.
+Script:
+bash
+Copy code
+docker tag [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:${{ github.sha }} [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:active-image
+docker push [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:active-image
+3. Fetch and Preserve the Previous active-image Tag
+Description: Before updating the active-image tag, the current active-image tag is fetched and re-tagged as old-active-image. This step is crucial for maintaining a rollback point.
+Script:
+bash
+Copy code
+# Assuming the previous active-image exists
+docker pull [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:active-image
+docker tag [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:active-image [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:old-active-image-$(date +%Y-%m-%d)
+docker push [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:old-active-image-$(date +%Y-%m-%d)
+4. Update Kustomize Configuration
+Description: The Kustomize manifest is dynamically updated to use the new active-image for deployment, ensuring the deployment process uses the latest image.
+Script:
+bash
+Copy code
+sed -i "s/newName:.*$/newName: [REGISTRY_URL]\/[PROJECT_NAME]\/[IMAGE_NAME]:active-image/" ./k8s/overlays/dev/kustomization.yaml
+5. Deploy to GKE
+Description: The updated Kustomize configuration is applied to the GKE clusters, deploying the new active-image.
+Script:
+bash
+Copy code
+kubectl apply -k ./k8s/overlays/dev/
+Notes
+Replace [REGISTRY_URL], [PROJECT_NAME], [IMAGE_NAME], and ${{ github.sha }} with your actual registry URL, project name, Docker image name, and commit SHA or tag, respectively.
+This pipeline assumes the use of bash scripting and Kubernetes command-line tools (docker, kubectl).
+You can copy and adapt this script to fit into a Confluence page, providing a clear, step-by-step guide to your CI/CD pipeline.
