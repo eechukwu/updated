@@ -40,44 +40,14 @@ kubectl get ns
 helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
+Step 1:  Docker build and push to registry with commit SHA tag
 
-Detailed Steps
-1. Build and Push the Docker Image
-Description: The Docker image is built from the source code and then pushed to a container registry (GCR/GHCR) with a unique tag, typically the commit SHA or a timestamp.
-Script:
-bash
-Copy code
-docker build -t [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:${{ github.sha }} .
-docker push [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:${{ github.sha }}
-2. Tag the New Image as active-image
-Description: After pushing, the latest image is tagged as active-image. This tag identifies the most recent successful build for a given environment.
-Script:
-bash
-Copy code
-docker tag [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:${{ github.sha }} [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:active-image
-docker push [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:active-image
-3. Fetch and Preserve the Previous active-image Tag
-Description: Before updating the active-image tag, the current active-image tag is fetched and re-tagged as old-active-image. This step is crucial for maintaining a rollback point.
-Script:
-bash
-Copy code
-# Assuming the previous active-image exists
-docker pull [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:active-image
-docker tag [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:active-image [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:old-active-image-$(date +%Y-%m-%d)
-docker push [REGISTRY_URL]/[PROJECT_NAME]/[IMAGE_NAME]:old-active-image-$(date +%Y-%m-%d)
-4. Update Kustomize Configuration
-Description: The Kustomize manifest is dynamically updated to use the new active-image for deployment, ensuring the deployment process uses the latest image.
-Script:
-bash
-Copy code
-sed -i "s/newName:.*$/newName: [REGISTRY_URL]\/[PROJECT_NAME]\/[IMAGE_NAME]:active-image/" ./k8s/overlays/dev/kustomization.yaml
-5. Deploy to GKE
-Description: The updated Kustomize configuration is applied to the GKE clusters, deploying the new active-image.
-Script:
-bash
-Copy code
-kubectl apply -k ./k8s/overlays/dev/
-Notes
-Replace [REGISTRY_URL], [PROJECT_NAME], [IMAGE_NAME], and ${{ github.sha }} with your actual registry URL, project name, Docker image name, and commit SHA or tag, respectively.
-This pipeline assumes the use of bash scripting and Kubernetes command-line tools (docker, kubectl).
-You can copy and adapt this script to fit into a Confluence page, providing a clear, step-by-step guide to your CI/CD pipeline.
+Step 2: Fetch the Previous active-image
+
+Step 3: Tag latest image as active-image
+
+Step 4: Retag current 'active-image' as 'rollback-image
+
+Step 5: Untag the old rollback image
+
+
