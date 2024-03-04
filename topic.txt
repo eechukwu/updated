@@ -38,7 +38,17 @@ helm install honeycomb-refinery honeycomb/refinery --namespace honeycomb
 kubectl create namespace honeycomb
 kubectl get ns
 
-  id-token: write  # Explicitly grant permission to write the ID token for GCP authentication
+# Verification step to list Artifact Registry repositories
+      - name: List Artifact Registry repositories
+        run: |
+          # Ensure gcloud is authenticated and configured
+          gcloud auth list
+          
+          # List Artifact Registry repositories in the specified project and location
+          gcloud artifacts repositories list --project YOUR_PROJECT_ID --location YOUR_LOCATION
+        env:
+          CLOUDSDK_CORE_DISABLE_PROMPTS: 1
+
 
 helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
