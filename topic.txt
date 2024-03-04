@@ -41,20 +41,21 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
 
+1s
+Run gcloud auth list
+  gcloud auth list
+  # This should list the authenticated service account
+  shell: /usr/bin/bash -e {0}
+  env:
+    DOCKER_REGISTRY: ghcr.io
+    ORGANISATION_NAME: frasers-group
+    TEST_TAG: test
+    CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: /home/runner/work/_temp/49bc3dcb8a1cf07019eb12c3
+    GOOGLE_APPLICATION_CREDENTIALS: /home/runner/work/_temp/49bc3dcb8a1cf07019eb12c3
+    CLOUDSDK_PROJECT: sandbox-dallen-9871
+    CLOUDSDK_CORE_PROJECT: sandbox-dallen-9871
+    GCP_PROJECT: sandbox-dallen-9871
+    GCLOUD_PROJECT: sandbox-dallen-9871
+    GOOGLE_CLOUD_PROJECT: sandbox-dallen-9871
 
-      - name: Authenticate with GCP
-        uses: google-github-actions/auth@v0.4.0  # Adjusted to a hypothetical version; please use the latest
-        with:
-          workload_identity_provider: 'projects/217712610684/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
-          service_account: 'sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com'
-      
-      - name: Configure Docker for Google Artifact Registry
-        run: |
-          gcloud auth configure-docker europe-west2-docker.pkg.dev --quiet
-
-
-      - name: Verify GCP Authentication for Debugging
-        run: |
-          gcloud auth list
-          # This should list the authenticated service account
-
+No credentialed accounts.
