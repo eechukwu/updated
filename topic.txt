@@ -40,5 +40,23 @@ kubectl get ns
 helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
+      - name: Authenticate with GCP
+        uses: google-github-actions/auth@v0.4.0  # Ensure you're using the latest version
+        with:
+          workload_identity_provider: 'projects/217712610684/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+          service_account: 'sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com'
+      
+      - name: Set GCP Project
+        run: gcloud config set project sandbox-dallen-9871
 
+      - name: Configure Docker for Google Artifact Registry
+        run: gcloud auth configure-docker europe-west2-docker.pkg.dev --quiet
+
+      # Add the verification step after setting the project
+      - name: Verify GCP Authentication
+        run: |
+          gcloud auth list
+          # Optionally, list Artifact Registry repositories or other resources as a test
+          # gcloud artifacts repositories list --project=sandbox-dallen-9871 --location=europe-west2
+      
 
