@@ -37,34 +37,6 @@ helm search repo honeycomb
 helm install honeycomb-refinery honeycomb/refinery --namespace honeycomb
 kubectl create namespace honeycomb
 kubectl get ns
-
-Run # Ensure gcloud is authenticated and configured
-  # Ensure gcloud is authenticated and configured
-  gcloud auth list
-  
-  # List Artifact Registry repositories in the specified project and location
-  #gcloud artifacts repositories list --project 217712610684 --location YOUR_LOCATION
-  shell: /usr/bin/bash -e {0}
-  env:
-    DOCKER_REGISTRY: ghcr.io
-    ORGANISATION_NAME: frasers-group
-    TEST_TAG: test
-    CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: /home/runner/work/te-shifts-push-app/te-shifts-push-app/gha-creds-eaaf79eb72e1c5ee.json
-    GOOGLE_APPLICATION_CREDENTIALS: /home/runner/work/te-shifts-push-app/te-shifts-push-app/gha-creds-eaaf79eb72e1c5ee.json
-    GOOGLE_GHA_CREDS_PATH: /home/runner/work/te-shifts-push-app/te-shifts-push-app/gha-creds-eaaf79eb72e1c5ee.json
-    CLOUDSDK_CORE_PROJECT: sandbox-dallen-9871
-    CLOUDSDK_PROJECT: sandbox-dallen-9871
-    GCLOUD_PROJECT: sandbox-dallen-9871
-    GCP_PROJECT: sandbox-dallen-9871
-    GOOGLE_CLOUD_PROJECT: sandbox-dallen-9871
-    CLOUDSDK_CORE_DISABLE_PROMPTS: 1
-
-No credentialed accounts.
-
-To login, run:
-  $ gcloud auth login `ACCOUNT`
-
-
 helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
