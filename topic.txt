@@ -56,18 +56,3 @@ helm uninstall honeycomb-refinery --namespace honeycomb
     GCLOUD_PROJECT: sandbox-dallen-9871
     GOOGLE_CLOUD_PROJECT: sandbox-dallen-9871
 
-No credentialed accounts.
-
-To login, run:
-  $ gcloud auth login `ACCOUNT`
-
-Listing items under project sandbox-dallen-9871, location europe-west2.
-
-ERROR: gcloud crashed (AttributeError): 'TokenRefreshError' object has no attribute 'content'
-
-If you would like to report this issue, please run the following command:
-  gcloud feedback
-
-To check gcloud for common problems, please run the following command:
-  gcloud info --run-diagnostics
-Error: Process completed with exit code 1.
