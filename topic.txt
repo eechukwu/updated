@@ -37,6 +37,9 @@ helm search repo honeycomb
 helm install honeycomb-refinery honeycomb/refinery --namespace honeycomb
 kubectl create namespace honeycomb
 kubectl get ns
+
+  id-token: write  # Explicitly grant permission to write the ID token for GCP authentication
+
 helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
