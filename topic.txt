@@ -42,17 +42,26 @@ helm uninstall honeycomb-refinery --namespace honeycomb
 
  gcloud auth list
   # Optionally, list Artifact Registry repositories or other resources as a test
-  gcloud artifacts repositories list --project=sandbox-dallen-9871 --location=europe-west2
+  # gcloud artifacts repositories list --project=sandbox-dallen-9871 --location=europe-west2
   shell: /usr/bin/bash -e {0}
   env:
     DOCKER_REGISTRY: ghcr.io
     ORGANISATION_NAME: frasers-group
     TEST_TAG: test
-    CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: /home/runner/work/_temp/50ba35d655e36648d02411ed
-    GOOGLE_APPLICATION_CREDENTIALS: /home/runner/work/_temp/50ba35d655e36648d02411ed
+    CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: /home/runner/work/te-shifts-push-app/te-shifts-push-app/gha-creds-104828ce0743f167.json
+    GOOGLE_APPLICATION_CREDENTIALS: /home/runner/work/te-shifts-push-app/te-shifts-push-app/gha-creds-104828ce0743f167.json
     CLOUDSDK_PROJECT: sandbox-dallen-9871
     CLOUDSDK_CORE_PROJECT: sandbox-dallen-9871
     GCP_PROJECT: sandbox-dallen-9871
     GCLOUD_PROJECT: sandbox-dallen-9871
     GOOGLE_CLOUD_PROJECT: sandbox-dallen-9871
+    GOOGLE_GHA_CREDS_PATH: /home/runner/work/te-shifts-push-app/te-shifts-push-app/gha-creds-104828ce0743f167.json
+    CLOUDSDK_METRICS_ENVIRONMENT: github-actions-setup-gcloud
+    CLOUDSDK_METRICS_ENVIRONMENT_VERSION: 2.1.0
+  
+                         Credentialed Accounts
 
+To set the active account, run:
+ACTIVE  ACCOUNT
+*       sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com
+    $ gcloud config set account `ACCOUNT`
