@@ -40,10 +40,178 @@ kubectl get ns
 helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
-- name: Tag Latest Image as active-image
-  run: |
-    docker tag ${DOCKER_REGISTRY}/${ORGANISATION_NAME}/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.DOCKER_IMAGE_TAG }} ${DOCKER_REGISTRY}/${ORGANISATION_NAME}/${{ inputs.DOCKER_IMAGE_NAME }}:active-image
-    docker push ${DOCKER_REGISTRY}/${ORGANISATION_NAME}/${{ inputs.DOCKER_IMAGE_NAME }}:active-image
-  env:
-    DOCKER_REGISTRY: ${{ env.DOCKER_REGISTRY }}
-    ORGANISATION_NAME: ${{ env.ORGANISATION_NAME }}
+
+name: Build and Push Container Image to Registry
+
+on:
+  workflow_call:
+    outputs:
+      IMAGE_DIGEST:
+        description: Image digest of resulting docker image
+        value: ${{ jobs.build-and-push.outputs.digest }}
+    inputs:
+      DOCKER_IMAGE_NAME:
+        description: Name of Docker Image
+        type: string 
+        required: true 
+      DOCKER_IMAGE_TAG:
+        description: Tag of Docker Image
+        type: string 
+        required: true 
+      DOCKERFILE_PATH:
+        description: Path of Dockerfile
+        type: string 
+        required: true 
+      BUILD_CONTEXT:
+        description: Build Context
+        type: string 
+        default: .
+        required: false 
+      CLEAN_UP_IMAGES:
+        description: Set to true to clean up old images.  The number of images to retain can be configured using the MIN_VERSION_TO_KEEP input variable.
+        type: boolean
+        default: true
+        required: false
+      MIN_VERSIONS_TO_KEEP:
+        description: The minimum number of image versions to keep starting with the latest version. To delete all versions set this to 0.
+        type: number
+        default: 50
+        required: false
+      TRIVYIGNORES:
+        description: Comma-separated list of relative paths in repository to one or more .trivyignore files
+        type: string
+        default: ""
+        required: false
+      INCLUDE_TEST:
+        description: Whether to execute test projects located in tests folder
+        type: boolean
+        default: false
+        required: false
+      PUSH_IMAGE:
+        description: Whether to push the built image to the registry
+        required: false
+        type: boolean
+        default: true
+
+permissions: 
+  contents: read
+  packages: write
+  id-token: write
+
+env: 
+  DOCKER_REGISTRY: ghcr.io
+  ORGANISATION_NAME: frasers-group
+  TEST_TAG: test
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.push-image.outputs.digest }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4b4e9c3e2d4531116a6f8ba8e71fc6e2cb6e6c8c # v2.5.0
+
+      - name: Log in to GitHub container registry
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a  # v2.1.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add Source
+        if: ${{ inputs.INCLUDE_TEST }}
+        run: dotnet nuget add source --username 'github' --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name 'github' 'https://nuget.pkg.github.com/frasers-group/index.json'
+
+      - name: Run Tests
+        if: ${{ inputs.INCLUDE_TEST }}
+        shell: bash
+        run: |
+          for file in $(find . -type f \( -iname '*.tests.csproj' \) ! -path './packages/*' ! -path '*/obj/*' | grep -iv testadapter); do
+            echo Executing tests in found test library $file
+            dotnet test $file 
+          done
+
+      # - name: Build Container Image 
+      #   uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671  # v4.0.0
+      #   with:
+      #     load: true
+      #     push: false
+      #     tags: ${{ env.TEST_TAG }}
+      #     file: ${{ inputs.DOCKERFILE_PATH }}
+      #     context: ${{ inputs.BUILD_CONTEXT }}
+      #     secrets: |
+      #       "github_token=${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Authenticate with GCP
+        uses: google-github-actions/auth@35b0e87d162680511bf346c299f71c9c5c379033  # v1.1.1
+        id: auth
+        with:
+          token_format: access_token
+          workload_identity_provider: 'projects/217712610684/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+          service_account: 'sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com'
+          access_token_lifetime: 600s
+
+      - name: Login to Artifact Registry
+        uses: docker/login-action@v1
+        with:
+          registry: europe-west2-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      # - id: docker-push-tagged
+      #   name: Tag Docker image and push to Google Artifact Registry
+      #   uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+      #   with:
+      #     push: true
+      #     tags: |
+      #        europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.DOCKER_IMAGE_TAG }}
+      #        europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:active-image
+
+      # Step 1: Docker build and push to registry with commit SHA tag
+      - id: build_image
+        name: Build Image
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          push: false
+          load: true
+          file: ${{ inputs.DOCKERFILE_PATH }}
+          context: ${{ inputs.BUILD_CONTEXT }}
+          secrets: |
+            "github_token=${{ secrets.GITHUB_TOKEN }}"
+          tags: |
+             europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.DOCKER_IMAGE_TAG }}
+
+      # Step 2: Push Image to GAR
+      - name: Push Latest Image to Google Artifact Registry
+        run: |
+          docker push europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.DOCKER_IMAGE_TAG }}
+ 
+      
+      # Step 3: Fetch the Previous active-image
+      - id: fetch_previous_active_image
+        name: Fetch the Previous active-image
+        run: |
+          docker pull europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:active-image
+      
+      
+      # Step 5: Retag current 'active-image' as 'rollback-image'
+      - name: Retag Current Active-Image as Rollback
+        run: |
+          # Tag the active-image as rollback-image
+          docker tag europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:active-image europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:rollback-image
+          # Push the rollback-image tag
+          docker push europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:rollback-image
+
+
+      # Step 4: Tag latest image as active-image
+      - name: Tag Latest Image as active-image
+        run: |
+          docker tag europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.DOCKER_IMAGE_TAG }} europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:active-image
+          docker push europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:active-image
