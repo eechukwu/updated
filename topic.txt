@@ -46,28 +46,24 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
 
-- name: Retag Top 5 Most Recent Images as Rollback
-  run: |
-    FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}"
-    DATE_TAG=$(date +%Y%m%d%H%M%S)
+      - name: Fetch and Tag Rollback Images
+        run: |
+          FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}"
+          DATE_TAG=$(date "+%Y%m%d%H%M%S")
 
-    # Fetch the latest 6 image digests, excluding the most recent push
-    IMAGE_DIGESTS=$(gcloud container images list --repository=$FULL_IMAGE_NAME --format='get(digest)' --limit=6 | tail -n +2)
+          # Authenticate with gcloud (if not already done)
+          echo "${{ secrets.GCLOUD_AUTH }}" | gcloud auth activate-service-account --key-file=-
+          
+          # Fetch the latest 6 tags, assuming the first is the most recent one to exclude
+          MAPFILE -t TAGS < <(gcloud container images list-tags $FULL_IMAGE_NAME --limit=6 --sort-by=~TIMESTAMP --format='get(tags)' | awk -F, '{print $1}' | tail -n +2)
 
-    # Initialize a counter for tagging the top 5 excluding the very latest
-    COUNT=0
-
-    echo "Processing for rollback tagging..."
-    for DIGEST in $IMAGE_DIGESTS; do
-      if [ $COUNT -lt 5 ]; then
-        NEW_TAG="rollback-image-${DATE_TAG}-${COUNT}"
-        echo "Tagging $DIGEST as $NEW_TAG"
-        
-        # Tagging the digest with the new rollback tag
-        gcloud container images add-tag $FULL_IMAGE_NAME@$DIGEST $FULL_IMAGE_NAME:$NEW_TAG --quiet
-        
-        let COUNT++
-      else
-        break # Exit the loop after processing 5 images
-      fi
-    done
+          # Tag the next 5 images as rollback images
+          for i in "${!TAGS[@]}"; do
+            if [[ $i -lt 5 ]]; then
+              NEW_TAG="rollback-image-${DATE_TAG}-${i}"
+              echo "Tagging ${TAGS[$i]} as $NEW_TAG"
+              
+              # Use gcloud to add the new tag to the image
+              gcloud container images add-tag "${FULL_IMAGE_NAME}:${TAGS[$i]}" "${FULL_IMAGE_NAME}:${NEW_TAG}" --quiet
+            fi
+          done
