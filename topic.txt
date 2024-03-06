@@ -46,24 +46,17 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
 
-      - name: Fetch and Tag Rollback Images
+jobs:
+  list_images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List Top 10 Images in GAR
         run: |
-          FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}"
-          DATE_TAG=$(date "+%Y%m%d%H%M%S")
-
-          # Authenticate with gcloud (if not already done)
+          gcloud auth configure-docker ${{ env.REGISTRY_HOST }}
           echo "${{ secrets.GCLOUD_AUTH }}" | gcloud auth activate-service-account --key-file=-
-          
-          # Fetch the latest 6 tags, assuming the first is the most recent one to exclude
-          MAPFILE -t TAGS < <(gcloud container images list-tags $FULL_IMAGE_NAME --limit=6 --sort-by=~TIMESTAMP --format='get(tags)' | awk -F, '{print $1}' | tail -n +2)
+          gcloud container images list-tags ${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }} --limit=10 --sort-by=TIMESTAMP
+        env:
+          REGISTRY_HOST: europe-west2-docker.pkg.dev
+          PROJECT_ID: sandbox-dallen-9871
+          REPOSITORY: demo-olufemi-registry
 
-          # Tag the next 5 images as rollback images
-          for i in "${!TAGS[@]}"; do
-            if [[ $i -lt 5 ]]; then
-              NEW_TAG="rollback-image-${DATE_TAG}-${i}"
-              echo "Tagging ${TAGS[$i]} as $NEW_TAG"
-              
-              # Use gcloud to add the new tag to the image
-              gcloud container images add-tag "${FULL_IMAGE_NAME}:${TAGS[$i]}" "${FULL_IMAGE_NAME}:${NEW_TAG}" --quiet
-            fi
-          done
