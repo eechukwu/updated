@@ -46,17 +46,36 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
 
-- name: Generate Rollback Tags
+- name: Debug and Generate Rollback Tags
   run: |
     FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}"
     DATE_TAG=$(date "+%Y%m%d")
     
-    # Fetch the top 10 tags
-    TAGS=$(gcloud artifacts docker images list $FULL_IMAGE_NAME --limit=10 --format='value(tags)' | tr ',' '\n' | head -n 10)
+    # Ensure gcloud is authenticated for debug purposes
+    echo "${{ secrets.GCLOUD_AUTH }}" | gcloud auth activate-service-account --key-file=-
     
-    echo "New rollback tags:"
-    for TAG in $TAGS; do
-      NEW_TAG="rollback-image-${DATE_TAG}-${TAG}"
-      echo "$FULL_IMAGE_NAME:$NEW_TAG"
-    done
+    # Print the command to debug it
+    echo "Running command: gcloud artifacts docker images list $FULL_IMAGE_NAME --limit=10 --format='value(tags)'"
+    
+    # Store the command output for debugging
+    COMMAND_OUTPUT=$(gcloud artifacts docker images list $FULL_IMAGE_NAME --limit=10 --format='value(tags)')
+    
+    # Check if COMMAND_OUTPUT is empty
+    if [[ -z "$COMMAND_OUTPUT" ]]; then
+      echo "The command returned no output. Possible reasons might include incorrect repository details or permissions issues."
+    else
+      echo "Command output received. Processing tags..."
+      # Process the command output
+      TAGS=$(echo "$COMMAND_OUTPUT" | tr ',' '\n' | head -n 10)
+      
+      if [[ -z "$TAGS" ]]; then
+        echo "No tags to process."
+      else
+        echo "New rollback tags:"
+        for TAG in $TAGS; do
+          NEW_TAG="rollback-image-${DATE_TAG}-${TAG}"
+          echo "$FULL_IMAGE_NAME:$NEW_TAG"
+        done
+      fi
+    fi
 
