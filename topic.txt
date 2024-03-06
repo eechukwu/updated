@@ -45,41 +45,29 @@ kubectl get ns
 helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
-      - name: Retag Top 5 Most Recent Images as Rollback
-        run: |
-          FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}"
-          DATE_TAG=$(date +%Y-%m-%d-%H-%M-%S)
 
-          # Assuming gcloud is already authenticated in previous steps
+- name: Retag Top 5 Most Recent Images as Rollback
+  run: |
+    FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}"
+    DATE_TAG=$(date +%Y%m%d%H%M%S)
 
-          # Fetch the 5 most recent tags excluding the very latest (assumes tags are in a sortable format like semver or dates)
-          RECENT_TAGS=$(gcloud container images list-tags $FULL_IMAGE_NAME --format='value(tags)' --limit=6 | tr ',' '\n' | grep -v "${{ inputs.DOCKER_IMAGE_TAG }}" | sort -r | head -n 5)
+    # Fetch the latest 6 image digests, excluding the most recent push
+    IMAGE_DIGESTS=$(gcloud container images list --repository=$FULL_IMAGE_NAME --format='get(digest)' --limit=6 | tail -n +2)
 
-          echo "Recent tags for rollback:"
-          echo "$RECENT_TAGS"
+    # Initialize a counter for tagging the top 5 excluding the very latest
+    COUNT=0
 
-          # Loop through the recent tags and retag them for rollback
-          for TAG in $RECENT_TAGS; do
-              # Construct the rollback tag name
-              ROLLBACK_TAG="rollback-image-${DATE_TAG}-${TAG}"
-              echo "Retagging $TAG as $ROLLBACK_TAG"
-              
-              # Pull the specific tag
-              docker pull $FULL_IMAGE_NAME:$TAG
-              
-              # Tag it with the new rollback tag and push
-              docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:$ROLLBACK_TAG
-              docker push $FULL_IMAGE_NAME:$ROLLBACK_TAG
-          done
-
-Name
-Description
-Tags
-Created
-Updated
- 69e93b393d77	
-active-imagead52a8c58dc34a72b2aa5ef7b01f9cc017de9c11
-Just now	Just now		
- c037453a4c7b	
-0rollback-image-2024-03-06-09-47-12-0rollback-image-2024-03-06-09-47-12-active-image
-35 minutes ago	Just now		
+    echo "Processing for rollback tagging..."
+    for DIGEST in $IMAGE_DIGESTS; do
+      if [ $COUNT -lt 5 ]; then
+        NEW_TAG="rollback-image-${DATE_TAG}-${COUNT}"
+        echo "Tagging $DIGEST as $NEW_TAG"
+        
+        # Tagging the digest with the new rollback tag
+        gcloud container images add-tag $FULL_IMAGE_NAME@$DIGEST $FULL_IMAGE_NAME:$NEW_TAG --quiet
+        
+        let COUNT++
+      else
+        break # Exit the loop after processing 5 images
+      fi
+    done
