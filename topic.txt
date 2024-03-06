@@ -46,3 +46,42 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
 
+      - name: Retag Current Active-Image as Rollback and Manage Old Rollbacks
+        run: |
+          FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}"
+          DATE_TAG=$(date +%Y%m%d%H%M%S)
+          
+          # Tag the current active-image as a new rollback image with the current date and push
+          docker tag $FULL_IMAGE_NAME:active-image $FULL_IMAGE_NAME:rollback-image-$DATE_TAG
+          docker push $FULL_IMAGE_NAME:rollback-image-$DATE_TAG
+
+          # Fetch all existing tags, prioritize rollback tags, and ensure we only operate on the relevant set
+          ALL_TAGS=$(gcloud container images list-tags $FULL_IMAGE_NAME --format='get(tags)' --limit=unlimited | tr ',' '\n' | grep -v '^$')
+          ROLLBACK_TAGS=()
+          OLD_DEPLOYED_TAGS=()
+          
+          for TAG in $ALL_TAGS; do
+              if [[ "$TAG" =~ rollback-image- ]]; then
+                  ROLLBACK_TAGS+=("$TAG")
+              elif [[ "$TAG" =~ old-deployed-images- ]]; then
+                  OLD_DEPLOYED_TAGS+=("$TAG")
+              fi
+          done
+
+          # Sort rollback tags to manage the latest 5
+          IFS=$'\n' ROLLBACK_TAGS=($(sort -r <<<"${ROLLBACK_TAGS[*]}"))
+          unset IFS
+
+          # Process rollback tags: keep top 5 as rollback, rest as old-deployed
+          for i in "${!ROLLBACK_TAGS[@]}"; do
+              TAG=${ROLLBACK_TAGS[$i]}
+              if [ $i -lt 5 ]; then
+                  # No action needed for the top 5
+                  continue
+              else
+                  # Re-tag the rest as old-deployed-images
+                  OLD_TAG=${TAG#rollback-image-}
+                  docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:old-deployed-images-$OLD_TAG
+                  docker push $FULL_IMAGE_NAME:old-deployed-images-$OLD_TAG
+              fi
+          done
