@@ -46,36 +46,37 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
 
-- name: Debug and Generate Rollback Tags
+- name: Retag and Push Top 5 Images as Rollback
   run: |
     FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}"
     DATE_TAG=$(date "+%Y%m%d")
-    
-    # Ensure gcloud is authenticated for debug purposes
+    EXCLUDE_TAG="${{ inputs.DOCKER_IMAGE_TAG }}"
+
+    # Authenticate with Google Cloud
     echo "${{ secrets.GCLOUD_AUTH }}" | gcloud auth activate-service-account --key-file=-
+    # Configure Docker to use the credentials
+    gcloud auth configure-docker ${{ env.REGISTRY_HOST }}
+
+    # Fetch the latest 6 tags (assuming the newest is not desired), excluding the latest push, and pick the top 5
+    IFS=$'\n' read -r -d '' -a IMAGE_TAGS <<< "$(gcloud artifacts docker images list $FULL_IMAGE_NAME --format='get(tags)' --limit=6 | grep -v "$EXCLUDE_TAG" | tr ',' '\n' | head -n 5)"
     
-    # Print the command to debug it
-    echo "Running command: gcloud artifacts docker images list $FULL_IMAGE_NAME --limit=10 --format='value(tags)'"
-    
-    # Store the command output for debugging
-    COMMAND_OUTPUT=$(gcloud artifacts docker images list $FULL_IMAGE_NAME --limit=10 --format='value(tags)')
-    
-    # Check if COMMAND_OUTPUT is empty
-    if [[ -z "$COMMAND_OUTPUT" ]]; then
-      echo "The command returned no output. Possible reasons might include incorrect repository details or permissions issues."
-    else
-      echo "Command output received. Processing tags..."
-      # Process the command output
-      TAGS=$(echo "$COMMAND_OUTPUT" | tr ',' '\n' | head -n 10)
-      
-      if [[ -z "$TAGS" ]]; then
-        echo "No tags to process."
-      else
-        echo "New rollback tags:"
-        for TAG in $TAGS; do
-          NEW_TAG="rollback-image-${DATE_TAG}-${TAG}"
-          echo "$FULL_IMAGE_NAME:$NEW_TAG"
-        done
+    for TAG in "${IMAGE_TAGS[@]}"; do
+      if [ ! -z "$TAG" ]; then
+        # Construct the new tag
+        NEW_TAG="rollback-image-${DATE_TAG}-${TAG}"
+        echo "Creating and pushing new tag: $NEW_TAG for $TAG"
+
+        # Pull the original image
+        docker pull $FULL_IMAGE_NAME:$TAG
+        
+        # Tag it with the new rollback tag
+        docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:$NEW_TAG
+        
+        # Push the new tag to the registry
+        docker push $FULL_IMAGE_NAME:$NEW_TAG
       fi
-    fi
+    done
+  env:
+    GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
+
 
