@@ -41,47 +41,41 @@ kubectl get ns
 
  
      
+# New Step 4: Retag the top 5 most recent images as rollback-image-date
+- name: Retag Top 5 Most Recent Images as Rollback
+  run: |
+    echo "Starting retagging process..."
 
-helm install refinery honeycomb/refinery --namespace honeycomb
-helm uninstall honeycomb-refinery --namespace honeycomb
+    FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}"
+    echo "Full image name: $FULL_IMAGE_NAME"
 
-jobs:
-  retag_images:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Authenticate and Configure
-        run: |
-          echo "${{ secrets.GCLOUD_AUTH }}" | base64 -d > gcloud.json
-          gcloud auth activate-service-account --key-file=gcloud.json
-          gcloud auth configure-docker ${{ env.REGISTRY_HOST }}
-        env:
-          GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
+    DATE_TAG=$(date +%Y%m%d%H%M%S)
+    echo "Generated date tag: $DATE_TAG"
 
-      - name: Tag and Push Images as Rollback
-        run: |
-          FULL_PATH="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}"
-          DATE_TAG=$(date "+%Y%m%d%H%M%S")
-          
-          echo "Fetching tags excluding ${{ inputs.DOCKER_IMAGE_TAG }}"
-          IFS=$'\n' read -d '' -r -a TAGS < <(gcloud artifacts docker images list "$FULL_PATH" --limit=6 --format='get(tags)' | grep -v "${{ inputs.DOCKER_IMAGE_TAG }}" | head -n 5 && printf '\0')
-          
-          echo "Tags to process: ${TAGS[@]}"
-          
-          for TAG in "${TAGS[@]}"; do
-            if [[ -n "$TAG" ]]; then
-              NEW_TAG="rollback-image-${DATE_TAG}-${TAG}"
-              echo "Tagging and pushing: $TAG as $NEW_TAG"
+    echo "Fetching all image tags..."
+    ALL_TAGS=$(gcloud artifacts docker images list $FULL_IMAGE_NAME --format='value(tags)' --limit=10 | tr ',' '\n' | sort -r | grep -v "^${{ inputs.DOCKER_IMAGE_TAG }}$")
+    echo "Fetched tags, excluding the latest: $ALL_TAGS"
 
-              # Make sure the pull, tag, and push operations are correctly formatted and executed
-              docker pull "${FULL_PATH}:${TAG}"
-              docker tag "${FULL_PATH}:${TAG}" "${FULL_PATH}:${NEW_TAG}"
-              docker push "${FULL_PATH}:${NEW_TAG}"
-            else
-              echo "No tag found for processing"
-            fi
-          done
-        env:
-          REGISTRY_HOST: europe-west2-docker.pkg.dev
-          PROJECT_ID: sandbox-dallen-9871
-          REPOSITORY: demo-olufemi-registry
-          DOCKER_IMAGE_TAG: latest # Example tag to exclude
+    COUNT=0
+
+    for TAG in $ALL_TAGS; do
+        if [ $COUNT -lt 5 ]; then
+            echo "Processing tag #$COUNT: $TAG"
+            NEW_TAG="rollback-image-$DATE_TAG-$COUNT" # Use COUNT to differentiate between rollback tags
+            echo "New tag will be: $NEW_TAG"
+
+            echo "Tagging $FULL_IMAGE_NAME:$TAG as $FULL_IMAGE_NAME:$NEW_TAG"
+            docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:$NEW_TAG
+
+            echo "Pushing $FULL_IMAGE_NAME:$NEW_TAG"
+            docker push $FULL_IMAGE_NAME:$NEW_TAG
+
+            echo "Tagged and pushed: $FULL_IMAGE_NAME:$NEW_TAG"
+            let COUNT=COUNT+1
+        else
+            echo "Reached limit of 5 tags, stopping."
+            break # Stop the loop after tagging the top 5
+        fi
+    done
+
+    echo "Retagging process completed."
