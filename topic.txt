@@ -59,4 +59,4 @@ jobs:
           REGISTRY_HOST: europe-west2-docker.pkg.dev
           PROJECT_ID: sandbox-dallen-9871
           REPOSITORY: demo-olufemi-registry
-
+ gcloud artifacts docker images list ${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }} --limit=10 --sort-by=TIMESTAMP
