@@ -86,3 +86,4 @@ helm uninstall honeycomb-refinery --namespace honeycomb
           done
         env:
           GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
+Error response from daemon: name invalid: Missing image name. Pulls should be of the form docker pull HOST-NAME/PROJECT-ID/REPOSITORY/IMAGE
