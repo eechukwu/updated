@@ -60,3 +60,4 @@ jobs:
           PROJECT_ID: sandbox-dallen-9871
           REPOSITORY: demo-olufemi-registry
  gcloud artifacts docker images list ${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }} --limit=10 --sort-by=TIMESTAMP
+ERROR: (gcloud.artifacts.docker.images.list) INVALID_ARGUMENT: Request contains an invalid argument.
