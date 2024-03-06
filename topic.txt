@@ -44,38 +44,22 @@ kubectl get ns
 # New Step 4: Retag the top 5 most recent images as rollback-image-date
 - name: Retag Top 5 Most Recent Images as Rollback
   run: |
-    echo "Starting retagging process..."
-
     FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}"
-    echo "Full image name: $FULL_IMAGE_NAME"
-
     DATE_TAG=$(date +%Y%m%d%H%M%S)
-    echo "Generated date tag: $DATE_TAG"
 
-    echo "Fetching all image tags..."
-    ALL_TAGS=$(gcloud artifacts docker images list $FULL_IMAGE_NAME --format='value(tags)' --limit=10 | tr ',' '\n' | sort -r | grep -v "^${{ inputs.DOCKER_IMAGE_TAG }}$")
-    echo "Fetched tags, excluding the latest: $ALL_TAGS"
+    # Fetch all image tags and sort them in descending order
+    ALL_TAGS=$(gcloud artifacts docker images list $FULL_IMAGE_NAME --limit=10 --format='value(tags)' | sort -r)
 
-    COUNT=0
+    # Initialize count
+    COUNT=1
 
     for TAG in $ALL_TAGS; do
-        if [ $COUNT -lt 5 ]; then
-            echo "Processing tag #$COUNT: $TAG"
-            NEW_TAG="rollback-image-$DATE_TAG-$COUNT" # Use COUNT to differentiate between rollback tags
-            echo "New tag will be: $NEW_TAG"
-
-            echo "Tagging $FULL_IMAGE_NAME:$TAG as $FULL_IMAGE_NAME:$NEW_TAG"
-            docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:$NEW_TAG
-
-            echo "Pushing $FULL_IMAGE_NAME:$NEW_TAG"
-            docker push $FULL_IMAGE_NAME:$NEW_TAG
-
-            echo "Tagged and pushed: $FULL_IMAGE_NAME:$NEW_TAG"
-            let COUNT=COUNT+1
+        if [ $COUNT -le 5 ]; then
+            # Retag the top 5 most recent images with rollback-image<index>
+            docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:rollback-image$COUNT
+            docker push $FULL_IMAGE_NAME:rollback-image$COUNT
+            let COUNT++
         else
-            echo "Reached limit of 5 tags, stopping."
-            break # Stop the loop after tagging the top 5
+            break # Stop the loop after tagging the top 5 images
         fi
     done
-
-    echo "Retagging process completed."
