@@ -45,30 +45,36 @@ kubectl get ns
 helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
-
-      # New Step 4: Retag the top 5 most recent images as rollback-image-date
       - name: Retag Top 5 Most Recent Images as Rollback
         run: |
           FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}"
           DATE_TAG=$(date +%Y%m%d%H%M%S)
 
-          # Fetch all image tags, excluding the latest pushed image, and sort them
-          ALL_TAGS=$(gcloud container images list-tags $FULL_IMAGE_NAME --format='value(tags)' --limit=unlimited | tr ',' '\n' | sort -r | grep -v "${{ inputs.DOCKER_IMAGE_TAG }}")
+          # Fetch all image tags, excluding the latest pushed image
+          ALL_TAGS=$(gcloud container images list-tags $FULL_IMAGE_NAME --format='get(tags)' --limit=unlimited | tr ',' '\n' | grep -v "${{ inputs.DOCKER_IMAGE_TAG }}" | sort -r)
+
+          # Debug: Print all tags fetched
+          echo "Fetched tags (excluding latest):"
+          echo "$ALL_TAGS"
 
           # Initialize count
           COUNT=0
 
           for TAG in $ALL_TAGS; do
               if [ $COUNT -lt 5 ]; then
-                  # Retag the top 5 most recent images, excluding the very latest, with rollback-image-<date>
-                  docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:rollback-image-$DATE_TAG-$TAG
-                  docker push $FULL_IMAGE_NAME:rollback-image-$DATE_TAG-$TAG
+                  # Assuming TAG contains the digest or a specific format not directly usable in docker tag command
+                  # You might need to adjust how you use TAG here depending on its format
+                  echo "Processing tag: $TAG for rollback"
+                  
+                  # Generate a new tag for rollback
+                  NEW_TAG="rollback-image-$DATE_TAG-$COUNT"
+                  # Fetch the image by digest/tag and then tag it with the new rollback tag
+                  docker pull $FULL_IMAGE_NAME:$TAG
+                  docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:$NEW_TAG
+                  docker push $FULL_IMAGE_NAME:$NEW_TAG
                   let COUNT++
               else
                   break # Stop the loop after tagging the top 5
               fi
           done
-          for TAG in "${OLD_ROLLBACK_TAGS[@]}"; do
-              docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:old-rollback-image-$DATE_TAG-$TAG
-              docker push $FULL_IMAGE_NAME:old-rollback-image-$DATE_TAG-$TAG
-          done
+
