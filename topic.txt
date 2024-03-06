@@ -45,4 +45,30 @@ kubectl get ns
 helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
- No such image: europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/te-team-management-app:rollback-image
+      - name: Retag Top 5 Most Recent Images as Rollback
+        run: |
+          FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}"
+          DATE_TAG=$(date +%Y-%m-%d-%H-%M-%S)
+
+          # Assuming gcloud is already authenticated in previous steps
+
+          # Fetch the 5 most recent tags excluding the very latest (assumes tags are in a sortable format like semver or dates)
+          RECENT_TAGS=$(gcloud container images list-tags $FULL_IMAGE_NAME --format='value(tags)' --limit=6 | tr ',' '\n' | grep -v "${{ inputs.DOCKER_IMAGE_TAG }}" | sort -r | head -n 5)
+
+          echo "Recent tags for rollback:"
+          echo "$RECENT_TAGS"
+
+          # Loop through the recent tags and retag them for rollback
+          for TAG in $RECENT_TAGS; do
+              # Construct the rollback tag name
+              ROLLBACK_TAG="rollback-image-${DATE_TAG}-${TAG}"
+              echo "Retagging $TAG as $ROLLBACK_TAG"
+              
+              # Pull the specific tag
+              docker pull $FULL_IMAGE_NAME:$TAG
+              
+              # Tag it with the new rollback tag and push
+              docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:$ROLLBACK_TAG
+              docker push $FULL_IMAGE_NAME:$ROLLBACK_TAG
+          done
+
