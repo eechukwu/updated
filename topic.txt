@@ -45,8 +45,19 @@ kubectl get ns
 helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
+jobs:
+  retag_images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate and Configure
+        run: |
+          echo "${{ secrets.GCLOUD_AUTH }}" | base64 -d > gcloud.json
+          gcloud auth activate-service-account --key-file=gcloud.json
+          gcloud auth configure-docker ${{ env.REGISTRY_HOST }}
+        env:
+          GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
 
-- name: Tag and Push Images as Rollback
+      - name: Tag and Push Images as Rollback
         run: |
           FULL_PATH="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}"
           DATE_TAG=$(date "+%Y%m%d%H%M%S")
