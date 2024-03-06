@@ -46,9 +46,10 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
 
-- name: Fetch and Process Image Tags for Rollback
+- name: Tag and Push Images as Rollback
   run: |
     FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}"
+    DATE_TAG=$(date "+%Y%m%d%H%M%S")
     EXCLUDE_TAG="${{ inputs.DOCKER_IMAGE_TAG }}"
 
     # Authenticate with gcloud if not already done
@@ -56,25 +57,30 @@ helm uninstall honeycomb-refinery --namespace honeycomb
     gcloud auth configure-docker ${{ env.REGISTRY_HOST }},gcr.io
 
     # Fetch image tags, aiming to exclude the latest tag
-    # Note: This command needs to be adjusted if --format='value(tags)' does not work as expected
-    # You might need to parse the output differently
-    echo "Fetching image tags, excluding: $EXCLUDE_TAG"
     IFS=$'\n' READ_TAGS=($(gcloud artifacts docker images list $FULL_IMAGE_NAME --limit=6 | grep -v "$EXCLUDE_TAG"))
     unset IFS
 
-    # Assuming READ_TAGS now contains lines of output from the gcloud command
-    # Adjust the parsing logic based on how these lines present the tags
+    # Process fetched tags and prepare new tags
     TAGS=()
     for line in "${READ_TAGS[@]}"; do
-      # Extract the tag from each line - adjust this based on the actual line format
-      # This is a placeholder logic, assuming the first word in each line is the tag
-      TAG=$(echo "$line" | awk '{print $1}')
+      TAG=$(echo "$line" | awk '{print $1}') # Adjust based on actual output format
       if [[ "$TAG" && "$TAG" != "$EXCLUDE_TAG" ]]; then
         TAGS+=("$TAG")
       fi
     done
 
-    # Debug: Print the tags to verify correct extraction
-    echo "Processed tags for rollback:"
-    printf '%s\n' "${TAGS[@]}"
+    # Tagging and pushing logic
+    for TAG in "${TAGS[@]}"; do
+      NEW_TAG="rollback-image-${DATE_TAG}-${TAG}"
+      echo "Tagging and pushing $TAG as $NEW_TAG"
+      
+      # Pull the original image
+      docker pull $FULL_IMAGE_NAME:$TAG
+      
+      # Tag it with the new rollback tag
+      docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:$NEW_TAG
+      
+      # Push the new tag to the registry
+      docker push $FULL_IMAGE_NAME:$NEW_TAG
+    done
 
