@@ -84,3 +84,4 @@ helm uninstall honeycomb-refinery --namespace honeycomb
       docker push $FULL_IMAGE_NAME:$NEW_TAG
     done
 
+Error response from daemon: name invalid: Missing image name. Pulls should be of the form docker pull HOST-NAME/PROJECT-ID/REPOSITORY/IMAGE
