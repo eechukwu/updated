@@ -48,40 +48,38 @@ helm uninstall honeycomb-refinery --namespace honeycomb
 
 - name: Tag and Push Images as Rollback
   run: |
-    FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}"
+    # Define the full path without the specific image tag
+    REGISTRY_HOST="${{ env.REGISTRY_HOST }}"
+    PROJECT_ID="${{ env.PROJECT_ID }}"
+    REPOSITORY="${{ env.REPOSITORY }}"
+    FULL_PATH="$REGISTRY_HOST/$PROJECT_ID/$REPOSITORY"
+    
     DATE_TAG=$(date "+%Y%m%d%H%M%S")
     EXCLUDE_TAG="${{ inputs.DOCKER_IMAGE_TAG }}"
 
-    # Authenticate with gcloud if not already done
+    # Authenticate with gcloud and configure Docker
     echo "${{ secrets.GCLOUD_AUTH }}" | gcloud auth activate-service-account --key-file=-
-    gcloud auth configure-docker ${{ env.REGISTRY_HOST }},gcr.io
+    gcloud auth configure-docker "$REGISTRY_HOST",gcr.io
 
-    # Fetch image tags, aiming to exclude the latest tag
-    IFS=$'\n' READ_TAGS=($(gcloud artifacts docker images list $FULL_IMAGE_NAME --limit=6 | grep -v "$EXCLUDE_TAG"))
+    # Fetch the latest 6 tags (excluding the most recent) and select the top 5 for rollback
+    IFS=$'\n' READ_TAGS=($(gcloud artifacts docker images list "$FULL_PATH" --limit=6 | grep -v "$EXCLUDE_TAG" | head -n 5))
     unset IFS
 
-    # Process fetched tags and prepare new tags
-    TAGS=()
-    for line in "${READ_TAGS[@]}"; do
-      TAG=$(echo "$line" | awk '{print $1}') # Adjust based on actual output format
-      if [[ "$TAG" && "$TAG" != "$EXCLUDE_TAG" ]]; then
-        TAGS+=("$TAG")
+    for TAG_INFO in "${READ_TAGS[@]}"; do
+      ORIGINAL_TAG=$(echo "$TAG_INFO" | awk '{print $1}') # Adjust extraction based on actual output format
+      if [[ -n "$ORIGINAL_TAG" && "$ORIGINAL_TAG" != "$EXCLUDE_TAG" ]]; then
+        NEW_TAG="rollback-image-${DATE_TAG}-${ORIGINAL_TAG//,/}"
+        IMAGE_NAME="$FULL_PATH" # Assuming the image name is consistent for rollback tags
+        
+        echo "Tagging and pushing $IMAGE_NAME:$ORIGINAL_TAG as $IMAGE_NAME:$NEW_TAG"
+        
+        # Pull the original image by tag
+        docker pull "$IMAGE_NAME:$ORIGINAL_TAG"
+        
+        # Tag the image with the new rollback tag
+        docker tag "$IMAGE_NAME:$ORIGINAL_TAG" "$IMAGE_NAME:$NEW_TAG"
+        
+        # Push the new tag to the registry
+        docker push "$IMAGE_NAME:$NEW_TAG"
       fi
     done
-
-    # Tagging and pushing logic
-    for TAG in "${TAGS[@]}"; do
-      NEW_TAG="rollback-image-${DATE_TAG}-${TAG}"
-      echo "Tagging and pushing $TAG as $NEW_TAG"
-      
-      # Pull the original image
-      docker pull $FULL_IMAGE_NAME:$TAG
-      
-      # Tag it with the new rollback tag
-      docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:$NEW_TAG
-      
-      # Push the new tag to the registry
-      docker push $FULL_IMAGE_NAME:$NEW_TAG
-    done
-
-Error response from daemon: name invalid: Missing image name. Pulls should be of the form docker pull HOST-NAME/PROJECT-ID/REPOSITORY/IMAGE
