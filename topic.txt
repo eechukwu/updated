@@ -46,41 +46,28 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
 
-           - name: Retag Current Active-Image as Rollback and Manage Old Rollbacks
+      # New Step 4: Retag the top 5 most recent images as rollback-image-date
+      - name: Retag Top 5 Most Recent Images as Rollback
         run: |
           FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}"
           DATE_TAG=$(date +%Y%m%d%H%M%S)
 
-          # Fetch all tags from the registry excluding the latest build
-          ALL_TAGS=$(gcloud container images list-tags $FULL_IMAGE_NAME --format='value(tags)' --limit=unlimited | tr ',' '\n' | grep -v 'latest' | sort -r)
+          # Fetch all image tags, excluding the latest pushed image, and sort them
+          ALL_TAGS=$(gcloud container images list-tags $FULL_IMAGE_NAME --format='value(tags)' --limit=unlimited | tr ',' '\n' | sort -r | grep -v "${{ inputs.DOCKER_IMAGE_TAG }}")
 
-          # Arrays to hold the tags
-          ROLLBACK_TAGS=()
-          OLD_ROLLBACK_TAGS=()
-
-          # Process each tag
+          # Initialize count
           COUNT=0
+
           for TAG in $ALL_TAGS; do
-              # Only process tags that are not 'active-image' or already processed rollback/old-rollback tags
-              if [[ ! "$TAG" =~ active-image ]] && [[ ! "$TAG" =~ rollback-image- ]] && [[ ! "$TAG" =~ old-rollback-image- ]]; then
-                  if [ $COUNT -lt 5 ]; then
-                      # These will be the new rollback tags
-                      ROLLBACK_TAGS+=("$TAG")
-                  else
-                      # These will be tagged as old-rollback-image
-                      OLD_ROLLBACK_TAGS+=("$TAG")
-                  fi
+              if [ $COUNT -lt 5 ]; then
+                  # Retag the top 5 most recent images, excluding the very latest, with rollback-image-<date>
+                  docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:rollback-image-$DATE_TAG-$TAG
+                  docker push $FULL_IMAGE_NAME:rollback-image-$DATE_TAG-$TAG
                   let COUNT++
+              else
+                  break # Stop the loop after tagging the top 5
               fi
           done
-
-          # Tag the last 5 (excluding the latest) as rollback-image-date
-          for TAG in "${ROLLBACK_TAGS[@]}"; do
-              docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:rollback-image-$DATE_TAG-$TAG
-              docker push $FULL_IMAGE_NAME:rollback-image-$DATE_TAG-$TAG
-          done
-
-          # Tag any beyond the top 5 as old-rollback-image-date
           for TAG in "${OLD_ROLLBACK_TAGS[@]}"; do
               docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:old-rollback-image-$DATE_TAG-$TAG
               docker push $FULL_IMAGE_NAME:old-rollback-image-$DATE_TAG-$TAG
