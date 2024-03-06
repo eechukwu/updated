@@ -46,18 +46,17 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
 
-jobs:
-  list_images:
-    runs-on: ubuntu-latest
-    steps:
-      - name: List Top 10 Images in GAR
-        run: |
-          gcloud auth configure-docker ${{ env.REGISTRY_HOST }}
-          echo "${{ secrets.GCLOUD_AUTH }}" | gcloud auth activate-service-account --key-file=-
-          gcloud container images list-tags ${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }} --limit=10 --sort-by=TIMESTAMP
-        env:
-          REGISTRY_HOST: europe-west2-docker.pkg.dev
-          PROJECT_ID: sandbox-dallen-9871
-          REPOSITORY: demo-olufemi-registry
- gcloud artifacts docker images list ${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }} --limit=10 --sort-by=TIMESTAMP
-ERROR: (gcloud.artifacts.docker.images.list) INVALID_ARGUMENT: Request contains an invalid argument.
+- name: Generate Rollback Tags
+  run: |
+    FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}"
+    DATE_TAG=$(date "+%Y%m%d")
+    
+    # Fetch the top 10 tags
+    TAGS=$(gcloud artifacts docker images list $FULL_IMAGE_NAME --limit=10 --format='value(tags)' | tr ',' '\n' | head -n 10)
+    
+    echo "New rollback tags:"
+    for TAG in $TAGS; do
+      NEW_TAG="rollback-image-${DATE_TAG}-${TAG}"
+      echo "$FULL_IMAGE_NAME:$NEW_TAG"
+    done
+
