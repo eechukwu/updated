@@ -39,77 +39,8 @@ kubectl create namespace honeycomb
 kubectl get ns
 
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      # Define environment variables for the job
-      env:
-        REGISTRY_HOST: europe-west2-docker.pkg.dev
-        PROJECT_ID: sandbox-dallen-9871
-        REPOSITORY: demo-olufemi-registry
-        IMAGE_NAME: ${{ inputs.DOCKER_IMAGE_NAME }}
-
-      # Step 1: Docker build and push to registry with commit SHA tag
-      - id: build_image
-        name: Build Image
-        uses: docker/build-push-action@v2
-        with:
-          push: false
-          load: true
-          file: ${{ inputs.DOCKERFILE_PATH }}
-          context: ${{ inputs.BUILD_CONTEXT }}
-          tags: |
-             ${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ inputs.DOCKER_IMAGE_TAG }}
-          secrets: |
-            "github_token=${{ secrets.GITHUB_TOKEN }}"
-
-      # Step 2: Push Image to Google Artifact Registry
-      - name: Push Latest Image to Google Artifact Registry
-        run: |
-          docker push ${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ inputs.DOCKER_IMAGE_TAG }}
-
-      # Step 3: Fetch the Previous active-image
-      - id: fetch_previous_active_image
-        name: Fetch the Previous active-image
-        run: |
-          docker pull ${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:active-image
-
-      # Step 4: Tag latest image as active-image
-      - name: Tag Latest Image as active-image
-        run: |
-          docker tag ${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ inputs.DOCKER_IMAGE_TAG }} ${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:active-image
-          docker push ${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:active-image
-
-      # New Step 5: Retag current 'active-image' as 'rollback-image' and manage old rollbacks
-      - name: Retag Current Active-Image as Rollback and Manage Old Rollbacks
-        run: |
-          FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}"
-          DATE_TAG=$(date +%Y%m%d%H%M%S)
-          
-          # Immediately tag the current active-image as a new rollback image with the current date and push
-          docker tag $FULL_IMAGE_NAME:active-image $FULL_IMAGE_NAME:rollback-image-$DATE_TAG
-          docker push $FULL_IMAGE_NAME:rollback-image-$DATE_TAG
-
-          # Fetch all existing rollback tags to manage them, now including the one just created
-          ROLLBACK_TAGS=$(gcloud container images list-tags $FULL_IMAGE_NAME --filter="tags:rollback-image-*" --format="get(tags)" --limit=unlimited | sort -r | tr ',' '\n' | grep rollback-image-)
-          COUNT=1 # Start count at 1 considering we've just added a new rollback image
-
-          for TAG in $ROLLBACK_TAGS; do
-              # Skip processing for the first 5 images including the one just tagged
-              if [ $COUNT -le 5 ]; then
-                  let COUNT++
-                  continue
-              else
-                  # Beyond the 5th rollback image, re-tag with old-deployed-images prefix
-                  OLD_TAG=${TAG#rollback-image-}
-                  docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:old-deployed-images-$OLD_TAG
-                  docker push $FULL_IMAGE_NAME:old-deployed-images-$OLD_TAG
-
-                  # Optionally, remove the old rollback tag from the registry if desired
-                  # gcloud container images untag $FULL_IMAGE_NAME:$TAG
-              fi
-          done
+ 
+     
 
 helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
