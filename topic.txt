@@ -46,35 +46,27 @@ helm install refinery honeycomb/refinery --namespace honeycomb
 helm uninstall honeycomb-refinery --namespace honeycomb
 
 
- jobs:
-  retag_images:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Authenticate and Configure
-        run: |
-          echo "${{ secrets.GCLOUD_AUTH }}" | gcloud auth activate-service-account --key-file=-
-          gcloud auth configure-docker ${{ env.REGISTRY_HOST }}
-        env:
-          GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
-
-      - name: Tag and Push Images as Rollback
+- name: Tag and Push Images as Rollback
         run: |
           FULL_PATH="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}"
           DATE_TAG=$(date "+%Y%m%d%H%M%S")
           
-          # Fetch tags and process them
-          IFS=$'\n' read -d '' -r -a TAGS < <(gcloud artifacts docker images list "$FULL_PATH" --limit=6 --format='value(tags)' | grep -v "${{ inputs.DOCKER_IMAGE_TAG }}" | head -n 5 && printf '\0')
+          echo "Fetching tags excluding ${{ inputs.DOCKER_IMAGE_TAG }}"
+          IFS=$'\n' read -d '' -r -a TAGS < <(gcloud artifacts docker images list "$FULL_PATH" --limit=6 --format='get(tags)' | grep -v "${{ inputs.DOCKER_IMAGE_TAG }}" | head -n 5 && printf '\0')
+          
+          echo "Tags to process: ${TAGS[@]}"
           
           for TAG in "${TAGS[@]}"; do
             if [[ -n "$TAG" ]]; then
-              NEW_TAG="rollback-image-$DATE_TAG-$TAG"
-              echo "Processing tag: $TAG"
-              echo "New tag will be: $NEW_TAG"
+              NEW_TAG="rollback-image-${DATE_TAG}-${TAG}"
+              echo "Tagging and pushing: $TAG as $NEW_TAG"
 
-              # Since we're focusing on fixing the format issue, ensure commands below are correctly formatted
+              # Make sure the pull, tag, and push operations are correctly formatted and executed
               docker pull "${FULL_PATH}:${TAG}"
               docker tag "${FULL_PATH}:${TAG}" "${FULL_PATH}:${NEW_TAG}"
               docker push "${FULL_PATH}:${NEW_TAG}"
+            else
+              echo "No tag found for processing"
             fi
           done
         env:
