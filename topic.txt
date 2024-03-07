@@ -48,7 +48,4 @@ npm init -y
 npm install sharp aws-sdk
 cd ..
 zip -r my-lambda-layer.zip nodejs/
-aws lambda publish-layer-version --layer-name "MyNodeDependencies" --description "Layer for sharp and aws-sdk" --zip-file fileb://my-lambda-layer.zip --compatible-runtimes nodejs14.x nodejs16.x
-
-aws lambda publish-layer-version --layer-name "MyNodeDependencies" --description "Layer for sharp and aws-sdk" --zip-file fileb:///Users/emmanuelchukwu/Desktop/lambda_layer/my-layer/my-lambda-layer.zip --compatible-runtimes nodejs14.x nodejs16.x --region us-east-1 --profile fd-cpe-infra-deploy
 
