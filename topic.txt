@@ -49,3 +49,4 @@ npm install sharp aws-sdk
 cd ..
 zip -r my-lambda-layer.zip nodejs/
 
+aws lambda list-layers --region us-east-1 --profile fd-cpe-infra-deploy
