@@ -41,25 +41,11 @@ kubectl get ns
 
  
      
-# New Step 4: Retag the top 5 most recent images as rollback-image-date
-- name: Retag Top 5 Most Recent Images as Rollback
-  run: |
-    FULL_IMAGE_NAME="${{ env.REGISTRY_HOST }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}"
-    DATE_TAG=$(date +%Y%m%d%H%M%S)
-
-    # Fetch all image tags and sort them in descending order
-    ALL_TAGS=$(gcloud artifacts docker images list $FULL_IMAGE_NAME --limit=10 --format='value(tags)' | sort -r)
-
-    # Initialize count
-    COUNT=1
-
-    for TAG in $ALL_TAGS; do
-        if [ $COUNT -le 5 ]; then
-            # Retag the top 5 most recent images with rollback-image<index>
-            docker tag $FULL_IMAGE_NAME:$TAG $FULL_IMAGE_NAME:rollback-image$COUNT
-            docker push $FULL_IMAGE_NAME:rollback-image$COUNT
-            let COUNT++
-        else
-            break # Stop the loop after tagging the top 5 images
-        fi
-    done
+cd path/to/lambda_layers
+mkdir my-layer && cd my-layer
+mkdir nodejs && cd nodejs
+npm init -y
+npm install sharp aws-sdk
+cd ..
+zip -r my-lambda-layer.zip nodejs/
+aws lambda publish-layer-version --layer-name "MyNodeDependencies" --description "Layer for sharp and aws-sdk" --zip-file fileb://my-lambda-layer.zip --compatible-runtimes nodejs14.x nodejs16.x
