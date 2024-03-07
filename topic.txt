@@ -49,3 +49,13 @@ npm install sharp aws-sdk
 cd ..
 zip -r my-lambda-layer.zip nodejs/
 aws lambda publish-layer-version --layer-name "MyNodeDependencies" --description "Layer for sharp and aws-sdk" --zip-file fileb://my-lambda-layer.zip --compatible-runtimes nodejs14.x nodejs16.x
+
+I have confirmed we use sso 
+
+952224021780 here is the account number
+profile is this --profile fd-cpe-infra-deploy
+region is us-east-1 
+zip file location : /Users/emmanuelchukwu/Desktop/lambda_layer/my-layer
+file called : my-lambda-layer.zip
+
+I need a command to upload this lambda layer 
