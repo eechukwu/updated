@@ -49,4 +49,22 @@ npm install sharp aws-sdk
 cd ..
 zip -r my-lambda-layer.zip nodejs/
 
-aws lambda list-layers --region us-east-1 --profile fd-cpe-infra-deploy
+aws lambda publish-layer-version --layer-name "FDCFImageResize" --description "Layer for sharp and aws-sdk for FD-CF-Image-Resize" --zip-file fileb:///Users/emmanuelchukwu/Desktop/lambda_layer/my-layer/my-lambda-layer.zip --compatible-runtimes nodejs14.x nodejs16.x --region us-east-1 --profile fd-cpe-infra-deploy
+
+"Layers": [
+        {
+            "LayerName": "FDCFImageResize",
+            "LayerArn": "arn:aws:lambda:us-east-1:446345481538:layer:FDCFImageResize",
+            "LatestMatchingVersion": {
+                "LayerVersionArn": "arn:aws:lambda:us-east-1:446345481538:layer:FDCFImageResize:2",
+                "Version": 2,
+                "Description": "Layer for sharp and aws-sdk for FD-CF-Image-Resize",
+                "CreatedDate": "2024-03-07T10:46:15.457+0000",
+                "CompatibleRuntimes": [
+                    "nodejs14.x",
+                    "nodejs16.x"
+                ]
+            }
+        }
+    ]
+}
