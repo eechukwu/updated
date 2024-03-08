@@ -41,10 +41,11 @@ kubectl get ns
 
  
      
-cd path/to/lambda_layers
-mkdir my-layer && cd my-layer
-mkdir nodejs && cd nodejs
-npm init -y
+Good morning, Dan,
+
+I had a review with Paul and Rob yesterday, during which they suggested that we should add the environment name to the tags, which is what we're currently working on. That's progressing well so far.
+
+Please feel free to add anything if I've missed something.
 npm install sharp aws-sdk
 cd ..
 zip -r my-lambda-layer.zip nodejs/
