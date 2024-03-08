@@ -174,3 +174,62 @@ jobs:
       K8S_CLUSTER_NAME: ${{ inputs.K8S_CLUSTER_NAME }}
       ARGO_APPLICATION_NAME: ${{ inputs.ARGO_APPLICATION_NAME }}
 
+name: Build and deploy application
+on: 
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "k8s/**" # This workflow MUST NOT trigger when changes are made to the kubernetes manifests folder
+      - "**/kustomization.yaml"
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  build-and-push:
+   uses: frasers-group/te-reusable-workflows-devops/.github/workflows/build-and-push-container-registry.yml@main
+   with:
+     DOCKER_IMAGE_NAME: wh-reform-api
+     DOCKER_IMAGE_TAG: ${{ github.sha }}
+     DOCKERFILE_PATH: ./Dockerfile
+  deploy-to-dev:
+    name: Deploy to dev
+    needs: 
+      - build-and-push
+    uses: frasers-group/te-reusable-workflows-devops/.github/workflows/cd-anthos-gcp-secrets.yml@main
+    with:
+      environment: dev # this should match the name of the Github environment to deploy to
+      image-digest: ${{ needs.build-and-push.outputs.IMAGE_DIGEST }}
+      kustomization-path: k8s/overlays/dev # append the name of the environment specific overlays folder
+      branch: main # set to the branch which is being synced to ArgoCD
+      service_account_prefix: wh-argo # SA to obtain GCP secrets for Github App
+  
+  deploy-to-test:
+      name: Deploy to test
+      needs: 
+      - build-and-push
+      - deploy-to-dev
+      uses: frasers-group/te-reusable-workflows-devops/.github/workflows/cd-anthos-gcp-secrets.yml@main
+      with:
+        environment: test # this should match the name of the Github environment to deploy to
+        image-digest: ${{ needs.build-and-push.outputs.IMAGE_DIGEST }}
+        kustomization-path: k8s/overlays/test # add path to the folder containing the kustomize environment specific overlays folder
+        branch: main # set to the branch which is being synced to ArgoCD
+        service_account_prefix: wh-argo # SA to obtain GCP secrets for Github App
+
+  deploy-to-prod:
+      name: Deploy to prod
+      needs: 
+        - build-and-push
+        - deploy-to-test
+      uses: frasers-group/te-reusable-workflows-devops/.github/workflows/cd-anthos-gcp-secrets.yml@main 
+      with:
+        environment: prod # this should match the name of the Github environment to deploy to
+        image-digest: ${{ needs.build-and-push.outputs.IMAGE_DIGEST }}
+        kustomization-path: k8s/overlays/prod # append the name of the environment specific overlays folder
+        branch: main # set to the branch which is being synced to ArgoCD
+        service_account_prefix: wh-argo # SA to obtain GCP secrets for Github App
