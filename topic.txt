@@ -38,6 +38,16 @@ helm install honeycomb-refinery honeycomb/refinery --namespace honeycomb
 kubectl create namespace honeycomb
 kubectl get ns
 
+Step 1:  Docker build and push to registry with commit SHA tag
+
+Step 2: Fetch the Previous active-image
+
+Step 3: Tag latest image as active-image
+
+Step 4: Retag current 'active-image' as 'rollback-image
+
+Step 5: Untag the old rollback image
+
 
  
   
