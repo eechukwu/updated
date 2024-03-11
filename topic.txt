@@ -48,9 +48,12 @@ Step 4: Retag current 'active-image' as 'rollback-image
 
 Step 5: Untag the old rollback image
 
-# Add a new step for echoing the Docker pull command
+echo-docker-pull-command:
+  needs: deploy-to-dev
+  runs-on: ubuntu-latest
   steps:
     - name: Echo Docker Pull Command
       run: echo "docker pull ghcr.io/frasers-group/wh-reform-api@${{ needs.build-and-push.outputs.IMAGE_DIGEST }}"
+
  
   
