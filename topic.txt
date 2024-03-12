@@ -49,9 +49,5 @@ Step 4: Retag current 'active-image' as 'rollback-image
 Step 5: Untag the old rollback image
 
 
- resource "google_service_account_iam_member" "github-actions-iac" {
-  service_account_id = module.iam_service_accounts["sa-artifact-registry"].service_account_full_id
-  role               = "roles/iam.workloadIdentityUser"
-  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github-actions.name}/attribute.repository/frasers-group/te-internal-test-app"
-}
+
   
