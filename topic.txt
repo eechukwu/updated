@@ -50,4 +50,25 @@ Step 5: Untag the old rollback image
 
 
 
-  
+  {
+  "repositories": [
+    "te-internal-test-app",
+    "te-internal-tesdddt-app2",
+    "te-internal-tdddest-app3"
+    // Add additional repository names as needed.
+  ]
+}
+
+repositories.json
+
+locals {
+  repositories_data = jsondecode(file("repositories.json"))
+}
+
+resource "google_service_account_iam_member" "github_actions_iac" {
+  for_each = toset(locals.repositories_data["repositories"])
+
+  service_account_id = module.iam_service_accounts["sa-artifact-registry"].service_account_full_id
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github-actions.name}/attribute.repository/frasers-group/${each.key}"
+}
