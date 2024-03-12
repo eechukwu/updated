@@ -50,12 +50,10 @@ Step 5: Untag the old rollback image
 
 
 
- "I focused on getting the serverless application I was working on across the finish line.
+It was a relatively quiet week because we haven’t had sprint planning for two weeks now.
 
-The focus for this week is to set up the new pre-production environment for CPE.
+The focus will be on working on the Lambda part of the serverless service that I was working on.
 
-Regarding challenges, the main one will be identifying the resources that need to be provisioned. Apart from that, it should be a straightforward job. Fingers crossed.
+Regarding challenges, the main one is that no one owns this service, making it difficult for the service to be tested. I will have to reach out to Steven for assistance on whom to contact about this.
 
-Not at the moment."
-  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github-actions.name}/attribute.repository/frasers-group/${each.key}"
-}
+Not at the moment.
