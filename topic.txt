@@ -48,5 +48,4 @@ Step 4: Retag current 'active-image' as 'rollback-image
 
 Step 5: Untag the old rollback image
 
-Also the authentication, you're using oidc right now which is great, but ideally we need to find a way so that each repo.doesnt need to authenticate directly otherwise that will be hard to manage.
 
