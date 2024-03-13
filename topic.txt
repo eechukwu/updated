@@ -48,4 +48,512 @@ Step 4: Retag current 'active-image' as 'rollback-image
 
 Step 5: Untag the old rollback image
 
+name: Build and deploy application
+on: 
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'k8s/**' # This workflow MUST NOT trigger when changes are made to the kubernetes manifests folder
+      - '**/kustomization.yaml'
+      - '.github/workflows/**'
 
+  workflow_dispatch:    
+  
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  build-and-push:
+   uses: frasers-group/te-reusable-workflows-devops/.github/workflows/build-and-push-container-registry.yml@add-google-artifact-registry
+   with:
+     DOCKER_IMAGE_NAME: te-internal-test-app
+     DOCKER_IMAGE_TAG: ${{ github.sha }}
+     DOCKERFILE_PATH: ./Dockerfile
+
+  deploy-to-dev:
+    name: Deploy to dev
+    needs: 
+      - build-and-push
+    uses: frasers-group/te-reusable-workflows-devops/.github/workflows/cd-anthos-gcp-secrets.yml@add-google-artifact-registry
+    with:
+      environment: dev # this should match the name of the Github environment to deploy to
+      image-digest: ${{ needs.build-and-push.outputs.IMAGE_DIGEST }}
+      kustomization-path: k8s/overlays/dev # append the name of the environment specific overlays folder
+      branch: main # set to the branch which is being synced to ArgoCD
+      service_account_prefix: te-argo # SA to obtain GCP secrets for Github App
+      DOCKERFILE_PATH: ./Dockerfile
+      DOCKER_IMAGE_NAME: te-internal-test-app
+
+
+  deploy-to-test:
+    name: Deploy to test
+    needs: 
+      - build-and-push
+      - deploy-to-dev
+    uses: frasers-group/te-reusable-workflows-devops/.github/workflows/cd-anthos-gcp-secrets.yml@add-google-artifact-registry 
+    with:
+      environment: test # this should match the name of the Github environment to deploy to
+      image-digest: ${{ needs.build-and-push.outputs.IMAGE_DIGEST }}
+      kustomization-path: k8s/overlays/test # append the name of the environment specific overlays folder
+      branch: main # set to the branch which is being synced to ArgoCD
+      service_account_prefix: te-argo # SA to obtain GCP secrets for Github App
+      DOCKERFILE_PATH: ./Dockerfile
+      DOCKER_IMAGE_NAME: te-internal-test-app
+  # deploy-to-prod:
+  #   name: Deploy to prod
+  #   needs: 
+  #     - build-and-push
+  #     - deploy-to-test
+  #   uses: frasers-group/te-reusable-workflows-devops/.github/workflows/cd-anthos-gcp-secrets.yml@main 
+  #   with:
+  #     environment: prod # this should match the name of the Github environment to deploy to
+  #     image-digest: ${{ needs.build-and-push.outputs.IMAGE_DIGEST }}
+  #     kustomization-path: k8s/overlays/prod # append the name of the environment specific overlays folder
+  #     branch: main # set to the branch which is being synced to ArgoCD
+  #     service_account_prefix: te-argo # SA to obtain GCP secrets for Github App
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  name: Update kustomize manifests
+# This workflow will update kustomize manifests to use the provided image digest
+# Since generally it is required to push changes to a protected branch you must
+# provide information to allow the github action to obtain it's github app creds
+
+on:
+  workflow_call:
+    inputs:
+      DOCKERFILE_PATH:
+        description: Path of Dockerfile
+        type: string 
+        required: true
+      BUILD_CONTEXT:
+        description: Build Context
+        type: string 
+        default: .
+        required: false
+      ENVIRONMENT:
+        description: The name of the environment for which to update the manifests
+        type: string
+        required: true
+      DOCKER_IMAGE_NAME:
+        description: Name of Docker Image
+        type: string 
+        required: true
+      IMAGE-DIGEST:
+        description: The image digest to be added to the manifests
+        type: string
+        required: true
+      IMAGE-TAG:
+        description: The image tag to be added to the manifests
+        type: string
+        required: false
+        default: ${{ github.SHA }}
+      KUSTOMIZATION-PATH:
+        description: The path to the directory containing the kustomization file, e.g. manifests/overlays/dev
+        type: string
+        required: true
+      BRANCH:
+        description: The branch to checkout and use to update the kustomize manifests
+        type: string
+        default: main
+        required: false
+      PROJECT_NUMBER:
+        description: The GCP project number
+        type: string
+        default: 1085205753965
+        required: false
+      PROJECT_ID:
+        description: The GCP project ID
+        type: string
+        default: corp-test-mgmt-anthos-3578
+        required: false
+      SERVICE_ACCOUNT_PREFIX:
+          description: The prefix of the service account, i.e wh-argo
+          type: string
+          required: true
+      K8S_REPO:
+        description: The repository containing the kustomize files to commit back to
+        type: string
+        required: false
+        default: ${{ github.REPOSITORY }}
+      K8S_CLUSTER_NAME:
+        description: The name of the cluster where the application will be deployed to.
+        type: string
+        default: ''
+        required: false
+      ARGO_APPLICATION_NAME:
+        description: The name of the argo application
+        type: string
+        required: false
+        default: ''
+
+
+permissions:
+  contents: read
+  id-token: write
+  packages: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.ENVIRONMENT }}
+    
+    steps:
+      - name: Authenticate with GCP
+        id: gcp-auth
+        uses: google-github-actions/auth@35b0e87d162680511bf346c299f71c9c5c379033  # v1.1.1
+        with:
+          workload_identity_provider: 'projects/${{ inputs.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+          service_account: '${{ inputs.SERVICE_ACCOUNT_PREFIX }}-gh@${{ inputs.PROJECT_ID }}.iam.gserviceaccount.com'
+
+      - name: Obtain GitHub App information
+        id: obtain-secrets
+        uses: google-github-actions/get-secretmanager-secrets@4d6d3dfd94110800dda8d84109cb6da0f6a5919d  # v1.0.1
+        with:
+          secrets: |-
+            github-app-id:${{ inputs.PROJECT_ID }}/${{ inputs.SERVICE_ACCOUNT_PREFIX }}-github-app-id
+            github-app-installation-id:${{ inputs.PROJECT_ID }}/${{ inputs.SERVICE_ACCOUNT_PREFIX }}-github-app-installation-id
+            github-app-private-key:${{ inputs.PROJECT_ID }}/${{ inputs.SERVICE_ACCOUNT_PREFIX }}-github-app-private-key
+
+      - name: Retrieve app token
+        id: get-app-token
+        uses: frasers-group/ec-fx-github-action-get-token-action-devops@804a73d26e4262e8248db95527b24e5456f8295e
+        with:
+          app-id: '${{ steps.obtain-secrets.outputs.github-app-id }}'
+          private-key: '${{ steps.obtain-secrets.outputs.github-app-private-key }}'
+          installation-id: '${{ steps.obtain-secrets.outputs.github-app-installation-id }}'
+
+      - name: Check out code
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
+        with:
+          token: ${{ steps.get-app-token.outputs.app-token }}
+          ref: ${{ inputs.BRANCH }}
+          repository: ${{ inputs.K8S_REPO }}
+
+
+      - name: Authenticate with GAR
+        uses: google-github-actions/auth@35b0e87d162680511bf346c299f71c9c5c379033  # v1.1.1
+        id: auth
+        with:
+          token_format: access_token
+          workload_identity_provider: 'projects/217712610684/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+          service_account: 'sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com'
+          access_token_lifetime: 600s
+
+      - name: Login to Artifact Registry
+        uses: docker/login-action@v1
+        with:
+          registry: europe-west2-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: Fetch Last 10 Images from the environment and Retag as Rollback
+        run: |
+          # Get the tags and digests for the images
+          tags=$(gcloud artifacts docker images list europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }} --sort-by=~CREATE_TIME --include-tags | awk 'NR>1 {print $3}' | grep "${{ inputs.ENVIRONMENT }}-" | head -n 10)
+          digests=$(gcloud artifacts docker images list europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}  --sort-by=~CREATE_TIME --format='value(TAGS,DIGEST)' --include-tags | grep ${{ inputs.ENVIRONMENT }}- | grep -o 'sha256:[a-f0-9]\{64\}' | head -n 10)
+          for tag in $tags; do
+              tags_to_delete+=" $tag"
+          done
+          for digest in $digests; do
+              digests_to_add+=" $digest"
+          done
+          # Loop through the list of tags to be deleted and delete them from the image
+          for tag in $tags_to_delete; do
+              gcloud artifacts docker tags delete europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:$tag
+          done
+          #tag the images with the digests
+          # Loop through the list of tags to be added and add them to the image with the corresponding rollback tag
+          i=1
+          for digest in $digests_to_add; do
+              gcloud artifacts docker tags add europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}@$digest europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.ENVIRONMENT }}-rollback-$i
+              ((i++))
+          done
+          
+      - name: Push container image to registry
+        if: inputs.PUSH_IMAGE  # Conditionally push based on the new input
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671  # v4.0.0
+        with:
+          push: false
+          load: true
+          file: ${{ inputs.DOCKERFILE_PATH }}
+          context: ${{ inputs.BUILD_CONTEXT }}
+          secrets: |
+            "github_token=${{ secrets.GITHUB_TOKEN }}"
+          tags: |
+             europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:no-environment
+
+      - name: Build the image and tag for the environemnt to be deployed to
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671  # v4.0.0
+        id: new-image
+        with:
+          load: true
+          push: false
+          file: ${{ inputs.DOCKERFILE_PATH }}
+          context: ${{ inputs.BUILD_CONTEXT }}
+          secrets: |
+            "github_token=${{ secrets.GITHUB_TOKEN }}"
+          tags: |
+             europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.ENVIRONMENT }}-active-image
+
+      - name: Push Latest Image to Google Artifact Registry
+        id: push-active-image
+        run: |
+          docker push europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.ENVIRONMENT }}-active-image
+          image_digest=$(docker inspect --format='{{index .RepoDigests 0}}' europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.ENVIRONMENT }}-active-image | cut -d@ -f2)
+          echo "::set-output name=image_digest::${image_digest}"
+        shell: bash
+
+      - name: Update manifests
+        run: |
+          yq e -i '.images[0].digest = "${{ steps.push-active-image.outputs.image_digest }}"' ${{ inputs.KUSTOMIZATION-PATH }}/kustomization.yaml
+          yq e -i '.images[0].newTag = "${{ inputs.ENVIRONMENT }}-active-image"' ${{ inputs.KUSTOMIZATION-PATH }}/kustomization.yaml
+
+      - name: Push changes
+        env:
+          FILE_TO_COMMIT: "${{ inputs.KUSTOMIZATION-PATH }}/kustomization.yaml"
+          DESTINATION_BRANCH: ${{ inputs.BRANCH }}
+          GITHUB_TOKEN: ${{ steps.get-app-token.outputs.app-token }}
+        run: |
+          export MESSAGE="Updated ${{ inputs.ENVIRONMENT }} with new image digest: ${{ inputs.IMAGE-DIGEST }}"
+          export SHA=$( git rev-parse "$DESTINATION_BRANCH":"$FILE_TO_COMMIT" )
+          export CONTENT=$( base64 -i "$FILE_TO_COMMIT" )
+          gh api --method PUT /repos/:owner/:repo/contents/"$FILE_TO_COMMIT" \
+            --field message="$MESSAGE" \
+            --field content="$CONTENT" \
+            --field encoding="base64" \
+            --field branch="$DESTINATION_BRANCH" \
+            --field sha="$SHA"
+
+  argo-sync:
+    if: inputs.ARGO_APPLICATION_NAME != ''
+    needs: deploy
+    uses: frasers-group/te-reusable-workflows-devops/.github/workflows/cd-anthos-argo-sync.yml@main
+    with:
+      PROJECT_NUMBER: ${{ inputs.PROJECT_NUMBER }}
+      PROJECT_ID: ${{ inputs.PROJECT_ID }}
+      K8S_CLUSTER_NAME: ${{ inputs.K8S_CLUSTER_NAME }}
+      ARGO_APPLICATION_NAME: ${{ inputs.ARGO_APPLICATION_NAME }}
+  
+  
+  
+  
+  
+  name: Build and Push Container Image to Registry
+
+on:
+  workflow_call:
+    outputs:
+      IMAGE_DIGEST:
+        description: Image digest of resulting docker image
+        value: ${{ jobs.build-and-push.outputs.digest }}
+    inputs:
+      DOCKER_IMAGE_NAME:
+        description: Name of Docker Image
+        type: string 
+        required: true 
+      DOCKER_IMAGE_TAG:
+        description: Tag of Docker Image
+        type: string 
+        required: true 
+      DOCKERFILE_PATH:
+        description: Path of Dockerfile
+        type: string 
+        required: true 
+      BUILD_CONTEXT:
+        description: Build Context
+        type: string 
+        default: .
+        required: false 
+      CLEAN_UP_IMAGES:
+        description: Set to true to clean up old images.  The number of images to retain can be configured using the MIN_VERSION_TO_KEEP input variable.
+        type: boolean
+        default: true
+        required: false
+      MIN_VERSIONS_TO_KEEP:
+        description: The minimum number of image versions to keep starting with the latest version. To delete all versions set this to 0.
+        type: number
+        default: 50
+        required: false
+      TRIVYIGNORES:
+        description: Comma-separated list of relative paths in repository to one or more .trivyignore files
+        type: string
+        default: ""
+        required: false
+      INCLUDE_TEST:
+        description: Whether to execute test projects located in tests folder
+        type: boolean
+        default: false
+        required: false
+      PUSH_IMAGE:
+        description: Whether to push the built image to the registry
+        required: false
+        type: boolean
+        default: true
+
+permissions: 
+  contents: read
+  packages: write
+  id-token: write
+
+env: 
+  DOCKER_REGISTRY: ghcr.io
+  ORGANISATION_NAME: frasers-group
+  TEST_TAG: test
+  REGISTRY_HOST: europe-west2-docker.pkg.dev
+  PROJECT_ID: sandbox-dallen-9871
+  REPOSITORY: demo-olufemi-registry
+  IMAGE_NAME: ${{ inputs.DOCKER_IMAGE_NAME }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.push-image.outputs.Digest }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4b4e9c3e2d4531116a6f8ba8e71fc6e2cb6e6c8c # v2.5.0
+
+      - name: Log in to GitHub container registry
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a  # v2.1.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add Source
+        if: ${{ inputs.INCLUDE_TEST }}
+        run: dotnet nuget add source --username 'github' --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name 'github' 'https://nuget.pkg.github.com/frasers-group/index.json'
+
+      - name: Run Tests
+        if: ${{ inputs.INCLUDE_TEST }}
+        shell: bash
+        run: |
+          for file in $(find . -type f \( -iname '*.tests.csproj' \) ! -path './packages/*' ! -path '*/obj/*' | grep -iv testadapter); do
+            echo Executing tests in found test library $file
+            dotnet test $file 
+          done
+          
+      - name: Authenticate with GCP
+        uses: google-github-actions/auth@35b0e87d162680511bf346c299f71c9c5c379033  # v1.1.1
+        id: auth
+        with:
+          token_format: access_token
+          workload_identity_provider: 'projects/217712610684/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+          service_account: 'sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com'
+          access_token_lifetime: 600s
+
+      - name: Login to Artifact Registry
+        uses: docker/login-action@v1
+        with:
+          registry: europe-west2-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+          
+      - name: Push container image to registry
+        if: inputs.PUSH_IMAGE  # Conditionally push based on the new input
+        id: push-image
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671  # v4.0.0
+        with:
+          push: false
+          file: ${{ inputs.DOCKERFILE_PATH }}
+          context: ${{ inputs.BUILD_CONTEXT }}
+          secrets: |
+            "github_token=${{ secrets.GITHUB_TOKEN }}"
+             
+      # - name: Push Latest Image to Google Artifact Registry
+      #   id: push-image
+      #   run: |
+      #     docker push europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:no-environment
+      #     image_digest=$(docker inspect --format='{{index .RepoDigests 0}}' europe-west2-docker.pkg.dev/sandbox-dallen-9871/demo-olufemi-registry/${{ inputs.DOCKER_IMAGE_NAME }}:no-environment | cut -d@ -f2)
+      #     echo "::set-output name=digest::$image_digest"
+      #   shell: bash
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+resource "google_iam_workload_identity_pool" "github-actions" {
+  workload_identity_pool_id = "github-actions"
+  display_name              = "github-actions"
+  description               = "Identity Pool to allow access to the clusters from GitHub Actions Pipelines"
+  disabled                  = false
+  project                   = local.project_id
+}
+
+resource "google_iam_workload_identity_pool_provider" "github-actions" {
+  workload_identity_pool_id          = google_iam_workload_identity_pool.github-actions.workload_identity_pool_id
+  workload_identity_pool_provider_id = "github-actions"
+  project                            = local.project_id
+  attribute_mapping = {
+    "google.subject"       = "assertion.sub"
+    "attribute.repository" = "assertion.repository"
+  }
+  attribute_condition = "assertion.repository_owner=='frasers-group'"
+  oidc {
+    issuer_uri = "https://token.actions.githubusercontent.com/"
+  }
+}
+
+resource "google_service_account_iam_member" "github-actions-iac" {
+  service_account_id = module.iam_service_accounts["sa-artifact-registry"].service_account_full_id
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github-actions.name}/attribute.repository/frasers-group/te-internal-test-app"
+}
+
+# Workload for GCP
+
+resource "google_service_account" "github" {
+  account_id = "github"
+  project = local.project_id
+  display_name = "GitHub"
+}
