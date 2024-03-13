@@ -80,38 +80,3 @@ Step 5: Untag the old rollback image
   
   
   
-resource "google_iam_workload_identity_pool" "github-actions" {
-  workload_identity_pool_id = "github-actions"
-  display_name              = "github-actions"
-  description               = "Identity Pool to allow access to the clusters from GitHub Actions Pipelines"
-  disabled                  = false
-  project                   = local.project_id
-}
-
-resource "google_iam_workload_identity_pool_provider" "github-actions" {
-  workload_identity_pool_id          = google_iam_workload_identity_pool.github-actions.workload_identity_pool_id
-  workload_identity_pool_provider_id = "github-actions"
-  project                            = local.project_id
-  attribute_mapping = {
-    "google.subject"       = "assertion.sub"
-    "attribute.repository" = "assertion.repository"
-  }
-  attribute_condition = "assertion.repository_owner=='frasers-group'"
-  oidc {
-    issuer_uri = "https://token.actions.githubusercontent.com/"
-  }
-}
-
-resource "google_service_account_iam_member" "github-actions-iac" {
-  service_account_id = module.iam_service_accounts["sa-artifact-registry"].service_account_full_id
-  role               = "roles/iam.workloadIdentityUser"
-  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github-actions.name}/attribute.repository/frasers-group/te-internal-test-app"
-}
-
-# Workload for GCP
-
-resource "google_service_account" "github" {
-  account_id = "github"
-  project = local.project_id
-  display_name = "GitHub"
-}
