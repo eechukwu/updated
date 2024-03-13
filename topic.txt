@@ -61,7 +61,22 @@ Step 5: Untag the old rollback image
   
   
   
-  
+  - name: Add IAM policy binding for the current repository
+  run: |
+    GCP_PROJECT_ID="your-gcp-project-id"
+    SERVICE_ACCOUNT_EMAIL="sa-artifact-registry@${GCP_PROJECT_ID}.iam.gserviceaccount.com"
+    WORKLOAD_IDENTITY_POOL_ID="github-actions" # Adjust as needed
+    REPOSITORY_NAME="frasers-group/${{ github.event.repository.name }}" # Adjust based on your GitHub org/user
+
+    # Formulate the member string for the current GitHub repository
+    MEMBER="principalSet://iam.googleapis.com/projects/${GCP_PROJECT_ID}/locations/global/workloadIdentityPools/${WORKLOAD_IDENTITY_POOL_ID}/attribute.repository/${REPOSITORY_NAME}"
+
+    # Add the IAM policy binding to allow the current repository to impersonate the service account
+    gcloud iam service-accounts add-iam-policy-binding $SERVICE_ACCOUNT_EMAIL \
+      --project=$GCP_PROJECT_ID \
+      --role="roles/iam.workloadIdentityUser" \
+      --member="$MEMBER"
+
   
   
   
