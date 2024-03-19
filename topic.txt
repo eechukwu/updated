@@ -1,21 +1,31 @@
-# locals.tf
+#------------------------------------------------------------------------------
+# Secrets
+#------------------------------------------------------------------------------
+
+Error Appname is not specified an attribute called appname is required
+module "github_actions_gcp_gar_access" {
+  source = "../modules/github_actions_gcp_gar_access"
+
+  repositories = local.repositories
+
+}
+
 
 locals {
   repositories = [
-    "app1",
-    "app2",
+    "te-internal-test-app",
     "app3"
   ]
 }
 
 
-# main.tf
-
 data "google_project" "this" {}
 
+
 resource "google_service_account" "this" {
-  account_id   = "your-service-account-id"
-  display_name = "GitHub Actions Service Account"
+  account_id   = "${var.app_name}-gh"
+  display_name = "${var.app_name}-github-actions-access"
+  description  = "This service account is used for GitHub Actions to access GCP GAR beginning with ${var.app_name}"
 }
 
 resource "google_service_account_iam_member" "this" {
@@ -25,80 +35,22 @@ resource "google_service_account_iam_member" "this" {
   member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.value}"
 }
 
-
-# variables.tf
-
-variable "repositories" {
-  description = "List of strings containing the repository names you wish to access the secrets, prefixed with the app namespace."
-  type        = list(string)
-}
-
-variable "identity_pool_name" {
-  description = "Name of the workload identity pool."
-  type        = string
-  default     = "github-actions"
-}
-
-
-# outputs.tf
-
 output "service_account_email" {
   value = google_service_account.this.email
 }
 
-
-
-# main.tf
-
-module "github_actions_gcp_gar_access" {
-  source = "./modules/github_actions_gcp_gar_access"
-
-  repositories = local.repositories
-  # identity_pool_name is optional here since it defaults to "github-actions" in the module
+variable "repositories" {
+  type        = list(any)
+  description = "List of strings containing the repostiory names you wish to access the secrets prefixed with the app namespace"
 }
 
-  
-  
-  
-  https://nordcloud.com/tech-community/google-cloud-authentication-with-workload-identity-federation-for-github-actions/
-  
-  
-  
-  
-  
-  
-  
-  - name: Add IAM policy binding for the current repository
-  run: |
-    GCP_PROJECT_ID="your-gcp-project-id"
-    SERVICE_ACCOUNT_EMAIL="sa-artifact-registry@${GCP_PROJECT_ID}.iam.gserviceaccount.com"
-    WORKLOAD_IDENTITY_POOL_ID="github-actions" # Adjust as needed
-    REPOSITORY_NAME="frasers-group/${{ github.event.repository.name }}" # Adjust based on your GitHub org/user
+variable "identity_pool_name" {
+  type        = string
+  default     = "github-actions"
+  description = "Name of the workload identity pool"
+}
 
-    # Formulate the member string for the current GitHub repository
-    MEMBER="principalSet://iam.googleapis.com/projects/${GCP_PROJECT_ID}/locations/global/workloadIdentityPools/${WORKLOAD_IDENTITY_POOL_ID}/attribute.repository/${REPOSITORY_NAME}"
-
-    # Add the IAM policy binding to allow the current repository to impersonate the service account
-    gcloud iam service-accounts add-iam-policy-binding $SERVICE_ACCOUNT_EMAIL \
-      --project=$GCP_PROJECT_ID \
-      --role="roles/iam.workloadIdentityUser" \
-      --member="$MEMBER"
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+variable "app_name" {
+  description = "The namespace prefix used for accessing secrets, i.e \"frasers-example-app\" "
+  type        = string
+}
