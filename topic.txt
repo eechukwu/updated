@@ -1,15 +1,4 @@
-data "google_project" "this" {}
-
-resource "google_service_account" "this" {
-  for_each     = toset(var.repositories)
-  account_id   = "${each.value}-gh"
-  display_name = "${each.value}-github-actions-access"
-  description  = "Service account for GitHub Actions to access GCP GAR for ${each.value}"
-}
-
-resource "google_service_account_iam_member" "this" {
-  for_each           = toset(var.repositories)
-  service_account_id = google_service_account.this[each.key].id
-  role               = "roles/iam.workloadIdentityUser"
-  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.key}"
+output "service_account_emails" {
+  description = "The emails of the service accounts used for GitHub Actions, keyed by repository name."
+  value = { for repo, sa in google_service_account.this : repo => sa.email }
 }
