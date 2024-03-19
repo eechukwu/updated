@@ -1,4 +1,17 @@
-output "service_account_emails" {
-  description = "The emails of the service accounts used for GitHub Actions, keyed by repository name."
-  value = { for repo, sa in google_service_account.this : repo => sa.email }
+google-github-actions/auth failed with: retry function failed after 4 attempts: failed to generate Google Cloud access token for sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com: (403) {
+  "error": {
+    "code": 403,
+    "message": "Permission 'iam.serviceAccounts.getAccessToken' denied on resource (or it may not exist).",
+    "status": "PERMISSION_DENIED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+        "reason": "IAM_PERMISSION_DENIED",
+        "domain": "iam.googleapis.com",
+        "metadata": {
+          "permission": "iam.serviceAccounts.getAccessToken"
+        }
+      }
+    ]
+  }
 }
