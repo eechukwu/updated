@@ -1,17 +1,4 @@
-google-github-actions/auth failed with: retry function failed after 4 attempts: failed to generate Google Cloud access token for sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com: (403) {
-  "error": {
-    "code": 403,
-    "message": "Permission 'iam.serviceAccounts.getAccessToken' denied on resource (or it may not exist).",
-    "status": "PERMISSION_DENIED",
-    "details": [
-      {
-        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
-        "reason": "IAM_PERMISSION_DENIED",
-        "domain": "iam.googleapis.com",
-        "metadata": {
-          "permission": "iam.serviceAccounts.getAccessToken"
-        }
-      }
-    ]
-  }
-}
+gcloud iam service-accounts add-iam-policy-binding sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com \
+  --member='serviceAccount:sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com' \
+  --role='roles/iam.serviceAccountTokenCreator' \
+  --project=sandbox-dallen-9871
