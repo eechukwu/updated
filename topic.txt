@@ -1,56 +1,15 @@
-#------------------------------------------------------------------------------
-# Secrets
-#------------------------------------------------------------------------------
-
-Error Appname is not specified an attribute called appname is required
-module "github_actions_gcp_gar_access" {
-  source = "../modules/github_actions_gcp_gar_access"
-
-  repositories = local.repositories
-
-}
-
-
-locals {
-  repositories = [
-    "te-internal-test-app",
-    "app3"
-  ]
-}
-
-
 data "google_project" "this" {}
 
-
 resource "google_service_account" "this" {
-  account_id   = "${var.app_name}-gh"
-  display_name = "${var.app_name}-github-actions-access"
-  description  = "This service account is used for GitHub Actions to access GCP GAR beginning with ${var.app_name}"
+  for_each     = toset(var.repositories)
+  account_id   = "${each.value}-gh"
+  display_name = "${each.value}-github-actions-access"
+  description  = "Service account for GitHub Actions to access GCP GAR for ${each.value}"
 }
 
 resource "google_service_account_iam_member" "this" {
   for_each           = toset(var.repositories)
-  service_account_id = google_service_account.this.id
+  service_account_id = google_service_account.this[each.key].id
   role               = "roles/iam.workloadIdentityUser"
-  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.value}"
-}
-
-output "service_account_email" {
-  value = google_service_account.this.email
-}
-
-variable "repositories" {
-  type        = list(any)
-  description = "List of strings containing the repostiory names you wish to access the secrets prefixed with the app namespace"
-}
-
-variable "identity_pool_name" {
-  type        = string
-  default     = "github-actions"
-  description = "Name of the workload identity pool"
-}
-
-variable "app_name" {
-  description = "The namespace prefix used for accessing secrets, i.e \"frasers-example-app\" "
-  type        = string
+  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.key}"
 }
