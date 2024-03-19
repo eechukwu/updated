@@ -1,4 +1,7 @@
-gcloud iam service-accounts add-iam-policy-binding sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com \
-  --member='serviceAccount:sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com' \
-  --role='roles/iam.serviceAccountTokenCreator' \
-  --project=sandbox-dallen-9871
+    "sa-artifact-registry" = [
+      "roles/iam.serviceAccountTokenCreator",
+      "roles/artifactregistry.admin",
+      "roles/iam.serviceAccountAdmin",         # Needed to create service accounts used for secrets access
+      "roles/iam.roleAdmin",                   # Needed to associate the service account with the iam.workloadidentityuser role
+      "roles/resourcemanager.projectIamAdmin", # Required to associate an IAM policy with a service account, used for allow access to secrets
+    ]
