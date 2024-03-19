@@ -1,5 +1,65 @@
 
-  
+  main.tf
+
+locals {
+  k8s_gcp_secrets = concat(
+    local.buying_secrets,
+    local.ecom_internal_secrets,
+    local.retail_secrets,
+    local.tech_enablement_secrets,
+    local.warehouse_secrets,
+    local.common_secrets
+  )
+}
+
+
+module "github_actions_secret_access" {
+  source = "../modules/github_actions_gcp_gar_access"
+
+  for_each = { for item in local.github_actions_gcp_secrets_access : item.app_name => item }
+
+  app_name           = each.value.app_name
+  identity_pool_name = each.value.identity_pool_name
+  repositories       = each.value.repositories
+}
+
+
+modules/github_actions_gcp_gar_access/main.tf
+data "google_project" "this" {}
+
+resource "google_service_account_iam_member" "this" {
+  for_each           = toset(var.repositories)
+  service_account_id = google_service_account.this.id
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.key}"
+}
+
+output "service_account_email" {
+  value = google_service_account.this.email
+}
+
+variable "repositories" {
+  type        = list(any)
+  description = "List of strings containing the repostiory names you wish to access the secrets prefixed with the app namespace"
+}
+
+variable "identity_pool_name" {
+  type        = string
+  default     = "github-actions"
+  description = "Name of the workload identity pool"
+}
+
+terraform {
+
+  required_version = "~> 1.3"
+
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 4.43"
+    }
+  }
+}
   
   
   
