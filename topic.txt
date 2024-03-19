@@ -1,7 +1,23 @@
-    "sa-artifact-registry" = [
-      "roles/iam.serviceAccountTokenCreator",
-      "roles/artifactregistry.admin",
-      "roles/iam.serviceAccountAdmin",         # Needed to create service accounts used for secrets access
-      "roles/iam.roleAdmin",                   # Needed to associate the service account with the iam.workloadidentityuser role
-      "roles/resourcemanager.projectIamAdmin", # Required to associate an IAM policy with a service account, used for allow access to secrets
-    ]
+variable "repositories" {
+  description = "A set of repository names"
+  type        = set(string)
+}
+
+variable "identity_pool_name" {
+  description = "The name of the identity pool"
+  type        = string
+}
+
+data "google_project" "this" {}
+
+data "google_service_account" "existing" {
+  account_id = "existing-service-account-id"
+  project    = data.google_project.this.project_id
+}
+
+resource "google_service_account_iam_member" "this" {
+  for_each           = toset(var.repositories)
+  service_account_id = data.google_service_account.existing.id
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.value}"
+}
