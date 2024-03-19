@@ -3,7 +3,7 @@
   
   
   
-  
+  https://nordcloud.com/tech-community/google-cloud-authentication-with-workload-identity-federation-for-github-actions/
   
   
   
