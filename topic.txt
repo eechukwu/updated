@@ -1,3 +1,61 @@
+# locals.tf
+
+locals {
+  repositories = [
+    "app1",
+    "app2",
+    "app3"
+  ]
+}
+
+
+# main.tf
+
+data "google_project" "this" {}
+
+resource "google_service_account" "this" {
+  account_id   = "your-service-account-id"
+  display_name = "GitHub Actions Service Account"
+}
+
+resource "google_service_account_iam_member" "this" {
+  for_each           = toset(var.repositories)
+  service_account_id = google_service_account.this.id
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.value}"
+}
+
+
+# variables.tf
+
+variable "repositories" {
+  description = "List of strings containing the repository names you wish to access the secrets, prefixed with the app namespace."
+  type        = list(string)
+}
+
+variable "identity_pool_name" {
+  description = "Name of the workload identity pool."
+  type        = string
+  default     = "github-actions"
+}
+
+
+# outputs.tf
+
+output "service_account_email" {
+  value = google_service_account.this.email
+}
+
+
+
+# main.tf
+
+module "github_actions_gcp_gar_access" {
+  source = "./modules/github_actions_gcp_gar_access"
+
+  repositories = local.repositories
+  # identity_pool_name is optional here since it defaults to "github-actions" in the module
+}
 
   
   
