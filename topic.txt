@@ -20,7 +20,7 @@ data "google_project" "this" {
 }
 
 data "google_service_account" "existing" {
-  account_id   = "sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com"
+  account_id   = "sa-artifact-registry"
   project = var.project_id
 }
 
