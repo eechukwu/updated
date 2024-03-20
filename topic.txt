@@ -1,15 +1,5 @@
-{
-    "error": {
-        "code": 401,
-        "message": "Anonymous caller does not have storage.objects.list access to the Google Cloud Storage bucket. Permission 'storage.objects.list' denied on resource (or it may not exist).",
-        "errors": [
-            {
-                "message": "Anonymous caller does not have storage.objects.list access to the Google Cloud Storage bucket. Permission 'storage.objects.list' denied on resource (or it may not exist).",
-                "domain": "global",
-                "reason": "required",
-                "locationType": "header",
-                "location": "Authorization"
-            }
-        ]
-    }
-}
+gcloud storage buckets add-iam-policy-binding  gs://"$BUCKET_NAME"-"$RANDOM_SUFFIX" --member="serviceAccount:$TF_SERVICE_ACCOUNT" --role="roles/storage.objectAdmin"
+
+tf-state-3494 bucket name 
+prefix: sandbox-dallen
+
