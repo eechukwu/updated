@@ -1,5 +1,4 @@
-gcloud storage buckets add-iam-policy-binding  gs://"$BUCKET_NAME"-"$RANDOM_SUFFIX" --member="serviceAccount:$TF_SERVICE_ACCOUNT" --role="roles/storage.objectAdmin"
-
-tf-state-3494 bucket name 
-prefix: sandbox-dallen
+gcloud storage buckets add-iam-policy-binding gs://tf-state-3494 \
+  --member="serviceAccount:sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com" \
+  --role="roles/storage.objectAdmin"
 
