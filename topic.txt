@@ -1,6 +1,32 @@
-locals {
-  repositories = [
-    "te-internal-test-app",
-    "app3"
-  ]
-}
+name: Run Terraform corp-prod-mgmt-anthos
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'corp-prod-mgmt-anthos/**'
+      - 'modules/**'
+      - 'common/**'
+
+  push:
+    branches:
+      - main
+    paths:
+      - 'corp-prod-mgmt-anthos/**'
+      - 'modules/**'
+      - 'common/**'
+    
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write # required to post plan to PR comment
+
+jobs:
+  terraform-plan:
+    uses: ./.github/workflows/tf-plan-apply.yaml
+    with:
+      environment: corp-prod-mgmt-anthos
+      gcp_workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER_PROD }}
+      gcp_service_account: ${{ vars.GCP_SERVICE_ACCOUNT_PROD }}
+    secrets: inherit
