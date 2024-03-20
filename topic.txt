@@ -1,7 +1,15 @@
-Email
-
-sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com
-
-Unique ID
-
-108846272382746046512
+{
+    "error": {
+        "code": 401,
+        "message": "Anonymous caller does not have storage.objects.list access to the Google Cloud Storage bucket. Permission 'storage.objects.list' denied on resource (or it may not exist).",
+        "errors": [
+            {
+                "message": "Anonymous caller does not have storage.objects.list access to the Google Cloud Storage bucket. Permission 'storage.objects.list' denied on resource (or it may not exist).",
+                "domain": "global",
+                "reason": "required",
+                "locationType": "header",
+                "location": "Authorization"
+            }
+        ]
+    }
+}
