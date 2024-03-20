@@ -21,3 +21,9 @@ resource "google_service_account_iam_member" "this" {
   role               = "roles/iam.workloadIdentityUser"
   member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.value}"
 }
+
+variable "identity_pool_name" {
+  description = "Name of the workload identity pool."
+  type        = string
+  default     = "github-actions"
+}
