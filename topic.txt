@@ -1,2 +1,19 @@
-
-sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com
+ Error: Failed to get existing workspaces: querying Cloud Storage failed: Get "https://storage.googleapis.com/storage/v1/b/tf-state-3494/o?alt=json&delimiter=%2F&endOffset=&includeTrailingDelimiter=false&pageToken=&prefix=sandbox-dallen%2F&prettyPrint=false&projection=full&startOffset=&versions=false": oauth2/google: status code 403: {
+│   "error": {
+│     "code": 403,
+│     "message": "Permission 'iam.serviceAccounts.getAccessToken' denied on resource (or it may not exist).",
+│     "status": "PERMISSION_DENIED",
+│     "details": [
+│       {
+│         "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+│         "reason": "IAM_PERMISSION_DENIED",
+│         "domain": "iam.googleapis.com",
+│         "metadata": {
+│           "permission": "iam.serviceAccounts.getAccessToken"
+│         }
+│       }
+│     ]
+│   }
+│ }
+│ 
+│ 
