@@ -6,6 +6,7 @@ variable "repositories" {
 variable "project_id" {
   description = "The ID of the Google Cloud project"
   type        = string
+  default = "sandbox-dallen-9871"
 }
 
 variable "identity_pool_name" {
@@ -19,7 +20,7 @@ data "google_project" "this" {
 }
 
 data "google_service_account" "existing" {
-  email   = "sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com"
+  account_id   = "sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com"
   project = var.project_id
 }
 
