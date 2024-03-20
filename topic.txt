@@ -1,2 +1,2 @@
 
-projects/217712610684/locations/global/workloadIdentityPools/github-actions/providers/github-actions
+sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com
