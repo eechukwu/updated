@@ -14,25 +14,18 @@ variable "identity_pool_name" {
   default     = "github-actions"
 }
 
-data "google_project" "this" {}
-
 data "google_project" "this" {
-  project_id = "sandbox-dallen-9871"
+  project_id = var.project_id
 }
 
 data "google_service_account" "existing" {
-  account_id = "108846272382746046512"
-  project    = data.google_project.this.project_id
+  email   = "sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com"
+  project = var.project_id
 }
 
 resource "google_service_account_iam_member" "this" {
-  for_each           = toset(local.repositories)
+  for_each           = toset(var.repositories)
   service_account_id = data.google_service_account.existing.id
   role               = "roles/iam.workloadIdentityUser"
   member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.value}"
 }
-
-
-sa-artifact-registry@sandbox-dallen-9871.iam.gserviceaccount.com
-
-
