@@ -1,51 +1,49 @@
-To organize your Terraform configuration with different local files for each department (such as locals-warehouse.tf, locals-retails.tf, and locals-buying.tf), you can simply create these files and define department-specific locals within them. Note that each locals block within a Terraform configuration must have unique keys; you cannot have the same local variable name (repositories in this case) defined in multiple places within the same Terraform configuration.
+Certainly! You can achieve the same without writing a YAML manifest file by using kubectl commands directly. Below are the steps tailored to your request:
 
-Here's how you can structure it, with an example for one department to get you started. You would replicate this approach for each department file, ensuring unique local variable names:
+1. Create a Deployment
+Use the kubectl create deployment command to create a new deployment for your test app. We'll stick with the nginx image for simplicity:
 
-For locals-warehouse.tf (Example)
-hcl
+bash
 Copy code
-locals {
-  warehouse_repositories = [
-    "warehouse-repo1",
-    "warehouse-repo2",
-    // Add more warehouse-specific repositories
-  ]
-}
-For locals-retails.tf (Another Example)
-hcl
+kubectl create deployment test-app --image=nginx
+This command creates a deployment named test-app using the nginx image.
+
+2. Expose Your Deployment (Optional)
+If you want your app to be accessible from outside the Kubernetes cluster, you can expose it as a service. For example, to expose it using NodePort:
+
+bash
 Copy code
-locals {
-  retails_repositories = [
-    "retail-repo1",
-    "retail-repo2",
-    // Add more retail-specific repositories
-  ]
-}
-Adjusting Your google_service_account_iam_member Resource
-Since you now have multiple sets of repositories organized by department, you'll need to adjust your google_service_account_iam_member resource to iterate over these different sets. One way to achieve this is to combine these sets into a single set or list that you then iterate over. Here’s an example using a combined list for simplicity:
+kubectl expose deployment test-app --type=NodePort --port=80
+This command creates a service of type NodePort for your deployment, making it accessible on a port on each node of your cluster.
 
-Adjusted Resource Block in Your Main Terraform Configuration (main.tf or similar)
-First, combine your department-specific repositories in a single local variable:
+3. Get Your Pod Name
+You need the name of the pod created by the deployment to log into it. You can find it with:
 
-hcl
+bash
 Copy code
-locals {
-  all_repositories = concat(local.warehouse_repositories, local.retails_repositories /*, Add other department repositories here*/)
-}
-Then, adjust your google_service_account_iam_member resource to use this combined list:
+kubectl get pods -l app=test-app -o name
+This command lists the names of all pods with the label app=test-app, which should include your newly created pod.
 
-hcl
+4. Log Into Your Pod
+Now, to get a shell in your container, you use kubectl exec. Replace <pod-name> with your pod’s name from the previous step:
+
+bash
 Copy code
-resource "google_service_account_iam_member" "this" {
-  for_each           = toset(local.all_repositories)
-  service_account_id = data.google_service_account.existing.id
-  role               = "roles/iam.workloadIdentityUser"
-  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.key}"
-}
-Final Note
-Ensure Uniqueness in locals: Each locals block in your separate files (locals-warehouse.tf, locals-retails.tf, locals-buying.tf, etc.) should define a uniquely named local variable that lists repositories relevant to that department.
+kubectl exec -it <pod-name> -- /bin/sh
+This will open a shell session inside your container. If the container uses a different shell or /bin/sh is not available, you might need to adjust the command accordingly.
 
-Combining Department Repositories: In your main Terraform configuration file (where you define the google_service_account_iam_member resource), combine these department-specific repository lists into a single list using the concat function in a new locals block, as shown above. This combined list is then used in the for_each attribute of the resource.
+5. Install Ping and Telnet
+Inside the container, you can attempt to install ping and telnet. The installation command depends on the base image of the container. For Debian/Ubuntu-based containers, you might use:
 
-This setup allows you to organize and manage your repositories more effectively, aligning with departmental structures while keeping your Terraform configuration clean and maintainable.
+bash
+Copy code
+apt-get update && apt-get install -y iputils-ping telnet
+And for Alpine-based containers:
+
+bash
+Copy code
+apk update && apk add iputils busybox-extras
+Note:
+Most containers, especially those designed for production, are minimalist and may not include package managers or the ability to easily install additional packages. If the base image of your container does not support installing new packages, you'll need to use a custom Docker image that includes the tools you need.
+In many cases, especially with managed Kubernetes services, you might not have root access or the necessary permissions to install new packages inside a running container. In such scenarios, building a custom image is the recommended approach.
+By following these steps, you can deploy a test application on a Kubernetes cluster, access the container, and attempt to install additional tools like ping and telnet, all without using manifest files.
