@@ -1,2 +1,4 @@
-
-
+Here are my thoughts this: 
+Store the secrets in GitHub secrets 
+Create the secret in the clusters 
+Reference the new secret in your K8S manifest file pod definition. 
