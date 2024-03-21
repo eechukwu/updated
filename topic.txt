@@ -1,40 +1,51 @@
+To organize your Terraform configuration with different local files for each department (such as locals-warehouse.tf, locals-retails.tf, and locals-buying.tf), you can simply create these files and define department-specific locals within them. Note that each locals block within a Terraform configuration must have unique keys; you cannot have the same local variable name (repositories in this case) defined in multiple places within the same Terraform configuration.
+
+Here's how you can structure it, with an example for one department to get you started. You would replicate this approach for each department file, ensuring unique local variable names:
+
+For locals-warehouse.tf (Example)
+hcl
+Copy code
+locals {
+  warehouse_repositories = [
+    "warehouse-repo1",
+    "warehouse-repo2",
+    // Add more warehouse-specific repositories
+  ]
+}
+For locals-retails.tf (Another Example)
+hcl
+Copy code
+locals {
+  retails_repositories = [
+    "retail-repo1",
+    "retail-repo2",
+    // Add more retail-specific repositories
+  ]
+}
+Adjusting Your google_service_account_iam_member Resource
+Since you now have multiple sets of repositories organized by department, you'll need to adjust your google_service_account_iam_member resource to iterate over these different sets. One way to achieve this is to combine these sets into a single set or list that you then iterate over. Here’s an example using a combined list for simplicity:
+
+Adjusted Resource Block in Your Main Terraform Configuration (main.tf or similar)
+First, combine your department-specific repositories in a single local variable:
+
+hcl
+Copy code
+locals {
+  all_repositories = concat(local.warehouse_repositories, local.retails_repositories /*, Add other department repositories here*/)
+}
+Then, adjust your google_service_account_iam_member resource to use this combined list:
+
+hcl
+Copy code
 resource "google_service_account_iam_member" "this" {
-  for_each           = toset(local.repositories)
+  for_each           = toset(local.all_repositories)
   service_account_id = data.google_service_account.existing.id
   role               = "roles/iam.workloadIdentityUser"
   member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.key}"
 }
+Final Note
+Ensure Uniqueness in locals: Each locals block in your separate files (locals-warehouse.tf, locals-retails.tf, locals-buying.tf, etc.) should define a uniquely named local variable that lists repositories relevant to that department.
 
-locals.tf 
-locals {
-  repositories = [
-    "te-internal-test-app",
-    "app3"
-  ]
-}
+Combining Department Repositories: In your main Terraform configuration file (where you define the google_service_account_iam_member resource), combine these department-specific repository lists into a single list using the concat function in a new locals block, as shown above. This combined list is then used in the for_each attribute of the resource.
 
-
-data "google_project" "this" {
-  project_id = var.project_id
-}
-
-data "google_service_account" "existing" {
-  account_id   = "sa-artifact-registry"
-  project = var.project_id
-}
-
-variable "project_id" {
-  description = "The ID of the Google Cloud project"
-  type        = string
-  default = "sandbox-dallen-9871"
-}
-
-variable "identity_pool_name" {
-  description = "Name of the workload identity pool."
-  type        = string
-  default     = "github-actions"
-}
-
-locals-warehouse.tf
-locals-retails.tf 
-locals-buying.tf 
+This setup allows you to organize and manage your repositories more effectively, aligning with departmental structures while keeping your Terraform configuration clean and maintainable.
