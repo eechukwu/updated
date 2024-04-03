@@ -1,1 +1,5 @@
 
+gkectl diagnose snapshot --kubeconfig=/home/ubuntu/kubeconfig-admin-cluster --cluster-name=prod-ecommerce-internal > gcp-report/
+
+ubuntu@prod-gke-admin-ws-230331-110505:/$ gkectl diagnose snapshot --kubeconfig=/home/ubuntu/kubeconfig-admin-cluster --cluster-name=prod-ecommerce-internal > gcp-report/
+-bash: gcp-report/: Is a directory
