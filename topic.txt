@@ -1,2 +1,1 @@
-
-During the cluster bootstrap phase, we encountered an issue where the config-management/config sync refused to install correctly. After debugging the issue, we found out that the debug script automatically installed the latest version (1.17), which for some reason is not compatible with our bootstrap script. So we had to manually set the version to 1.16, which is exactly the same version used by other clusters as well.
+Thank you for the detailed update. Please let me know how the replication goes. On our side, I will check the logs and send you a snapshot of the recent occurrence of this error so that you can take a look at it.
