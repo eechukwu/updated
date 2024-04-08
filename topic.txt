@@ -12,11 +12,33 @@
 
 
 {
-    "name": "log_shipping_errors",
-    "documentation": "${resource.label.cluster_name} | Alert for the number of times that the cluster has failed to flush logs to GCP based on a log metric",
-    "severity": "information",
-    "team": "platform",
-    "violation_duration": "0s",
-    "evaluation_missing_data": null,
-    "query": "fetch k8s_container | metric 'logging.googleapis.com/log_entry_count' | filter (resource.cluster_name) && (metric.log =~ 'st.*') | align delta(5m) | every 5m | group_by [resource.cluster_name], [value_log_entry_count_mean: mean(value.log_entry_count)]"
-  },
+	"name": "log_shipping_errors",
+	"documentation": "${resource.label.cluster_name} | Alert for the number of times that the cluster has failed to flush logs to GCP based on a log metric",
+	"severity": "information",
+	"team": "platform",
+	"violation_duration": "0s",
+	"evaluation_missing_data": null,
+	"query": "fetch k8s_container | metric 'logging.googleapis.com/log_entry_count' | filter (resource.cluster_name) && (metric.log =~ 'st.*') | align delta(5m) | every 5m | group_by [resource.cluster_name], [value_log_entry_count_mean: mean(value.log_entry_count)]"
+},
+
+Following up on this Paul, I have generated the following query from the recommendation below. Please can you confirm that you are okay with the above query. Thanks
+
+fetch k8s_container
+
+| metric 'logging.googleapis.com/log_entry_count'
+
+| filter
+
+ (resource.cluster_name == 'aovm-support-admin-lab-138')
+
+ && (metric.log =~ 'st.*')
+
+| group_by 5m, [value_log_entry_count_mean: mean(value.log_entry_count)]
+
+| every 5m
+
+| group_by [resource.cluster_name],
+
+ [value_log_entry_count_mean_mean: mean(value_log_entry_count_mean)]
+
+| absent_for 300s
