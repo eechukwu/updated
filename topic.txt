@@ -11,3 +11,11 @@
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
 
+Validate the number of replicas for each service:
+
+As part of our monthly maintenance task, we need to ensure the reliability of our deployed services by conducting regular checks to confirm that we have the appropriate number of replicas running for each app.
+
+APIs should have at least 2 replicas, while most background workers run on 1 replica. The main aim of this check is to continuously monitor anything that is running on 1 replica.
+
+Emmanuel will create a Python script to automate this check.
+Emmanuel will create a Jira task for the monthly checks.
