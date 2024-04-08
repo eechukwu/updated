@@ -20,3 +20,5 @@ fetch k8s_container
 
 
 Syntax error in filter on line 7, column 34.
+
+| filter resource.project_id != ""
