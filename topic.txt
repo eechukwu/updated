@@ -19,8 +19,4 @@ fetch k8s_container
 | group_by [resource.cluster_name, metric.log_name], [value_log_entry_count_mean: mean(value.log_entry_count)]
 
 
-Syntax error in filter on line 7, column 34.
-
-| filter resource.project_id != ""
-
-query": "fetch k8s_container | metric 'logging.googleapis.com/user/log_shipping_errors' | align delta(5m) | every 5m | group_by [resource.cluster_name], [value_log_shipping_errors_aggregate: aggregate(value.log_shipping_errors)] | condition val() > 5
+Line 4: Cannot find column or metadata name 'metric.log_name'.
