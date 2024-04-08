@@ -10,11 +10,22 @@
 | Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
-As part of our monthly check, we need to ensure that our K8S config files are backed up in GitHub. This is crucial for maintaining the stability of our environment.
+Problem Statement
+We need to make sure we’re regularly reviewing all services deployed and that we have the right
+Usually background workers have just 1 replica (with a small number of exceptions) and APIs should have at LEAST 2.
 
-Below are the steps on how to check and back up the config files:
+We need to use the naming convention to identify APIs where they may not have the right number of replicas, and validate this.
 
-Check the list of already built clusters.
-Compare that list against the K8S config maps in the GitHub repo.
-Add missing config maps. Please make sure to add the config files to the right cluster folder.
-The GitHub repo's config map can be found at the links below:
+Work Involved
+Create a script to list out all apis across all clusters and verify their replicas.
+Add this to the checks.
+
+Test Criteria
+N/A
+
+Dependencies
+N/A
+
+Apis/ui’s in most cases should have two, we should be reviewing anything that has only 1 replica.
+
+Background worker services are normal to have only 1.
