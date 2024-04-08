@@ -1,1 +1,11 @@
-Thank you for the detailed update. Please let me know how the replication goes. On our side, I will check the logs and send you a snapshot of the recent occurrence of this error so that you can take a look at it.
+|| Cluster || Addon 1 || Addon 2 || Addon 3 || ... || Addon 20 ||
+| Cluster 1 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
+| Cluster 2 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
+| Cluster 3 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
+| Cluster 4 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
+| Cluster 5 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
+| Cluster 6 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
+| Cluster 7 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
+| Cluster 8 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
+| Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
+| Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
