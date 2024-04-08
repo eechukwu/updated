@@ -13,8 +13,9 @@
 fetch k8s_container
 | metric 'logging.googleapis.com/log_entry_count'
 | filter resource.cluster_name != ''
-| filter metric.log_name =~ "st.*"
+| filter metric.log_name =~ "st.*" 
 | align mean(5m)
 | every 5m
-| group_by [resource.cluster_name], [value_log_entry_count_mean: mean(value.log_entry_count)]
+| group_by [resource.cluster_name, metric.log_name], [value_log_entry_count_mean: mean(value.log_entry_count)]
+
 
