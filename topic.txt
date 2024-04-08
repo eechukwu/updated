@@ -17,3 +17,6 @@ fetch k8s_container
 | every 5m
 | group_by [resource.cluster_name], [value_log_entry_count_mean_mean: mean(value_log_entry_count_mean)]
 | absent_for 300s
+
+
+Syntax error in filter on line 4, column 14.
