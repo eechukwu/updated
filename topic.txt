@@ -10,13 +10,75 @@
 | Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
-fetch k8s_container
-| metric 'logging.googleapis.com/log_entry_count'
-| filter resource.cluster_name != ''
-| filter metric.log_name =~ "st.*"
-| align mean(5m)
-| every 5m
-| group_by [resource.cluster_name, metric.log_name], [value_log_entry_count_mean: mean(value.log_entry_count)]
+# Define your clusters as a list of dictionaries, each containing information about a cluster.
+CLUSTERS = [
+    {"name": "non-prod-warehouse", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-warehouse"}
+]
 
+def switch_context(cluster_info):
+    """
+    Switches the kubectl context to the specified cluster.
+    """
+    import subprocess
 
-Line 4: Cannot find column or metadata name 'metric.log_name'.
+    context = cluster_info['context']
+    cmd = ['kubectl', 'config', 'use-context', context]
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = proc.communicate()
+
+    if proc.returncode != 0:
+        print(f"Error switching to context {context}: {err.decode()}")
+        return False
+
+    print(f"Switched to context {context}")
+    return True
+import subprocess
+from clusters import CLUSTERS, switch_context  # Import from clusters.py
+
+def get_namespaces():
+    """
+    Retrieves a list of all namespaces in the Kubernetes cluster.
+    """
+    cmd = ['kubectl', 'get', 'namespaces', '-o', 'jsonpath={.items[*].metadata.name}']
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Error retrieving namespaces: {result.stderr}")
+        return []
+    return result.stdout.split()
+
+def check_empty_namespaces(namespaces):
+    """
+    Checks and displays namespaces with no pods.
+    """
+    empty_namespaces = []
+
+    for namespace in namespaces:
+        cmd = ['kubectl', 'get', 'pods', '-n', namespace, '-o', 'jsonpath={.items}']
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f"Error retrieving pods in namespace {namespace}: {result.stderr}")
+            continue
+
+        # Check if the namespace has no pods
+        if not result.stdout.strip():
+            empty_namespaces.append(namespace)
+
+    return empty_namespaces
+
+# Main execution
+for cluster in CLUSTERS:
+    if switch_context(cluster):
+        print(f"Checking cluster: {cluster['name']}")
+        namespaces = get_namespaces()
+        empty_namespaces = check_empty_namespaces(namespaces)
+
+        if empty_namespaces:
+            print(f"Namespaces with no pods in cluster {cluster['name']}:")
+            for namespace in empty_namespaces:
+                print(namespace)
+        else:
+            print(f"No empty namespaces found in cluster {cluster['name']}.")
+    else:
+        print(f"Failed to switch to cluster {cluster['name']}")
+    print("-" * 40)
+
