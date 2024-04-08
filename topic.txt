@@ -10,3 +10,4 @@
 | Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
+We need to update our monthly checks to ensure we’re checking that we ahve got recent backups of our kubernetes config files stored in GitHub (with secrets redacted).
