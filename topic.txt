@@ -10,4 +10,11 @@
 | Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
-We need to update our monthly checks to ensure we’re checking that we ahve got recent backups of our kubernetes config files stored in GitHub (with secrets redacted).
+As part of our monthly check, we need to ensure that our K8S config files are backed up in GitHub. This is crucial for maintaining the stability of our environment.
+
+Below are the steps on how to check and back up the config files:
+
+Check the list of already built clusters.
+Compare that list against the K8S config maps in the GitHub repo.
+Add missing config maps.
+The GitHub repo config map can be found here: [insert link here]
