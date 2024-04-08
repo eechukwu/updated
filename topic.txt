@@ -19,3 +19,4 @@ fetch k8s_container
 | group_by [resource.cluster_name, metric.log_name], [value_log_entry_count_mean: mean(value.log_entry_count)]
 
 
+Syntax error in filter on line 7, column 34.
