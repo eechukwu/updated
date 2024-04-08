@@ -16,5 +16,5 @@ Below are the steps on how to check and back up the config files:
 
 Check the list of already built clusters.
 Compare that list against the K8S config maps in the GitHub repo.
-Add missing config maps.
-The GitHub repo config map can be found here: [insert link here]
+Add missing config maps. Please make sure to add the config files to the right cluster folder.
+The GitHub repo's config map can be found at the links below:
