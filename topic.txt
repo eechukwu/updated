@@ -10,22 +10,4 @@
 | Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
-Problem Statement
-We need to make sure we’re regularly reviewing all services deployed and that we have the right
-Usually background workers have just 1 replica (with a small number of exceptions) and APIs should have at LEAST 2.
 
-We need to use the naming convention to identify APIs where they may not have the right number of replicas, and validate this.
-
-Work Involved
-Create a script to list out all apis across all clusters and verify their replicas.
-Add this to the checks.
-
-Test Criteria
-N/A
-
-Dependencies
-N/A
-
-Apis/ui’s in most cases should have two, we should be reviewing anything that has only 1 replica.
-
-Background worker services are normal to have only 1.
