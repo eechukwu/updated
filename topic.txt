@@ -12,12 +12,8 @@
 
 fetch k8s_container
 | metric 'logging.googleapis.com/log_entry_count'
-| filter (resource.cluster_name != "" AND metric.log =~ 'st.*')
-| group_by [resource.cluster_name, period(5m)], 
-    [value_log_entry_count_mean: mean(value.log_entry_count)]
+| filter (resource.cluster_name != "" && metric.log_name =~ "st.*")
+| align mean(5m)
 | every 5m
-| group_by [resource.cluster_name], 
-    [value_log_entry_count_mean_mean: mean(value_log_entry_count_mean)]
-| absent_for 300s
+| group_by [resource.cluster_name], [value_log_entry_count_mean: mean(value.log_entry_count)]
 
-Syntax error in filter on line 4, column 34.
