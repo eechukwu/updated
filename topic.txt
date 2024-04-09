@@ -11,4 +11,12 @@
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
           
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
+import sys
+import os
+# Make sure to import other necessary modules here
+
+# Add the 'k8s/common' directory to the sys.path
+script_dir = os.path.dirname(__file__)  # Get the directory where the script is located
+common_path = os.path.join(script_dir, '..', 'common')  # Path to the 'common' directory
+sys.path.append(os.path.abspath(common_path))  # Add 'common' directory to sys.path
+
