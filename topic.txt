@@ -11,78 +11,224 @@
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
 
-import subprocess
-import sys
-import os
 
-# Setup the path to the common directory to import clusters.py
-common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
-sys.path.insert(0, os.path.abspath(common_dir))
-
-from clusters import CLUSTERS, switch_context, ANSIColors
-
-ignore_namespaces = [
-    "anthos-identity-service", "argocd", "argoworkflows", "bigip", "cert-manager",
-    "config-management-system", "external-secrets", "gatekeeper-system", "gke-connect",
-    "gke-managed-metrics-server", "gke-system", "kube-system"
+cluster.py
+# Define your clusters as a list of dictionaries, each containing information about a cluster.
+CLUSTERS = [
+    {"name": "non-prod-warehouse", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-warehouse"},
+    {"name": "non-prod-ecommerce-internal", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-ecommerce-internal"},
+    {"name": "non-prod-retail", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-retail"},
+    {"name": "non-prod-tech-enablement", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-tech-enablement"},
+    {"name": "non-prod-buying", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-buying"}
 ]
 
-def run_kubectl_command(cmd):
+def switch_context(cluster_info):
     """
-    Runs a given kubectl command and prints its output.
+    Switches the kubectl context to the specified cluster.
     """
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        return result.stdout
-    except subprocess.CalledProcessError as e:
-        print(f"{ANSIColors.RED}Command failed: {' '.join(cmd)}\n{e.stderr}{ANSIColors.ENDC}")
+    import subprocess
 
-def filter_namespaces(output):
+    context = cluster_info['context']
+    cmd = ['kubectl', 'config', 'use-context', context]
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = proc.communicate()
+
+    if proc.returncode != 0:
+        print(f"Error switching to context {context}: {err.decode()}")
+        return False
+
+    print(f"Switched to context {context}")
+    return True
+
+# ANSI escape codes for coloring text.
+class ANSIColors:
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    BLUE = '\033[94m'
+    MAGENTA = '\033[95m'
+    CYAN = '\033[96m'
+    WHITE = '\033[97m'
+    ENDC = '\033[0m'
+	
+	
+import subprocess
+import json
+
+# Define your clusters as a list of dictionaries, each containing information about a cluster.
+CLUSTERS = [
+    {"name": "non-prod-warehouse", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-warehouse"}
+]
+
+# ANSI escape codes for coloring text.
+class ANSIColors:
+    RED = '\033[91m'
+    ENDC = '\033[0m'
+    # Add more colors if needed
+
+def switch_context(cluster_info):
     """
-    Filters out lines that include any of the namespaces to ignore.
+    Switches the kubectl context to the specified cluster.
     """
-    lines = output.split('\n')
-    filtered_lines = [line for line in lines if not any(ns in line for ns in ignore_namespaces)]
-    return '\n'.join(filtered_lines)
+    context = cluster_info['context']
+    cmd = ['kubectl', 'config', 'use-context', context]
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = proc.communicate()
 
-def print_cluster_info():
-    for cluster in CLUSTERS:
-        if switch_context(cluster):
-            print(f"{ANSIColors.CYAN}Information for cluster: {cluster['name']}{ANSIColors.ENDC}")
-            
-            # Component statuses
-            print(f"{ANSIColors.GREEN}Component Statuses:{ANSIColors.ENDC}")
-            print(run_kubectl_command(['kubectl', 'get', 'componentstatuses']))
+    if proc.returncode != 0:
+        print(f"Error switching to context {context}: {err.decode()}")
+        return False
 
-            # Nodes
-            print(f"{ANSIColors.GREEN}Nodes:{ANSIColors.ENDC}")
-            print(run_kubectl_command(['kubectl', 'get', 'nodes']))
+    print(f"Switched to context {context}")
+    return True
 
-            # Deployments
-            print(f"{ANSIColors.GREEN}Deployments:{ANSIColors.ENDC}")
-            deployments_output = run_kubectl_command(['kubectl', 'get', 'deployments', '--all-namespaces'])
-            print(filter_namespaces(deployments_output))
+def get_ingresses():
+    """
+    Fetches all ingresses in the current kubectl context.
+    """
+    cmd = ['kubectl', 'get', 'ing', '-o', 'json', '--all-namespaces']
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = proc.communicate()
 
-            # Pods
-            print(f"{ANSIColors.GREEN}Pods:{ANSIColors.ENDC}")
-            pods_output = run_kubectl_command(['kubectl', 'get', 'pods', '--all-namespaces'])
-            print(filter_namespaces(pods_output))
+    if proc.returncode != 0:
+        print(f"Error fetching ingresses: {err.decode()}")
+        return []
 
-            # Pods with Restart Counts
-            print(f"{ANSIColors.GREEN}Pods by Restart Count:{ANSIColors.ENDC}")
-            pods_restarts_output = run_kubectl_command([
-                'kubectl', 'get', 'pods', '--all-namespaces', 
-                '-o', 'custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,RESTARTS:.status.containerStatuses[0].restartCount'
-            ])
-            print(filter_namespaces(pods_restarts_output))
+    ingresses = json.loads(out.decode())['items']
+    urls = []
+    for ing in ingresses:
+        for rule in ing['spec']['rules']:
+            host = rule['host']
+            if 'http' not in host:
+                host = 'https://' + host
+            urls.append(host + '/health')
 
-            # Top Pods by CPU usage
-            print(f"{ANSIColors.GREEN}Top Pods by CPU:{ANSIColors.ENDC}")
-            print(run_kubectl_command(['kubectl', 'top', 'pods', '--all-namespaces', '--sort-by=cpu']))
+    return urls
 
-            # Top Nodes by CPU usage
-            print(f"{ANSIColors.GREEN}Top Nodes by CPU:{ANSIColors.ENDC}")
-            print(run_kubectl_command(['kubectl', 'top', 'nodes']))
+def check_endpoints(urls):
+    """
+    Checks each endpoint to ensure it's up and running.
+    """
+    status_200 = []
+    status_404 = []
+    other_statuses = []
+    unexpected_outputs = []
+
+    for url in urls:
+        cmd = f"curl -k -s -o /dev/null -w '%{{http_code}}' {url}"
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        out, err = proc.communicate()
+
+        http_status = out.decode().strip().strip("'")
+
+        try:
+            http_status_code = int(http_status)
+        except ValueError:
+            unexpected_outputs.append(f"{ANSIColors.RED}Unexpected output for {url}: {http_status}{ANSIColors.ENDC}")
+            continue
+
+        message = f"{url}: '{http_status_code}'"
+        if http_status_code == 200:
+            status_200.append(f"{message} - SSL Working Fine")
+        elif http_status_code == 404:
+            status_404.append(f"{ANSIColors.RED}{message} - Error 404 returned, please investigate.{ANSIColors.ENDC}")
+        else:
+            other_statuses.append(f"{ANSIColors.RED}{message} - Error {http_status_code} returned, please investigate.{ANSIColors.ENDC}")
+
+    print("\n--- Status 200 ---")
+    for message in status_200:
+        print(message)
+
+    print("\n--- Status 404 ---")
+    for message in status_404:
+        print(message)
+
+    print("\n--- Other Statuses ---")
+    for message in other_statuses:
+        print(message)
+
+    print("\n--- Unexpected Outputs ---")
+    for message in unexpected_outputs:
+        print(message)
+
+def main():
+    for cluster_info in CLUSTERS:
+        if switch_context(cluster_info):
+            urls = get_ingresses()
+            if urls:
+                check_endpoints(urls)
+            else:
+                print(f"No ingresses found in cluster: {cluster_info['name']}")
+        else:
+            print(f"Skipping checks for cluster: {cluster_info['name']}")
 
 if __name__ == "__main__":
-    print_cluster_info()
+    main()
+]
+
+
+Switched to context connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-warehouse
+
+--- Status 200 ---
+https://dev-wh-container-checker-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-container-checker-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-highjump-gateway-ui.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-highjump-gateway-ui.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-highjump-goodsin-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-highjump-goodsin-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-highjump-inventory-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-highjump-inventory-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-highjump-proxy-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-highjump-proxy-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-highjump-tunnelling-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-highjump-tunnelling-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-pick-by-scanner-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-pick-by-scanner-ui.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-putwall-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-putwall-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-reform-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-reform-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-self-service.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-self-service.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-userevents-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://dev-wh-userevents-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://test-wh-container-checker-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://test-wh-container-checker-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://test-wh-highjump-goodsin-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://test-wh-highjump-goodsin-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://test-wh-highjump-tunnelling-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://test-wh-highjump-tunnelling-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://test-wh-pick-by-scanner-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://test-wh-pick-by-scanner-ui.anthos.sportski.com/health: '200' - SSL Working Fine
+https://test-wh-putwall-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://test-wh-putwall-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://test-wh-reform-api.anthos.sportski.com/health: '200' - SSL Working Fine
+https://test-wh-reform-api.anthos.sportski.com/health: '200' - SSL Working Fine
+
+--- Status 404 ---
+https://argo-warehouse-test.anthos.sportski.com/health: '404' - Error 404 returned, please investigate.
+https://dev-wh-kronos-api.anthos.sportski.com/health: '404' - Error 404 returned, please investigate.
+https://dev-wh-kronos-api.anthos.sportski.com/health: '404' - Error 404 returned, please investigate.
+https://dev-wh-self-service-api.anthos.sportski.com/health: '404' - Error 404 returned, please investigate.
+https://dev-wh-self-service-api.anthos.sportski.com/health: '404' - Error 404 returned, please investigate.
+https://test-wh-kronos-api.anthos.sportski.com/health: '404' - Error 404 returned, please investigate.
+https://test-wh-kronos-api.anthos.sportski.com/health: '404' - Error 404 returned, please investigate.
+https://test-wh-self-service-api.anthos.sportski.com/health: '404' - Error 404 returned, please investigate.
+https://test-wh-self-service-api.anthos.sportski.com/health: '404' - Error 404 returned, please investigate.
+
+--- Other Statuses ---
+https://apache-test-f5.anthos.sportski.com/health: '0' - Error 0 returned, please investigate.
+https://dev-wh-amr-sync-api.anthos.sportski.com/health: '503' - Error 503 returned, please investigate.
+https://dev-wh-amr-sync-api.anthos.sportski.com/health: '503' - Error 503 returned, please investigate.
+https://test-wh-amr-sync-api.anthos.sportski.com/health: '0' - Error 0 returned, please investigate.
+https://test-wh-amr-sync-api.anthos.sportski.com/health: '0' - Error 0 returned, please investigate.
+https://test-wh-highjump-gateway-ui.anthos.sportski.com/health: '0' - Error 0 returned, please investigate.
+https://test-wh-highjump-gateway-ui.anthos.sportski.com/health: '0' - Error 0 returned, please investigate.
+https://test-wh-highjump-inventory-api.anthos.sportski.com/health: '0' - Error 0 returned, please investigate.
+https://test-wh-highjump-inventory-api.anthos.sportski.com/health: '0' - Error 0 returned, please investigate.
+https://test-wh-highjump-proxy-api.anthos.sportski.com/health: '0' - Error 0 returned, please investigate.
+https://test-wh-highjump-proxy-api.anthos.sportski.com/health: '0' - Error 0 returned, please investigate.
+https://test-wh-self-service.anthos.sportski.com/health: '0' - Error 0 returned, please investigate.
+https://test-wh-self-service.anthos.sportski.com/health: '0' - Error 0 returned, please investigate.
+https://test-wh-userevents-api.anthos.sportski.com/health: '0' - Error 0 returned, please investigate.
+https://test-wh-userevents-api.anthos.sportski.com/health: '0' - Error 0 returned, please investigate.
