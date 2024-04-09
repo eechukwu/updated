@@ -12,78 +12,83 @@
 
 
 import subprocess
-import json
-import sys
+import base64
 import os
+import sys
+from datetime import datetime
 
-# Setup the path to the common directory to import clusters.py
+# Setup the path to the common directory
 common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
 sys.path.insert(0, os.path.abspath(common_dir))
 
-from clusters import CLUSTERS, switch_context, ANSIColors
+from clusters import CLUSTERS, switch_context
 
-def get_deployments():
+def get_certificate_expiration_date(cert_data_base64):
     """
-    Retrieves deployments in the current Kubernetes context,
-    excluding certain namespaces and categorizing based on the replica count and naming convention.
-    Includes the replica count in the output.
+    Extracts and returns the expiration date of a certificate.
     """
-    ignore_namespaces = [
-        "anthos-identity-service", "argocd", "argoworkflows", "bigip", "cert-manager",
-        "config-management-system", "external-secrets", "gatekeeper-system", "gke-connect",
-        "gke-managed-metrics-server", "gke-system", "kube-system"
-    ]
-    cmd = ['kubectl', 'get', 'deployments', '--all-namespaces', '-o', 'json']
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        cert_data_bytes = base64.b64decode(cert_data_base64)
+        cert_data_str = cert_data_bytes.decode('utf-8')
+        openssl_path = r'C:\Program Files\Git\mingw64\bin\openssl.exe'
+        cert_end_date = subprocess.check_output(
+            [openssl_path, 'x509', '-noout', '-enddate'],
+            input=cert_data_str, text=True
+        )
+        expiration_date = cert_end_date.split('=')[1].strip()
+        expiration_date = datetime.strptime(expiration_date, '%b %d %H:%M:%S %Y %Z')
+        return expiration_date
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing OpenSSL command: {e}")
+        return None
+    except Exception as e:
+        print(f"Error decoding certificate: {e}")
+        return None
 
-    if result.returncode != 0:
-        print(f"{ANSIColors.RED}Error retrieving deployments: {result.stderr}{ANSIColors.ENDC}")
-        return [], []
+def print_certificates_for_cluster(cluster_info):
+    """
+    Prints the certificates for the given cluster along with their expiration dates.
+    """
+    # ANSI color codes
+    CYAN = '\033[36m'
+    RESET = '\033[0m'
 
-    deployments = json.loads(result.stdout)
+    certificates = []
 
-    api_deployments_one_replica = []
-    other_deployments_one_replica = []
+    if not switch_context(cluster_info):
+        return
 
-    for item in deployments['items']:
-        namespace = item['metadata']['namespace']
-        if namespace in ignore_namespaces:
-            continue
+    try:
+        cmd = [
+            'kubectl', 'get', 'secret', '--namespace=gke-system',
+            '--field-selector', 'type=kubernetes.io/tls',
+            r'-o=jsonpath={range .items[*]}{.metadata.name}{"\t"}{.data.tls\.crt}{"\n"}{end}'
+        ]
+        cert_data_list = subprocess.check_output(cmd, text=True).splitlines()
 
-        name = item['metadata']['name']
-        replicas = item['spec'].get('replicas', 0)
-        ready_replicas = item['status'].get('readyReplicas', 0)
-
-        if replicas == 1 and ready_replicas == 1:
-            deployment_detail = f"{namespace}/{name} - {replicas} replica(s)"
-            if name.endswith('api') or name.endswith('Api'):
-                api_deployments_one_replica.append(deployment_detail)
+        for cert_data in cert_data_list:
+            name, cert_data_base64 = cert_data.split('\t')
+            expiration_date = get_certificate_expiration_date(cert_data_base64)
+            if expiration_date:
+                certificates.append((name, expiration_date))
             else:
-                other_deployments_one_replica.append(deployment_detail)
+                certificates.append((name, None))
 
-    return api_deployments_one_replica, other_deployments_one_replica
+        # Sort certificates by expiration date for the current cluster
+        sorted_certificates = sorted(certificates, key=lambda x: x[1] if x[1] is not None else datetime.max)
+        
+        # Print the sorted certificates including cluster information with color
+        print(f"\n{CYAN}Certificates for cluster: {cluster_info['name']}{RESET}")
+        print(f"{'Certificate Name':<40} | {'Expiration Date':<20}")
+        print("-" * 61)
 
-def print_table(deployments, title):
-    if deployments:
-        print(f"{ANSIColors.GREEN}{title}:{ANSIColors.ENDC}")
-        headers = ['Namespace/Deployment', 'Replicas']
-        col_width = max(len(dep) for dep in deployments + headers) + 10  # Adjusted for better formatting
-        print(f"{headers[0].ljust(col_width)} | {headers[1]}")
-        print('-' * (col_width + 3 + len(headers[1])))
-        for dep in deployments:
-            namespace_deployment, replicas = dep.rsplit(' - ', 1)
-            print(f"{namespace_deployment.ljust(col_width)} | {replicas}")
-    else:
-        print(f"{ANSIColors.RED}No {title.lower()} found.{ANSIColors.ENDC}")
+        for name, expiration_date in sorted_certificates:
+            date_str = expiration_date.strftime("%d %B %Y at %I:%M%p") if expiration_date else "Error checking certificate"
+            print(f"{name:<40} | {date_str:<20}")
 
-def main():
-    for cluster in CLUSTERS:
-        if switch_context(cluster):
-            print(f"\n{ANSIColors.CYAN}Checking cluster: {cluster['name']}{ANSIColors.ENDC}")
-            api_deployments, other_deployments = get_deployments()
+    except subprocess.CalledProcessError as e:
+        print(f"Error checking certificates on cluster {cluster_info['context']}: {e}")
 
-            print_table(api_deployments, "API Deployments running one replica")
-            print_table(other_deployments, "Other Deployments running one replica")
-
-if __name__ == "__main__":
-    main()
+# Iterate over clusters and print certificates
+for cluster in CLUSTERS:
+    print_certificates_for_cluster(cluster)
