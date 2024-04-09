@@ -10,7 +10,6 @@
 | Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
-
 import subprocess
 import base64
 import os
@@ -21,7 +20,7 @@ from datetime import datetime
 common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
 sys.path.insert(0, os.path.abspath(common_dir))
 
-from clusters import CLUSTERS, switch_context
+from clusters import CLUSTERS, switch_context, ANSIColors
 
 def get_certificate_expiration_date(cert_data_base64):
     """
@@ -30,7 +29,7 @@ def get_certificate_expiration_date(cert_data_base64):
     try:
         cert_data_bytes = base64.b64decode(cert_data_base64)
         cert_data_str = cert_data_bytes.decode('utf-8')
-        openssl_path = r'C:\Program Files\Git\mingw64\bin\openssl.exe'
+        openssl_path = r'C:\Program Files\Git\mingw64\bin\openssl.exe'  # Ensure this path is correct for your setup
         cert_end_date = subprocess.check_output(
             [openssl_path, 'x509', '-noout', '-enddate'],
             input=cert_data_str, text=True
@@ -39,20 +38,16 @@ def get_certificate_expiration_date(cert_data_base64):
         expiration_date = datetime.strptime(expiration_date, '%b %d %H:%M:%S %Y %Z')
         return expiration_date
     except subprocess.CalledProcessError as e:
-        print(f"Error executing OpenSSL command: {e}")
+        print(f"{ANSIColors.RED}Error executing OpenSSL command: {e}{ANSIColors.ENDC}")
         return None
     except Exception as e:
-        print(f"Error decoding certificate: {e}")
+        print(f"{ANSIColors.RED}Error decoding certificate: {e}{ANSIColors.ENDC}")
         return None
 
 def print_certificates_for_cluster(cluster_info):
     """
     Prints the certificates for the given cluster along with their expiration dates.
     """
-    # ANSI color codes
-    CYAN = '\033[36m'
-    RESET = '\033[0m'
-
     certificates = []
 
     if not switch_context(cluster_info):
@@ -78,16 +73,16 @@ def print_certificates_for_cluster(cluster_info):
         sorted_certificates = sorted(certificates, key=lambda x: x[1] if x[1] is not None else datetime.max)
         
         # Print the sorted certificates including cluster information with color
-        print(f"\n{CYAN}Certificates for cluster: {cluster_info['name']}{RESET}")
-        print(f"{'Certificate Name':<40} | {'Expiration Date':<20}")
-        print("-" * 61)
+        print(f"\n{ANSIColors.CYAN}Certificates for cluster: {cluster_info['name']}{ANSIColors.ENDC}")
+        print(f"{ANSIColors.GREEN}{'Certificate Name':<40} | {'Expiration Date':<20}{ANSIColors.ENDC}")
+        print(f"{ANSIColors.GREEN}{'-' * 61}{ANSIColors.ENDC}")
 
         for name, expiration_date in sorted_certificates:
             date_str = expiration_date.strftime("%d %B %Y at %I:%M%p") if expiration_date else "Error checking certificate"
             print(f"{name:<40} | {date_str:<20}")
 
     except subprocess.CalledProcessError as e:
-        print(f"Error checking certificates on cluster {cluster_info['context']}: {e}")
+        print(f"{ANSIColors.RED}Error checking certificates on cluster {cluster_info['context']}: {e}{ANSIColors.ENDC}")
 
 # Iterate over clusters and print certificates
 for cluster in CLUSTERS:
