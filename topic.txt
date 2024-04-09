@@ -12,6 +12,124 @@
 
           
 
-PS C:\Users\echukwu\OneDrive - Frasers Group\Desktop> & C:/Users/echukwu/AppData/Local/Programs/Python/Python311/python.exe "c:/Users/echukwu/OneDrive - Frasers Group/Desktop/ProjectFiles/te-shared-script/k8s/weekly-check/namespace_checker.py"
+import subprocess
+import base64
+import os
+import sys
+
+common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
+sys.path.insert(0, os.path.abspath(common_dir))
+
+from datetime import datetime
+from clusters import CLUSTERS, switch_context  # Import from clusters.py
+
+def get_certificate_expiration_date(cert_data_base64):
+    """
+    Extracts and returns the expiration date of a certificate.
+    """
+    try:
+        cert_data_bytes = base64.b64decode(cert_data_base64)
+        cert_data_str = cert_data_bytes.decode('utf-8')  # Convert bytes to string
+        openssl_path = r'C:\Program Files\Git\mingw64\bin\openssl.exe'
+        cert_end_date = subprocess.check_output(
+            [openssl_path, 'x509', '-noout', '-enddate'],
+            input=cert_data_str, text=True  # Use the string here
+        )
+        expiration_date = cert_end_date.split('=')[1].strip()
+        expiration_date = datetime.strptime(expiration_date, '%b %d %H:%M:%S %Y %Z')
+        return expiration_date
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing OpenSSL command: {e}")
+        return None
+    except Exception as e:
+        print(f"Error decoding certificate: {e}")
+        return None
+
+def check_certificate_renewal(cluster_info):
+    """
+    Checks the renewal date of all certificates running on the cluster and returns them.
+    """
+    certificates = []
+
+    if not switch_context(cluster_info):
+        return certificates
+
+    try:
+        cmd = [
+            'kubectl', 'get', 'secret', '--namespace=gke-system',
+            '--field-selector', 'type=kubernetes.io/tls',
+            r'-o=jsonpath={range .items[*]}{.metadata.name}{"\t"}{.data.tls\.crt}{"\n"}{end}'
+        ]
+        cert_data_list = subprocess.check_output(cmd, text=True).splitlines()
+
+        for cert_data in cert_data_list:
+            name, cert_data_base64 = cert_data.split('\t')
+            expiration_date = get_certificate_expiration_date(cert_data_base64)
+            if expiration_date:
+                certificates.append((name, expiration_date))
+            else:
+                certificates.append((name, None))
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error checking certificates on cluster {cluster_info['context']}: {e}")
+
+    return certificates
+
+# Collecting all certificates from all clusters
+all_certificates = []
+for cluster in CLUSTERS:
+    all_certificates.extend(check_certificate_renewal(cluster))
+
+# Sorting the certificates by expiration date
+sorted_certificates = sorted(all_certificates, key=lambda x: x[1] if x[1] is not None else datetime.max)
+
+# Print the sorted certificates
+print(f"\nSorted Certificates by Expiration Date:")
+print(f"{'Certificate Name':<40} | {'Expiration Date':<20}")
+print("-" * 63)
+
+for name, expiration_date in sorted_certificates:
+    date_str = expiration_date.strftime("%d %B %Y by %I:%M%p") if expiration_date else "Error checking certificate"
+    print(f"{name:<40} | {date_str:<20}")
+
 Switched to context connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-warehouse
-Checking cluster: non-prod-warehouse
+Switched to context connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-ecommerce-internal
+Switched to context connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-retail
+
+Sorted Certificates by Expiration Date:
+Certificate Name                         | Expiration Date
+---------------------------------------------------------------       
+star-anthos-crt                          | 29 February 2024 by 03:51PM
+dev-wh-pick-by-scanner-ui                | 21 November 2024 by 05:40PM
+test-wh-pick-by-scanner-ui               | 21 November 2024 by 05:40PM
+dev-wh-pick-by-scanner-api               | 22 November 2024 by 01:17PM
+test-wh-pick-by-scanner-api              | 22 November 2024 by 01:17PM
+argo-crt                                 | 24 May 2025 by 12:59PM     
+dev-wh-container-checker-api-ssl         | 24 May 2025 by 01:07PM     
+test-wh-container-checker-api-ssl        | 24 May 2025 by 01:07PM     
+argo-crt                                 | 08 March 2026 by 04:45PM   
+dev-dev-wh-amr-sync-api                  | 08 March 2026 by 04:45PM   
+dev-dev-wh-highjump-proxy-api-ssl        | 08 March 2026 by 04:45PM   
+dev-dev-wh-highjump-tunnelling-api-ssl   | 08 March 2026 by 04:45PM   
+dev-wh-highjump-gateway-ui-ssl           | 08 March 2026 by 04:45PM   
+dev-wh-highjump-goodsin-api              | 08 March 2026 by 04:45PM   
+dev-wh-highjump-inventory-api-ssl        | 08 March 2026 by 04:45PM   
+dev-wh-kronos-api                        | 08 March 2026 by 04:45PM   
+dev-wh-putwall-api-ssl                   | 08 March 2026 by 04:45PM   
+dev-wh-reform-api-ssl                    | 08 March 2026 by 04:45PM   
+dev-wh-self-service                      | 08 March 2026 by 04:45PM   
+dev-wh-self-service-api                  | 08 March 2026 by 04:45PM
+test-test-wh-amr-sync-api                | 08 March 2026 by 04:45PM
+test-test-wh-highjump-proxy-api-ssl      | 08 March 2026 by 04:45PM
+test-test-wh-highjump-tunnelling-api-ssl | 08 March 2026 by 04:45PM
+test-wh-highjump-gateway-ui-ssl          | 08 March 2026 by 04:45PM
+test-wh-highjump-goodsin-api             | 08 March 2026 by 04:45PM
+test-wh-highjump-inventory-api-ssl       | 08 March 2026 by 04:45PM
+test-wh-kronos-api                       | 08 March 2026 by 04:45PM
+test-wh-putwall-api-ssl                  | 08 March 2026 by 04:45PM
+test-wh-reform-api-ssl                   | 08 March 2026 by 04:45PM
+test-wh-self-service                     | 08 March 2026 by 04:45PM
+test-wh-self-service-api                 | 08 March 2026 by 04:45PM
+argo-crt                                 | 08 March 2026 by 04:45PM
+dev-rt-external-trade-submitter-api-ssl  | 08 March 2026 by 04:45PM
+test-rt-external-trade-submitter-api-ssl | 08 March 2026 by 04:45PM
