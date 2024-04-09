@@ -12,6 +12,59 @@
 
           
 
-# Correct the path based on the actual directory name 'monthly-check'
+import subprocess
+import os
+import sys
+
 common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
 sys.path.insert(0, os.path.abspath(common_dir))
+
+from clusters import CLUSTERS, switch_context
+
+
+def get_namespaces():
+    """
+    Retrieves a list of all namespaces in the Kubernetes cluster.
+    """
+    cmd = ['kubectl', 'get', 'namespaces', '-o', 'jsonpath={.items[*].metadata.name}']
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Error retrieving namespaces: {result.stderr}")
+        return []
+    return result.stdout.split()
+
+def check_empty_namespaces(namespaces):
+    """
+    Checks and displays namespaces with no pods.
+    """
+    empty_namespaces = []
+
+    for namespace in namespaces:
+        cmd = ['kubectl', 'get', 'pods', '-n', namespace, '-o', 'jsonpath={.items}']
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f"Error retrieving pods in namespace {namespace}: {result.stderr}")
+            continue
+
+        # Check if the namespace has no pods
+        if not result.stdout.strip():
+            empty_namespaces.append(namespace)
+
+    return empty_namespaces
+
+# Main execution
+for cluster in CLUSTERS:
+    if switch_context(cluster):
+        print(f"Checking cluster: {cluster['name']}")
+        namespaces = get_namespaces()
+        empty_namespaces = check_empty_namespaces(namespaces)
+
+        if empty_namespaces:
+            print(f"Namespaces with no pods in cluster {cluster['name']}:")
+            for namespace in empty_namespaces:
+                print(namespace)
+        else:
+            print(f"No empty namespaces found in cluster {cluster['name']}.")
+    else:
+        print(f"Failed to switch to cluster {cluster['name']}")
+    print("-" * 40)
