@@ -10,37 +10,3 @@
 | Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
-test-wh-amr-sync-api                           test-wh-amr-sync-api                               2/2     2            2           314d
-test-wh-amr-sync                               test-wh-amr-sync                                   1/1     1            1           332d
-test-wh-container-checker-api                  test-wh-container-checker-api                      2/2     2            2           313d
-test-wh-highjump-gateway-ui                    test-wh-highjump-gateway-ui                        2/2     2            2           236d
-test-wh-highjump-goodsin-api                   test-wh-highjump-goodsin-api                       2/2     2            2           334d
-test-wh-highjump-inventory-api                 test-wh-highjump-inventory-api                     2/2     2            2           294d
-test-wh-highjump-order-processing-api          test-wh-highjump-order-processing-api              2/2     2            2           238d
-test-wh-highjump-print-scheduler               test-wh-highjump-print-scheduler                   2/2     2            2           319d
-test-wh-highjump-process-shipment-app          test-wh-highjump-process-shipment-app              2/2     2            2           294d
-test-wh-highjump-proxy-api                     test-wh-highjump-proxy-api                         2/2     2            2           305d
-test-wh-highjump-sync                          test-wh-highjump-sync-eu                           1/1     1            1           214d
-test-wh-highjump-sync                          test-wh-highjump-sync-uk                           1/1     1            1           210d
-test-wh-highjump-tunnelling-api                test-wh-highjump-tunnelling-api                    2/2     2            2           292d
-test-wh-kafka-hjibt-sync                       test-wh-kafka-hjibt-sync                           2/2     2            2           237d
-test-wh-kafka-hjpick-sync                      test-wh-kafka-hjpick-sync                          1/1     1            1           292d
-test-wh-kafka-hjpricing-sync                   test-wh-kafka-hjpricing-sync                       1/1     1            1           277d
-test-wh-kafka-shipment-retrieval-service       test-wh-kafka-shipment-retrieval-service           2/2     2            2           350d
-test-wh-kronos-api                             test-wh-kronos-api                                 2/2     2            2           350d
-test-wh-metapack-parcel-tracking-service-app   test-wh-metapack-parcel-tracking-service-app       0/1     1            0           12d
-test-wh-pick-by-scanner-api                    test-wh-pick-by-scanner-api                        1/1     1            1           143d
-test-wh-pick-by-scanner-ui                     test-wh-pick-by-scanner-ui                         1/1     1            1           67d
-test-wh-pna-service                            test-wh-pna-service                                1/1     1            1           311d
-test-wh-putwall-api                            test-wh-putwall-api                                2/2     2            2           241d
-test-wh-reform-api                             test-wh-reform-api                                 2/2     2            2           181d
-test-wh-rfid-container-sync                    test-wh-rfid-container-sync                        1/1     1            1           221d
-test-wh-self-service                           test-wh-self-service-api                           2/2     2            2           399d
-test-wh-self-service                           test-wh-self-service-ui                            2/2     2            2           398d
-test-wh-studio-sync-service                    test-wh-studio-sync-service                        1/1     1            1           286d
-test-wh-trailer-loading-svc                    test-wh-trailer-loading-svc                        1/1     1            1           298d
-test-wh-userevents-api                         test-wh-userevents-api                             2/2     2            2           307d
-test-wh-userevents-sync                        test-wh-userevents-sync                            1/1     1            1           315d
-test-wh-voiteq-sync                            test-wh-voiteq-sync                                1/1     1            1           202d
-test-wh-wasi-api                               test-wh-wasi-api                                   2/2     2            2           334d
-test-wh-wasi-sync                              test-wh-wasi-sync
