@@ -11,6 +11,9 @@
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
           
+# deployment_inspector.py
+import subprocess
+import json
 import sys
 import os
 # Make sure to import other necessary modules here
@@ -19,4 +22,5 @@ import os
 script_dir = os.path.dirname(__file__)  # Get the directory where the script is located
 common_path = os.path.join(script_dir, '..', 'common')  # Path to the 'common' directory
 sys.path.append(os.path.abspath(common_path))  # Add 'common' directory to sys.path
+from clusters import CLUSTERS, switch_context
 
