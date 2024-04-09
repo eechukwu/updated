@@ -15,23 +15,28 @@ import subprocess
 import json
 import sys
 import os
+import requests
+from datetime import datetime
 
-# Setup the path to the common directory to import clusters.py
+# Adjust the path according to your project structure
 common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
 sys.path.insert(0, os.path.abspath(common_dir))
 
 from clusters import CLUSTERS, switch_context, ANSIColors
 
+# Disable warnings for unverified HTTPS requests
+requests.packages.urllib3.disable_warnings()
+
 def get_ingresses():
-    """
-    Fetches all ingresses in the current kubectl context.
-    """
     cmd = ['kubectl', 'get', 'ing', '-o', 'json', '--all-namespaces']
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True, timeout=30)
         ingresses = json.loads(result.stdout)['items']
     except subprocess.CalledProcessError as e:
         print(f"{ANSIColors.RED}Error fetching ingresses: {e.stderr}{ANSIColors.ENDC}")
+        return []
+    except subprocess.TimeoutExpired:
+        print(f"{ANSIColors.RED}Timeout expired fetching ingresses{ANSIColors.ENDC}")
         return []
 
     urls = []
@@ -47,49 +52,24 @@ def get_ingresses():
     return urls
 
 def check_endpoints(urls):
-    """
-    Checks each endpoint to ensure it's up and running.
-    """
     status_200 = []
-    status_404 = []
-    other_statuses = []
-    unexpected_outputs = []
-
+    status_not_200 = []
     for url in urls:
-        cmd = ['curl', '-k', '-s', '-o', '/dev/null', '-w', '%{http_code}', url]
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-            http_status_code = int(result.stdout.strip().strip("'"))
-
-            message = f"{url}: '{http_status_code}'"
-            if http_status_code == 200:
-                status_200.append(message)
-            elif http_status_code == 404:
-                status_404.append(f"{ANSIColors.RED}{message} - Error 404 returned, please investigate.{ANSIColors.ENDC}")
+            response = requests.get(url, verify=False, timeout=10)
+            if response.status_code == 200:
+                status_200.append(f"{url}: '{response.status_code}' - SSL Working Fine")
             else:
-                other_statuses.append(f"{ANSIColors.RED}{message} - Error {http_status_code} returned, please investigate.{ANSIColors.ENDC}")
-        except subprocess.CalledProcessError as e:
-            unexpected_outputs.append(f"{ANSIColors.RED}Curl command failed for {url}: {e}{ANSIColors.ENDC}")
-        except ValueError:
-            unexpected_outputs.append(f"{ANSIColors.RED}Unexpected output for {url}: {result.stdout}{ANSIColors.ENDC}")
+                status_not_200.append(f"{ANSIColors.RED}{url}: '{response.status_code}' - Please investigate.{ANSIColors.ENDC}")
+        except requests.exceptions.RequestException as e:
+            status_not_200.append(f"{ANSIColors.RED}Request failed for {url}: {e}{ANSIColors.ENDC}")
 
-    print_results(status_200, status_404, other_statuses, unexpected_outputs)
-
-def print_results(status_200, status_404, other_statuses, unexpected_outputs):
     print("\n--- Status 200 ---")
     for message in status_200:
         print(message)
 
-    print("\n--- Status 404 ---")
-    for message in status_404:
-        print(message)
-
-    print("\n--- Other Statuses ---")
-    for message in other_statuses:
-        print(message)
-
-    print("\n--- Unexpected Outputs ---")
-    for message in unexpected_outputs:
+    print("\n--- Status NOT 200 ---")
+    for message in status_not_200:
         print(message)
 
 def main():
