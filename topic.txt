@@ -10,64 +10,21 @@
 | Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
-# deployments_inspector.py
+PS C:\Users\echukwu\OneDrive - Frasers Group\Desktop\ProjectFiles> & C:/Users/echukwu/AppData/Local/Programs/Python/Python311/python.exe "c:/Users/echukwu/OneDrive - Frasers Group/Desktop/ProjectFiles/te-shared-script/k8s/weekly-check/replica_check.py"
+Switched to context connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-warehouse
+Checking cluster: non-prod-warehouse
 
-import subprocess
-from clusters import CLUSTERS, switch_context
+No deployments ending with 'Api' and running one replica found.
 
-def get_deployments():
-    """
-    Retrieves deployments in the current Kubernetes context.
-    Returns a tuple of two lists: (api_deployments, other_deployments)
-    """
-    cmd = ['kubectl', 'get', 'deployments', '-o', 'json']
-    proc = subprocess.run(cmd, capture_output=True, text=True)
-    if proc.returncode != 0:
-        print(f"Error retrieving deployments: {proc.stderr}")
-        return ([], [])
-    
-    try:
-        deployments = json.loads(proc.stdout)
-    except json.JSONDecodeError:
-        print("Failed to decode deployment data.")
-        return ([], [])
+No other deployments running one replica found.
 
-    api_deployments = []
-    other_deployments = []
-
-    for deployment in deployments.get('items', []):
-        name = deployment['metadata']['name']
-        replicas = deployment['spec']['replicas']
-        if replicas == 1:
-            if name.endswith('Api'):
-                api_deployments.append(name)
-            else:
-                other_deployments.append(name)
-
-    return (api_deployments, other_deployments)
-
-def main():
-    for cluster in CLUSTERS:
-        if switch_context(cluster):
-            print(f"Checking cluster: {cluster['name']}")
-            api_deployments, other_deployments = get_deployments()
-
-            if api_deployments:
-                print("\nDeployments ending with 'Api' and running one replica:")
-                for dep in api_deployments:
-                    print(dep)
-            else:
-                print("\nNo deployments ending with 'Api' and running one replica found.")
-
-            if other_deployments:
-                print("\nOther deployments running one replica:")
-                for dep in other_deployments:
-                    print(dep)
-            else:
-                print("\nNo other deployments running one replica found.")
-
-            print("-" * 40)
-
-if __name__ == "__main__":
-    import json  # Make sure to import json at the top if not already imported
-    main()
+test-wh-amr-sync-api                           test-wh-amr-sync-api                               2/2     2            2           314d
+test-wh-amr-sync                               test-wh-amr-sync                                   1/1     1            1           332d
+test-wh-container-checker-api                  test-wh-container-checker-api                      2/2     2            2           313d
+test-wh-highjump-gateway-ui                    test-wh-highjump-gateway-ui                        2/2     2            2           236d
+test-wh-highjump-goodsin-api                   test-wh-highjump-goodsin-api                       2/2     2            2           334d
+test-wh-highjump-inventory-api                 test-wh-highjump-inventory-api                     2/2     2            2           294d
+test-wh-highjump-order-processing-api          test-wh-highjump-order-processing-api              2/2     2            2           238d
+test-wh-highjump-print-scheduler               test-wh-highjump-print-scheduler                   2/2     2            2           319d
+test-wh-highjump-process-shipment-app          test-wh-highjump-process-shipment-app              2/2     2            2           294d
+test-wh-highjump-proxy-api             
