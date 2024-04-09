@@ -11,64 +11,16 @@
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
 
-clusters.py
-# Define your clusters as a list of dictionaries, each containing information about a cluster.
-CLUSTERS = [
-    {"name": "non-prod-warehouse", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-warehouse"},
-    {"name": "non-prod-ecommerce-internal", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-ecommerce-internal"},
-    {"name": "non-prod-retail", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-retail"},
-    {"name": "non-prod-tech-enablement", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-tech-enablement"},
-    {"name": "non-prod-buying", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-buying"}
-]
-
-def switch_context(cluster_info):
-    """
-    Switches the kubectl context to the specified cluster.
-    """
-    import subprocess
-
-    context = cluster_info['context']
-    cmd = ['kubectl', 'config', 'use-context', context]
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out, err = proc.communicate()
-
-    if proc.returncode != 0:
-        print(f"Error switching to context {context}: {err.decode()}")
-        return False
-
-    print(f"Switched to context {context}")
-    return True
-
-# ANSI escape codes for coloring text.
-class ANSIColors:
-    RED = '\033[91m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    BLUE = '\033[94m'
-    MAGENTA = '\033[95m'
-    CYAN = '\033[96m'
-    WHITE = '\033[97m'
-    ENDC = '\033[0m'
-	
-
-replica-check.py 
-
 import subprocess
 import json
 import sys
 import os
+
+# Setup the path to the common directory to import clusters.py
 common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
 sys.path.insert(0, os.path.abspath(common_dir))
-from clusters import CLUSTERS, switch_context
 
-# ANSI color codes
-RED = '\033[31m'
-GREEN = '\033[32m'
-YELLOW = '\033[33m'
-BLUE = '\033[34m'
-MAGENTA = '\033[35m'
-CYAN = '\033[36m'
-RESET = '\033[0m'
+from clusters import CLUSTERS, switch_context, ANSIColors
 
 def get_deployments():
     """
@@ -85,7 +37,7 @@ def get_deployments():
     result = subprocess.run(cmd, capture_output=True, text=True)
 
     if result.returncode != 0:
-        print(f"{RED}Error retrieving deployments: {result.stderr}{RESET}")
+        print(f"{ANSIColors.RED}Error retrieving deployments: {result.stderr}{ANSIColors.ENDC}")
         return [], []
 
     deployments = json.loads(result.stdout)
@@ -113,21 +65,21 @@ def get_deployments():
 
 def print_table(deployments, title):
     if deployments:
-        print(f"{GREEN}{title}:{RESET}")
+        print(f"{ANSIColors.GREEN}{title}:{ANSIColors.ENDC}")
         headers = ['Namespace/Deployment', 'Replicas']
-        col_width = max(len(dep) for dep in deployments + headers)
+        col_width = max(len(dep) for dep in deployments + headers) + 10  # Adjusted for better formatting
         print(f"{headers[0].ljust(col_width)} | {headers[1]}")
         print('-' * (col_width + 3 + len(headers[1])))
         for dep in deployments:
             namespace_deployment, replicas = dep.rsplit(' - ', 1)
             print(f"{namespace_deployment.ljust(col_width)} | {replicas}")
     else:
-        print(f"{RED}No {title.lower()} found.{RESET}")
+        print(f"{ANSIColors.RED}No {title.lower()} found.{ANSIColors.ENDC}")
 
 def main():
     for cluster in CLUSTERS:
         if switch_context(cluster):
-            print(f"\n{CYAN}Checking cluster: {cluster['name']}{RESET}")
+            print(f"\n{ANSIColors.CYAN}Checking cluster: {cluster['name']}{ANSIColors.ENDC}")
             api_deployments, other_deployments = get_deployments()
 
             print_table(api_deployments, "API Deployments running one replica")
@@ -135,5 +87,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-	
-	
