@@ -11,3 +11,57 @@
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
 
+cluster.py
+# Define your clusters as a list of dictionaries, each containing information about a cluster.
+CLUSTERS = [
+    {"name": "non-prod-warehouse", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-warehouse"},
+    {"name": "non-prod-ecommerce-internal", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-ecommerce-internal"},
+    {"name": "non-prod-retail", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-retail"},
+    {"name": "non-prod-tech-enablement", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-tech-enablement"},
+    {"name": "non-prod-buying", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-buying"}
+]
+
+def switch_context(cluster_info):
+    """
+    Switches the kubectl context to the specified cluster.
+    """
+    import subprocess
+
+    context = cluster_info['context']
+    cmd = ['kubectl', 'config', 'use-context', context]
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = proc.communicate()
+
+    if proc.returncode != 0:
+        print(f"Error switching to context {context}: {err.decode()}")
+        return False
+
+    print(f"Switched to context {context}")
+    return True
+
+# ANSI escape codes for coloring text.
+class ANSIColors:
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    BLUE = '\033[94m'
+    MAGENTA = '\033[95m'
+    CYAN = '\033[96m'
+    WHITE = '\033[97m'
+    ENDC = '\033[0m'
+	
+	
+kubectl get componentstatuses
+kubectl get nodes
+kubectl get deployments --all-namespaces
+kubectl get pods --all-namespaces
+kubectl get pods --all-namespaces -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,RESTARTS:.status.containerStatuses[0].restartCount | sort -k 3 -nr
+kubectl top pods --all-namespaces --sort-by=cpu
+kubectl top nodes
+
+
+ignore_namespaces = [
+	"anthos-identity-service", "argocd", "argoworkflows", "bigip", "cert-manager",
+	"config-management-system", "external-secrets", "gatekeeper-system", "gke-connect",
+	"gke-managed-metrics-server", "gke-system", "kube-system"
+]
