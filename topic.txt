@@ -10,21 +10,3 @@
 | Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
-PS C:\Users\echukwu\OneDrive - Frasers Group\Desktop\ProjectFiles> & C:/Users/echukwu/AppData/Local/Programs/Python/Python311/python.exe "c:/Users/echukwu/OneDrive - Frasers Group/Desktop/ProjectFiles/te-shared-script/k8s/weekly-check/replica_check.py"
-Switched to context connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-warehouse
-Checking cluster: non-prod-warehouse
-
-No deployments ending with 'Api' and running one replica found.
-
-No other deployments running one replica found.
-
-test-wh-amr-sync-api                           test-wh-amr-sync-api                               2/2     2            2           314d
-test-wh-amr-sync                               test-wh-amr-sync                                   1/1     1            1           332d
-test-wh-container-checker-api                  test-wh-container-checker-api                      2/2     2            2           313d
-test-wh-highjump-gateway-ui                    test-wh-highjump-gateway-ui                        2/2     2            2           236d
-test-wh-highjump-goodsin-api                   test-wh-highjump-goodsin-api                       2/2     2            2           334d
-test-wh-highjump-inventory-api                 test-wh-highjump-inventory-api                     2/2     2            2           294d
-test-wh-highjump-order-processing-api          test-wh-highjump-order-processing-api              2/2     2            2           238d
-test-wh-highjump-print-scheduler               test-wh-highjump-print-scheduler                   2/2     2            2           319d
-test-wh-highjump-process-shipment-app          test-wh-highjump-process-shipment-app              2/2     2            2           294d
-test-wh-highjump-proxy-api             
