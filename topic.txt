@@ -17,6 +17,7 @@ import os
 import sys
 from datetime import datetime
 
+# Setup the path to the common directory
 common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
 sys.path.insert(0, os.path.abspath(common_dir))
 
@@ -48,6 +49,10 @@ def print_certificates_for_cluster(cluster_info):
     """
     Prints the certificates for the given cluster along with their expiration dates.
     """
+    # ANSI color codes
+    CYAN = '\033[36m'
+    RESET = '\033[0m'
+
     certificates = []
 
     if not switch_context(cluster_info):
@@ -72,8 +77,8 @@ def print_certificates_for_cluster(cluster_info):
         # Sort certificates by expiration date for the current cluster
         sorted_certificates = sorted(certificates, key=lambda x: x[1] if x[1] is not None else datetime.max)
         
-        # Print the sorted certificates including cluster information
-        print(f"\nCertificates for cluster: {cluster_info['name']}")
+        # Print the sorted certificates including cluster information with color
+        print(f"\n{CYAN}Certificates for cluster: {cluster_info['name']}{RESET}")
         print(f"{'Certificate Name':<40} | {'Expiration Date':<20}")
         print("-" * 61)
 
@@ -87,3 +92,4 @@ def print_certificates_for_cluster(cluster_info):
 # Iterate over clusters and print certificates
 for cluster in CLUSTERS:
     print_certificates_for_cluster(cluster)
+
