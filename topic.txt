@@ -11,3 +11,89 @@
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
 
+import subprocess
+import json
+import sys
+import os
+
+# Assuming clusters.py is in the parent directory of the current script's directory, under 'common'
+common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
+sys.path.insert(0, os.path.abspath(common_dir))
+
+from clusters import CLUSTERS, switch_context, ANSIColors
+
+def get_ingresses():
+    cmd = ['kubectl', 'get', 'ing', '-o', 'json', '--all-namespaces']
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = proc.communicate()
+
+    if proc.returncode != 0:
+        print(f"{ANSIColors.RED}Error fetching ingresses: {err.decode()}{ANSIColors.ENDC}")
+        return []
+
+    ingresses = json.loads(out.decode())['items']
+    urls = []
+    for ing in ingresses:
+        for rule in ing.get('spec', {}).get('rules', []):
+            host = rule.get('host')
+            if 'http' not in host:
+                host = 'https://' + host
+            urls.append(host + '/health')
+
+    return urls
+
+def check_endpoints(urls):
+    status_200 = []
+    status_404 = []
+    other_statuses = []
+    unexpected_outputs = []
+
+    for url in urls:
+        cmd = f"curl -k -s -o /dev/null -w '%{{http_code}}' {url}"
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        out, err = proc.communicate()
+
+        http_status = out.decode().strip().strip("'")
+
+        try:
+            http_status_code = int(http_status)
+            message = f"{url}: '{http_status_code}'"
+            if http_status_code == 200:
+                status_200.append(f"{message} - SSL Working Fine")
+            elif http_status_code == 404:
+                status_404.append(f"{ANSIColors.RED}{message} - Error 404 returned, please investigate.{ANSIColors.ENDC}")
+            else:
+                other_statuses.append(f"{ANSIColors.RED}{message} - Error {http_status_code} returned, please investigate.{ANSIColors.ENDC}")
+        except ValueError:
+            unexpected_outputs.append(f"{ANSIColors.RED}Unexpected output for {url}: {http_status}{ANSIColors.ENDC}")
+
+    print("\n--- Status 200 ---")
+    for message in status_200:
+        print(message)
+
+    print("\n--- Status 404 ---")
+    for message in status_404:
+        print(message)
+
+    print("\n--- Other Statuses ---")
+    for message in other_statuses:
+        print(message)
+
+    print("\n--- Unexpected Outputs ---")
+    for message in unexpected_outputs:
+        print(message)
+
+def main():
+    for cluster_info in CLUSTERS:
+        if switch_context(cluster_info):
+            print(f"{ANSIColors.CYAN}Gathering information for cluster: {cluster_info['name']}{ANSIColors.ENDC}")
+            urls = get_ingresses()
+            if urls:
+                check_endpoints(urls)
+            else:
+                print(f"{ANSIColors.YELLOW}No ingresses found in cluster: {cluster_info['name']}{ANSIColors.ENDC}")
+        else:
+            print(f"{ANSIColors.RED}Skipping checks for cluster: {cluster_info['name']}{ANSIColors.ENDC}")
+
+if __name__ == "__main__":
+    main()
