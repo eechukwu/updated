@@ -11,3 +11,80 @@
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
           
+# deployment_inspector.py
+import subprocess
+import json
+from clusters import CLUSTERS, switch_context
+
+# ANSI color codes
+RED = '\033[31m'
+GREEN = '\033[32m'
+YELLOW = '\033[33m'
+BLUE = '\033[34m'
+MAGENTA = '\033[35m'
+CYAN = '\033[36m'
+RESET = '\033[0m'
+
+def get_deployments():
+    """
+    Retrieves deployments in the current Kubernetes context,
+    excluding certain namespaces and categorizing based on the replica count and naming convention.
+    Includes the replica count in the output.
+    """
+    ignore_namespaces = [
+        "anthos-identity-service", "argocd", "argoworkflows", "bigip", "cert-manager",
+        "config-management-system", "external-secrets", "gatekeeper-system", "gke-connect",
+        "gke-managed-metrics-server", "gke-system", "kube-system"
+    ]
+    cmd = ['kubectl', 'get', 'deployments', '--all-namespaces', '-o', 'json']
+    result = subprocess.run(cmd, capture_output=True, text=True)
+
+    if result.returncode != 0:
+        print(f"{RED}Error retrieving deployments: {result.stderr}{RESET}")
+        return [], []
+
+    deployments = json.loads(result.stdout)
+
+    api_deployments_one_replica = []
+    other_deployments_one_replica = []
+
+    for item in deployments['items']:
+        namespace = item['metadata']['namespace']
+        if namespace in ignore_namespaces:
+            continue
+
+        name = item['metadata']['name']
+        replicas = item['spec'].get('replicas', 0)
+        ready_replicas = item['status'].get('readyReplicas', 0)
+
+        if replicas == 1 and ready_replicas == 1:
+            deployment_detail = f"{namespace}/{name} - {replicas} replica(s)"
+            if name.endswith('api') or name.endswith('Api'):
+                api_deployments_one_replica.append(deployment_detail)
+            else:
+                other_deployments_one_replica.append(deployment_detail)
+
+    return api_deployments_one_replica, other_deployments_one_replica
+
+def main():
+    for cluster in CLUSTERS:
+        if switch_context(cluster):
+            print(f"\n{CYAN}Checking cluster: {cluster['name']}{RESET}")
+            api_deployments, other_deployments = get_deployments()
+
+            if api_deployments:
+                print(f"\n{GREEN}API Deployments running one replica:{RESET}")
+                for dep in api_deployments:
+                    print(dep)
+            else:
+                print(f"\n{YELLOW}No API deployments running one replica found.{RESET}")
+
+            if other_deployments:
+                print(f"\n{MAGENTA}Other Deployments running one replica:{RESET}")
+                for dep in other_deployments:
+                    print(dep)
+            else:
+                print(f"\n{YELLOW}No other deployments running one replica found.{RESET}")
+
+if __name__ == "__main__":
+    main()
