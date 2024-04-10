@@ -1,7 +1,2 @@
-| Cluster Name                  | Addon1 | Addon2 | Addon3 | Addon4 | Addon5 | Addon6 | Addon7 | Addon8 | Addon9 | Addon10 | Addon11 | Addon12 | Addon13 | Addon14 | Addon15 |
-|-------------------------------|--------|--------|--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|---------|---------|---------|
-| non-prod-warehouse            |        |        |        |        |        |        |        |        |        |         |         |         |         |         |         |
-| non-prod-ecommerce-internal   |        |        |        |        |        |        |        |        |        |         |         |         |         |         |         |
-| non-prod-retail               |        |        |        |        |        |        |        |        |        |         |         |         |         |         |         |
-| non-prod-tech-enablement      |        |        |        |        |        |        |        |        |        |         |         |         |         |         |         |
-| non-prod-buying               |        |        |        |        |        |        |        |        |        |         |         |         |         |         |         |
+&#x2713;   <!-- This is a checkmark (&#x2713;) -->
+:heavy_check_mark: 
