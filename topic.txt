@@ -10,18 +10,3 @@
 | Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
-resource "aws_lambda_function" "fd-cf-s3-image-resizer" {
-  function_name    = local.lambda_function_name
-  description      = "A function to handle image resizing"
-  handler          = local.lambda_handler
-  runtime          = local.lambda_runtime
-  memory_size      = local.lambda_memory_size
-  filename         = data.archive_file.lambda_zip.output_path
-  source_code_hash = filebase64sha256(data.archive_file.lambda_zip.output_path)
-  role             = module.iam_role.arn
-  publish          = true
-
-  layers = [
-    "arn:aws:lambda:us-east-1:446345481538:layer:FDCFImageResize:2"
-  ]
-}
