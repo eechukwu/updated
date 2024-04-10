@@ -11,3 +11,25 @@
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
 
+FYI warehouse team will be reaching out to you for a small bit of support, they need help understanding if the version of their app deployed to kubernetes is the one which is in source control.
+ 
+Think we may need to look to check which image version is being used, and what commit that is based on.
+
+
+Problem Statement
+During a recent cluster build (ecom premium prod) there was an issue with the installation of config sync.  The version installed was 1.17.x.  All other clusters have < 1.17 installed.  Although it installed fine, it failed to auth with the the anthos management repository using SSH keys.  Pinning the version to 1.16.0 fixed the issue.
+
+Work Involved
+Update the following workflows to pin the version of config-sync installed
+
+te-anthos-non-prod-bootstrap
+
+te-anthos-prod-bootstrap
+
+ec-anthos-non-prod-bootstrap
+
+Test Criteria
+Workflow still runs successfully
+
+Dependencies
+None
