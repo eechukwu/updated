@@ -1,18 +1,1 @@
-| Addon | Purpose | Advantages | Disadvantages | Notes |
-|-------|---------|------------|---------------|-------|
-| Add1  |         |            |               |       |
-| Add2  |         |            |               |       |
-| Add3  |         |            |               |       |
-| Add4  |         |            |               |       |
-| Add5  |         |            |               |       |
-| Add6  |         |            |               |       |
-| Add7  |         |            |               |       |
-| Add8  |         |            |               |       |
-| Add9  |         |            |               |       |
-| Add10 |         |            |               |       |
-| Add11 |         |            |               |       |
-| Add12 |         |            |               |       |
-| Add13 |         |            |               |       |
-| Add14 |         |            |               |       |
-| Add15 |         |            |               |       |
-
+Below you'll find a list of our current add-ons, a brief overview of what each is used for, and a look at their pros and cons. I've also included a section for notes, where we can write down any future observations or recommendations. This way, we can keep a reference to understand our setup better and make informed decisions moving forward
