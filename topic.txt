@@ -10,3 +10,21 @@
 | Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
+"Hi [Name],
+
+As I finish up with the FanDuel project, I'd really appreciate your thoughts on how I did. Your feedback will help me improve. Can you take a moment to share your thoughts in the quick form below?
+
+Thank you,
+[Your Name]"
+
+Personal Feedback Form:
+
+How would you rate the quality of my work and contributions to the FanDuel project?
+
+Excellent
+Good
+Average
+Needs Improvement
+What were the strengths of my performance during the project?
+
+In what areas do you think I could improve in future projects?
