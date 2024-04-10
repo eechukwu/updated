@@ -10,3 +10,12 @@
 | Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
+
+╷
+│ Error: Request cancelled
+│
+│   with aws_lambda_function.fd-cf-s3-image-resizer,
+│   on lambda.tf line 16, in resource "aws_lambda_function" "fd-cf-s3-image-resizer":
+│   16: resource "aws_lambda_function" "fd-cf-s3-image-resizer" {
+│
+│ The plugin.(*GRPCProvider).ApplyResourceChange request was cancelled.
