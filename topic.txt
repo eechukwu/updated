@@ -10,21 +10,8 @@
 | Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
-"Hi [Name],
+Good morning [Name1] and [Name2],
 
-As I finish up with the FanDuel project, I'd really appreciate your thoughts on how I did. Your feedback will help me improve. Can you take a moment to share your thoughts in the quick form below?
+I'm writing to let you know that we've finished building the Prod Premium Cluster. Could you please let me know your plan or how you intend to proceed with the cluster?
 
-Thank you,
-[Your Name]"
-
-Personal Feedback Form:
-
-How would you rate the quality of my work and contributions to the FanDuel project?
-
-Excellent
-Good
-Average
-Needs Improvement
-What were the strengths of my performance during the project?
-
-In what areas do you think I could improve in future projects?
+Thanks,
