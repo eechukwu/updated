@@ -12,3 +12,19 @@
 
 
 
+Problem Statement:
+The warehouse team needs help figuring out if the app version they're using in Kubernetes is the same as the one in their code storage. They're not sure if the app version they're using is the right one.
+
+Work Involved:
+
+Find out which version of the app is running in Kubernetes.
+Check the code storage to see which app version it should be.
+If the versions don't match, figure out a way to fix it.
+Write down the steps so the team can do it themselves next time.
+Test Criteria:
+
+Make sure we can tell which app version is running in Kubernetes.
+Check that this version matches the one in code storage.
+The team can keep everything running smoothly while doing this check.
+Dependencies:
+None. We just need access to the Kubernetes system and the code storage to look things up
