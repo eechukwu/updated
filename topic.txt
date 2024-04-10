@@ -10,8 +10,40 @@
 | Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 | Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
 
-Good morning [Name1] and [Name2],
+1150  aws configure list
+1151  aws sso login --profile fd-cpe-infra-deploy
+1152  pws
+1153  pwd
+1154  ls
+1155  aws lambda publish-layer-version --layer-name "FDCFImageResize" --description "Layer for sharp and aws-sdk for FD-CF-Image-Resize" --zip-file fileb:///Users/emmanuelchukwu/Desktop/lambda_layer/my-layer/my-lambda-layer.zip --compatible-runtimes nodejs14.x nodejs16.x --region us-east-1 --profile fd-cpe-infra-deploy
+1156  aws lambda list-layers --region us-east-1 --profile fd-cpe-infra-deploy
 
-I'm writing to let you know that we've finished building the Prod Premium Cluster. Could you please let me know your plan or how you intend to proceed with the cluster?
 
-Thanks,
+
+│ Error: creating Lambda Function (fd-cf-s3-image-resizer-master): operation error Lambda: CreateFunction, https response error StatusCode: 413, RequestID: b75d20c2-dc01-4101-bc12-48b8d331b918, api error RequestEntityTooLargeException: Request must be smaller than 70167211 bytes for the CreateFunction operation
+│
+│   with aws_lambda_function.fd-cf-s3-image-resizer,
+│   on lambda.tf line 16, in resource "aws_lambda_function" "fd-cf-s3-image-resizer":
+│   16: resource "aws_lambda_function" "fd-cf-s3-image-resizer" {
+│
+
+FDCFImageResize
+
+{
+    "Layers": [
+        {
+            "LayerName": "FDCFImageResize",
+            "LayerArn": "arn:aws:lambda:us-east-1:446345481538:layer:FDCFImageResize",
+            "LatestMatchingVersion": {
+                "LayerVersionArn": "arn:aws:lambda:us-east-1:446345481538:layer:FDCFImageResize:2",
+                "Version": 2,
+                "Description": "Layer for sharp and aws-sdk for FD-CF-Image-Resize",
+                "CreatedDate": "2024-03-07T10:46:15.457+0000",
+                "CompatibleRuntimes": [
+                    "nodejs14.x",
+                    "nodejs16.x"
+                ]
+            }
+        }
+    ]
+}
