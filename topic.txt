@@ -1,15 +1,18 @@
-|| Cluster || Addon 1 || Addon 2 || Addon 3 || ... || Addon 20 ||
-| Cluster 1 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
-| Cluster 2 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
-| Cluster 3 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
-| Cluster 4 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
-| Cluster 5 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
-| Cluster 6 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
-| Cluster 7 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
-| Cluster 8 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
-| Cluster 9 | [ ]      | [ ]      | [ ]      | ...  | [ ]       |
-| Cluster 10| [ ]      | [ ]      | [ ]      | ...  | [ ]       |
+| Addon | Purpose | Advantages | Disadvantages | Notes |
+|-------|---------|------------|---------------|-------|
+| Add1  |         |            |               |       |
+| Add2  |         |            |               |       |
+| Add3  |         |            |               |       |
+| Add4  |         |            |               |       |
+| Add5  |         |            |               |       |
+| Add6  |         |            |               |       |
+| Add7  |         |            |               |       |
+| Add8  |         |            |               |       |
+| Add9  |         |            |               |       |
+| Add10 |         |            |               |       |
+| Add11 |         |            |               |       |
+| Add12 |         |            |               |       |
+| Add13 |         |            |               |       |
+| Add14 |         |            |               |       |
+| Add15 |         |            |               |       |
 
-
-
-Our Kubernetes setup is expanding, including essential components like secrets, Ingress, Image Repositories, Policy Controllers, and more. As we integrate more tools and systems, managing everything is becoming complex. To address this, we're creating a guide to catalog what's currently in use, where it's deployed, and the reasons behind these choices. Furthermore, we'll outline our future direction. Consider this guide as a comprehensive map detailing our current K8S state and planning for our journey ahead
