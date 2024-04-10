@@ -1,6 +1,7 @@
-|| Cluster Name || Addon 1 || Addon 2 || Addon 3 || Addon 4 || Addon 5 || Addon 6 || Addon 7 || Addon 8 || Addon 9 || Addon 10 || Addon 11 || Addon 12 || Addon 13 || Addon 14 || Addon 15 ||
-| non-prod-warehouse |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| non-prod-ecommerce-internal |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| non-prod-retail |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| non-prod-tech-enablement |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| non-prod-buying |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Cluster Name                  | Addon 1 | Addon 2 | Addon 3 | Addon 4 | Addon 5 | Addon 6 | Addon 7 | Addon 8 | Addon 9 | Addon 10 | Addon 11 | Addon 12 | Addon 13 | Addon 14 | Addon 15 |
+|-------------------------------|---------|---------|---------|---------|---------|---------|---------|---------|---------|----------|----------|----------|----------|----------|----------|
+| non-prod-warehouse            |         |         |         |         |         |         |         |         |         |          |          |          |          |          |          |
+| non-prod-ecommerce-internal   |         |         |         |         |         |         |         |         |         |          |          |          |          |          |          |
+| non-prod-retail               |         |         |         |         |         |         |         |         |         |          |          |          |          |          |          |
+| non-prod-tech-enablement      |         |         |         |         |         |         |         |         |         |          |          |          |          |          |          |
+| non-prod-buying               |         |         |         |         |         |         |         |         |         |          |          |          |          |          |          |
