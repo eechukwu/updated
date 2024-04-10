@@ -1,1 +1,14 @@
-Below you'll find a list of our current add-ons, a brief overview of what each is used for, and a look at their pros and cons. I've also included a section for notes, where we can write down any future observations or recommendations. This way, we can keep a reference to understand our setup better and make informed decisions moving forward
+CLUSTERS = [
+    {"name": "non-prod-warehouse", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-warehouse"},
+    {"name": "non-prod-ecommerce-internal", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-ecommerce-internal"},
+    {"name": "non-prod-retail", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-retail"},
+    {"name": "non-prod-tech-enablement", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-tech-enablement"},
+    {"name": "non-prod-buying", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-buying"},
+    {"name": "prod-warehouse", "project": "corp-prod-mgmt-anthos-9061", "context": "connectgateway_corp-prod-mgmt-anthos-9061_global_prod-warehouse"},
+    {"name": "prod-ecommerce-internal", "project": "corp-prod-mgmt-anthos-9061", "context": "connectgateway_corp-prod-mgmt-anthos-9061_global_prod-ecommerce-internal"},
+    {"name": "prod-retail", "project": "corp-prod-mgmt-anthos-9061", "context": "connectgateway_corp-prod-mgmt-anthos-9061_global_prod-retail"},
+    {"name": "prod-tech-enablement", "project": "corp-prod-mgmt-anthos-9061", "context": "connectgateway_corp-prod-mgmt-anthos-9061_global_prod-tech-enablement"},
+    {"name": "prod-buying", "project": "corp-prod-mgmt-anthos-9061", "context": "connectgateway_corp-prod-mgmt-anthos-9061_global_prod-buying"},
+    {"name": "non-prod-ecom", "project": "ecom-dev-fgp-anthos-2885", "context": "connectgateway_ecom-dev-fgp-anthos-2885_global_non-prod-ecom"},
+    {"name": "prod-prem", "project": "ecom-dev-fgp-anthos-5383", "context": "connectgateway_ecom-dev-fgp-anthos-5383_global_prod-prem"},
+    {"name": "prod-sports", "project": "ecom-dev-fgp-anthos-5383", "context": "connectgateway_ecom-dev-fgp-anthos-5383_global_prod-sports"}
