@@ -7,7 +7,48 @@ kubectl get addons --all-namespaces
 curl -I http://dev-rt-b2b-giftcard-api.anthos.sportski.com
 
 
-$ ping https://dev-rt-b2b-giftcard-api.anthos.sportski.com
-Ping request could not find host https://dev-rt-b2b-giftcard-api.anthos.sportski.com. Please check the name and try again.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rt-b2b-giftcard-api # Add app name. It will be patched with the nameSuffix or namePrefix set in kustomization.yaml
+spec:
+  tls:
+  - hosts: # set hostnames
+    - dev-rt-b2b-giftcard-api.anthos.sportski.com
+    secretName: dev-rt-b2b-giftcard-api-ssl # This needs to match the name of the secret containing the SSL certificate - if no SSL needed, the whole TLS section can be commented out
+  ingressClassName: nginx
+  rules: # set hostname rules
+  - host: dev-rt-b2b-giftcard-api.anthos.sportski.com 
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dev-rt-b2b-giftcard-api # this should match the name of the service you are targeting.  It will be patched with the nameSuffix to match the patched service manifest
+            port:
+              number: 80
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rt-external-trade-submitter-api # Add app name. It will be patched with the nameSuffix or namePrefix set in kustomization.yaml
+spec:
+  tls:
+  - hosts: # set hostnames
+    - dev-rt-external-trade-submitter-api.anthos.sportski.com
+    secretName: dev-rt-external-trade-submitter-api-ssl # This needs to match the name of the secret containing the SSL certificate - if no SSL needed, the whole TLS section can be commented out
+  rules: # set hostname rules
+  - host: dev-rt-external-trade-submitter-api.anthos.sportski.com 
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dev-rt-external-trade-submitter-api # this should match the name of the service you are targeting.  It will be patched with the nameSuffix to match the patched service manifest
+            port:
+              number: 80
+
 
 
