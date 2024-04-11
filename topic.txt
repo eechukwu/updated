@@ -1,6 +1,9 @@
 **&#x2713;**
 **x**
 
+https://docs.github.com/en/actions/managing-workflow-runs/skipping-workflow-runs
+I came across this GHA feature today that I was not aware of https://docs.github.com/en/actions/managing-workflow-runs/skipping-workflow-runs
+It might we worth trying it in the Anthos deployment resuable workflow as additional protection from triggering recursive workflows (the bit where it commits the image tag back to the repo).  Adding that should help with some concurrency issues we've seen with Argo sync workflow as well.
 
 Problem:
 Users can't reach dev-rt-b2b-giftcard-api because they're seeing a message saying "This page isn't working at the momentdev-rt-b2b-giftcard-api.anthos.sportski.com redirected you too many times. Try deleting your cookies. ERR_TOO_MANY_REDIRECTS."
