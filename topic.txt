@@ -1,9 +1,3 @@
 **&#x2713;**
 
-Waiting for Lewis Roberts on this, we've gone through the Repo, ArgoCD, GitHub Packages, and confirmed that everything looks good from our side. I've advised him to pull a fresh copy of the code and give it a try.
-
-I reached out to him this morning, just waiting for his confirmation.
-
-From the latest response from GCP, the override should survive cluster upgrade. Below is their response.
-
-So we can decide to close this ticket and create another ticket to monitor the CPU and memory increase task, or we can continue the work on this ticket. Currently waiting for Dan's input on that.
+Here are my go to study guide when it comes to AWS Devops Pro exam, I have used them twice now
