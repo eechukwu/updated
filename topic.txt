@@ -1,4 +1,6 @@
 **&#x2713;**
+**x**
+
 
 kubectl get addons --all-namespaces
 
