@@ -2,20 +2,20 @@
 **x**
 
 
-This page isn't working at the momentdev-rt-b2b-giftcard-api.anthos.sportski.com redirected you too many times.
-Try deleting your cookies.
-ERR_TOO_MANY_REDIRECTS
+Problem:
+Users can't reach dev-rt-b2b-giftcard-api because they're seeing a message saying "This page isn't working at the momentdev-rt-b2b-giftcard-api.anthos.sportski.com redirected you too many times. Try deleting your cookies. ERR_TOO_MANY_REDIRECTS."
 
+Work:
 
+Check how the Ingress and services are set up for dev-rt-b2b-giftcard-api to find why there are too many redirects.
+Look at the app's code and server settings to make sure they handle requests and redirects correctly.
+Use tools like curl and ping to test connections to dev-rt-b2b-giftcard-api and see if there are any issues.
+Check the app's repository to make sure there are no configuration errors causing the redirects.
+Test different situations to see when the issue happens and why.
+Make changes needed to stop the excessive redirects and let users access dev-rt-b2b-giftcard-api smoothly.
+Testing:
 
-Problem Statement:
-The warehouse team needs help figuring out if the app version they're using in Kubernetes is the same as the one in their code storage. They're not sure if the app version they're using is the right one.
-
-Work Involved:
-
-Find out which version of the app is running in Kubernetes.
-Check GitHub and ArgoCD to see which app version it should be.
-
-Test Criteria:
-Make sure we can tell which app version is running in Kubernetes.
-Check that this version matches the one in GitHub.
+Make sure users can reach dev-rt-b2b-giftcard-api without getting the redirect error.
+Check that the app works as it should after fixing the redirects.
+Test on different browsers and devices to make sure it works everywhere.
+Keep an eye on logs and user feedback to know if the issue is fixed.
