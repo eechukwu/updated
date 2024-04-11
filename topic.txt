@@ -1,26 +1,48 @@
 **&#x2713;**
 **x**
 
-Ticket Title: Use GitHub Feature to Avoid Recurring Workflows in Anthos Deployment
+Addon Name
 
-Problem:
-I found out about a new feature in GitHub called "Skipping Workflow Runs" (https://docs.github.com/en/actions/managing-workflow-runs/skipping-workflow-runs) that could help us with our Anthos deployment workflow. It might prevent repetitive workflows from being triggered, especially when committing image tags back to the repository. This could also solve some issues we've noticed with the Argo sync workflow.
+ArgoCD
 
-Work:
+ArgoEvents
 
-Read up on how "Skipping Workflow Runs" works in GitHub's documentation.
-Check our Anthos deployment workflow to see where this feature could be useful.
-Make any necessary adjustments to our workflow to incorporate this feature.
-Test it out to make sure it works as expected and doesn't cause any problems.
-Document what changes we made and update any related documents.
-Testing:
+ArgoWorkflows
 
-Make sure the "Skipping Workflow Runs" feature stops recurring workflows effectively.
-Confirm that our Anthos deployment workflow still runs smoothly with this new feature.
-Test it in different situations to be sure it's reliable.
-Keep an eye on how it performs and listen to any feedback from users.
+SealedSecrets
 
-No worries, that's fine. I don't know the effort required to do this at the moment, but it involves:
+Argo-repository-credential
 
-Identifying all the clusters where we are getting the error messages.
-Implementing the changes following this documentation:
+Cluster-external-secret
+
+Config-management
+
+External-secrets
+
+F5cis
+
+Identity-service
+
+LogicMonitor
+
+NginxIngress
+
+Secrets-store
+
+Cert Manager 
+
+Gatekeeper System 
+
+Resource Group System 
+
+Honeycomb
+
+Grafana 
+
+Harbor
+
+Influxdb 
+
+Trivy
+
+Xmcyber-Posture
