@@ -1,24 +1,26 @@
 **&#x2713;**
 **x**
 
-https://docs.github.com/en/actions/managing-workflow-runs/skipping-workflow-runs
-I came across this GHA feature today that I was not aware of https://docs.github.com/en/actions/managing-workflow-runs/skipping-workflow-runs
-It might we worth trying it in the Anthos deployment resuable workflow as additional protection from triggering recursive workflows (the bit where it commits the image tag back to the repo).  Adding that should help with some concurrency issues we've seen with Argo sync workflow as well.
+Ticket Title: Use GitHub Feature to Avoid Recurring Workflows in Anthos Deployment
 
 Problem:
-Users can't reach dev-rt-b2b-giftcard-api because they're seeing a message saying "This page isn't working at the momentdev-rt-b2b-giftcard-api.anthos.sportski.com redirected you too many times. Try deleting your cookies. ERR_TOO_MANY_REDIRECTS."
+I found out about a new feature in GitHub called "Skipping Workflow Runs" (https://docs.github.com/en/actions/managing-workflow-runs/skipping-workflow-runs) that could help us with our Anthos deployment workflow. It might prevent repetitive workflows from being triggered, especially when committing image tags back to the repository. This could also solve some issues we've noticed with the Argo sync workflow.
 
 Work:
 
-Check how the Ingress and services are set up for dev-rt-b2b-giftcard-api to find why there are too many redirects.
-Look at the app's code and server settings to make sure they handle requests and redirects correctly.
-Use tools like curl and ping to test connections to dev-rt-b2b-giftcard-api and see if there are any issues.
-Check the app's repository to make sure there are no configuration errors causing the redirects.
-Test different situations to see when the issue happens and why.
-Make changes needed to stop the excessive redirects and let users access dev-rt-b2b-giftcard-api smoothly.
+Read up on how "Skipping Workflow Runs" works in GitHub's documentation.
+Check our Anthos deployment workflow to see where this feature could be useful.
+Make any necessary adjustments to our workflow to incorporate this feature.
+Test it out to make sure it works as expected and doesn't cause any problems.
+Document what changes we made and update any related documents.
 Testing:
 
-Make sure users can reach dev-rt-b2b-giftcard-api without getting the redirect error.
-Check that the app works as it should after fixing the redirects.
-Test on different browsers and devices to make sure it works everywhere.
-Keep an eye on logs and user feedback to know if the issue is fixed.
+Make sure the "Skipping Workflow Runs" feature stops recurring workflows effectively.
+Confirm that our Anthos deployment workflow still runs smoothly with this new feature.
+Test it in different situations to be sure it's reliable.
+Keep an eye on how it performs and listen to any feedback from users.
+
+No worries, that's fine. I don't know the effort required to do this at the moment, but it involves:
+
+Identifying all the clusters where we are getting the error messages.
+Implementing the changes following this documentation:
