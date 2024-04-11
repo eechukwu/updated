@@ -2,6 +2,14 @@
 **x**
 
 
+This page isn't working at the momentdev-rt-b2b-giftcard-api.anthos.sportski.com redirected you too many times.
+Try deleting your cookies.
+ERR_TOO_MANY_REDIRECTS
+
+
+
+
+
 kubectl get addons --all-namespaces
 
 curl -I http://dev-rt-b2b-giftcard-api.anthos.sportski.com
