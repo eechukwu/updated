@@ -1,8 +1,5 @@
 **&#x2713;**
 
-Here are my go to study guide when it comes to AWS Devops Pro exam, I have used them twice now
+kubectl get addons --all-namespaces
 
-https://www.udemy.com/course/aws-certified-devops-engineer-professional-hands-on/?kw=aws+devops+pro&src=sac&couponCode=ST8MT40924
-https://www.udemy.com/course/aws-certified-devops-engineer-professional-practice-exams-amazon-dop-c02/learn/quiz/4741928/results?expanded=1109749878#overview
-https://www.udemy.com/course/aws-certified-devops-engineer-professional-practice-exam-dop/learn/quiz/4724020/results?expanded=1108396188#overview
 
