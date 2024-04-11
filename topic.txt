@@ -7,15 +7,7 @@ kubectl get addons --all-namespaces
 curl -I http://dev-rt-b2b-giftcard-api.anthos.sportski.com
 
 
-$ curl -I http://dev-rt-b2b-giftcard-api.anthos.sportski.com
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0   169    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0HTTP/1.1 301 Moved Permanently
-Server: nginx/1.25.1
-Date: Thu, 11 Apr 2024 10:25:16 GMT
-Content-Type: text/html
-Content-Length: 169
-Connection: keep-alive
-Location: https://dev-rt-b2b-giftcard-api.anthos.sportski.com:443/
-Set-Cookie: BIGipServer~k8s-cis-non-prod-retail~Shared~nginx_ingress_retail_hg=1572016300.50813.0000; path=/; Httponly
+$ ping https://dev-rt-b2b-giftcard-api.anthos.sportski.com
+Ping request could not find host https://dev-rt-b2b-giftcard-api.anthos.sportski.com. Please check the name and try again.
+
 
