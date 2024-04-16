@@ -1,9 +1,7 @@
 **&#x2713;**
 **x**
 
-Is anyone else having trouble with the GCP console? I can't load the Kubernetes workloads section.
-
-it has significantly reduced the need for our teams to manually add repositories to ArgoCD, streamlining our deployment workflows and reducing human error.
+Hi Jonathan, Qasim reached out to me asking for access to this account ({account name}). According to him, he has already spoken to you about it. Am I okay to add him to this IAM group?
 
 Argo-repository-credential
 Purpose: Manages repository credentials for Argo projects.
