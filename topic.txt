@@ -1,7 +1,7 @@
 **&#x2713;**
 **x**
 
-Hi Jonathan, Qasim reached out to me asking for access to this account ({account name}). According to him, he has already spoken to you about it. Am I okay to add him to this IAM group?
+Hi Dan, With regards to Vaibhav's Kubernetes access, I assume he needs the same permissions as myself, right?
 
 Argo-repository-credential
 Purpose: Manages repository credentials for Argo projects.
