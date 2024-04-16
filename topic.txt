@@ -1,6 +1,8 @@
 **&#x2713;**
 **x**
 
+Is anyone else having trouble with the GCP console? I can't load the Kubernetes workloads section.
+
 it has significantly reduced the need for our teams to manually add repositories to ArgoCD, streamlining our deployment workflows and reducing human error.
 
 Argo-repository-credential
