@@ -1,11 +1,4 @@
-Non-Prod and Prod Internal Clusters:
-Currently being used in all internal clusters to mount secrets to pods.
+PRPAS-001 - Orchestration to Run and Manage Web Apps
+AWS Partner has deep understanding of and leverages AWS Elastic Beanstalk as an orchestration platform to handle deployments from capacity provisioning, load balancing, auto-scaling to application health monitoring. If an alternate such as Heroku is leveraged, AWS Partner to describe reasons for leveraging alternative(s).
 
-Ecom Clusters:
-External secrets are currently in use, so they have not been used in any of the Ecom clusters.
-
-Non-Prod and Prod Internal Clusters:
-
-Replace it with ExternalSecrets to match the Ecom clusters.
-Remove it from the bootstrap pipeline.
-Clean up the clusters.
+Evidence must be in the form of demonstration and description of PaaS as part of AWS Partner’s DevOps strategy.
