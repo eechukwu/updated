@@ -1,11 +1,3 @@
-What NGINX Ingress is Used For:
-NGINX Ingress is used as a controller in Kubernetes to manage access to services from outside the Kubernetes cluster. It directs incoming traffic to the right services based on the rules defined in the ingress resource.
+Sealed secrets are currently being used in production clusters for imagePullSecrets. For F5: All the F5 configuration files can be found in the F5 repositories.
 
-Two Advantages of NGINX Ingress:
-
-Performance: NGINX is known for its high performance and efficiency. It handles large volumes of traffic smoothly and is very fast.
-Flexibility: NGINX Ingress allows detailed configuration options. You can fine-tune the behavior of your ingress traffic extensively, which is great for specific needs.
-Two Disadvantages of NGINX Ingress:
-
-Complex Configuration: While its flexibility is an advantage, it also means that NGINX can be complex to configure correctly, especially for users who are not familiar with its setup and syntax.
-Limited Native Support for Advanced Traffic Routing: NGINX Ingress primarily focuses on basic load balancing and doesn’t natively support advanced traffic management features like canary releases or A/B testing unless integrated with additional tools.
+We have replaced the imagePullSecret with clusterExternalSecret for the non-prod environments. We need to do the same for the prod clusters, and here is the ticket for it.
