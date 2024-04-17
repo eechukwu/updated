@@ -1,53 +1,28 @@
-Image Repositories Addons
-
-Purpose
-
-Advantages
-
-Disadvantages/Pain Points
-
-Future State
-
-GitHub Packages   
-
-Cloud based image container registry owned by GitHub
-
-Deep integration with GitHub CI/CD
-
-Uses GitHub permissions
-
-Doesn’t support multi-regional replication 
-
-Image Retention
-
-Availability since it doesn’t support multi-regional replication
-
-Migrate all our images to GAR (Google Artifact Registry)
-
+Image Repositories Addons for Frasers Group
+GitHub Packages
+Purpose: To utilize a cloud-based image container registry that is seamlessly integrated with our existing GitHub workflows at Frasers.
+Advantages:
+Deep integration with GitHub CI/CD enhances our DevOps pipelines at Frasers.
+Uses GitHub permissions, simplifying access control based on existing GitHub organizational structures at Frasers.
+Disadvantages/Pain Points:
+Lack of multi-regional replication can affect the availability and speed of access across Frasers' global operations.
+Future State:
+Plan to migrate all our container images at Frasers to Google Artifact Registry (GAR) to leverage better scalability and multi-regional support.
 Google Artifact Registry
-
-Cloud based image container registry owned by Google 
-
-Integrates with Google Cloud services
-
-Supports Multi-regional replication
-
-N/A
-
-N/A
-
-Harbor   
-
-A secure registry for storing our container images on PREM.
-
-Hosted onPrem
-
-Integrates with Kubernetes
-
-Role-Based Access Control
-
-Limited Support and Documentation
-
-Security issue since its an open source project
-
-Back up our images onPrem with harbour
+Purpose: To adopt a cloud-based image container registry that supports robust, scalable management of container images and artifacts across Google Cloud services for Frasers.
+Advantages:
+Supports multi-regional replication, ensuring high availability and quick access to images globally for Frasers.
+Disadvantages/Pain Points:
+N/A (assumes full alignment with Frasers' needs).
+Future State:
+Complete migration of all container images from GitHub Packages and potentially other registries to GAR for improved performance and reliability at Frasers.
+Harbor
+Purpose: To maintain a secure, on-premises registry for storing container images, aligning with Frasers Group’s requirements for data sovereignty and security.
+Advantages:
+Hosted on-premises, providing full control over the security and compliance of container images at Frasers.
+Integrates seamlessly with Kubernetes, supporting Frasers' container orchestration platforms with robust access controls.
+Disadvantages/Pain Points:
+Limited support and documentation may challenge ongoing maintenance and scalability at Frasers.
+Being open-source, it requires rigorous security practices at Frasers to mitigate potential vulnerabilities.
+Future State:
+Implement robust backup strategies at Frasers and potentially expand usage as Harbor evolves to better support its features and community.
