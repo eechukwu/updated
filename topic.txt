@@ -1,15 +1,53 @@
-**&#x2713;**
-**x**
+Image Repositories Addons
 
- Purpose                      | To integrate package management with GitHub workflows.    | To provide a single place for managing artifacts across all Google Cloud services. | To offer a secure, scalable, and open-source registry solution for containers and Helm charts. |
+Purpose
 
-| Feature                      | GitHub Packages                    | Google Artifact Registry           | Harbor                            |
-|------------------------------|------------------------------------|------------------------------------|-----------------------------------|
-| Hosting Type                 | Cloud-based                        | Cloud-based                        | Can be hosted on-premises or cloud|
-| Integration                  | Deep integration with GitHub CI/CD | Integrates with Google Cloud services | Integrates with Kubernetes        |
-| Access Control               | Uses GitHub permissions            | Uses Google Cloud IAM              | Role-Based Access Control (RBAC)  |
-| Vulnerability Scanning       | Yes, with GitHub Advanced Security | Yes, built-in with additional capabilities | Yes, built-in                     |
-| Image Replication            | Limited support                    | Multi-regional replication         | Multi-regional and multi-cloud replication |
-| Cost                         | Pay as you go based on usage       | Pay as you go based on usage       | Free, open-source software        |
-| Customizability              | Limited customization options      | Limited customization options      | Highly customizable               |
-| User Interface               | GitHub web interface               | Google Cloud Console               | Standalone web UI                 |
+Advantages
+
+Disadvantages/Pain Points
+
+Future State
+
+GitHub Packages   
+
+Cloud based image container registry owned by GitHub
+
+Deep integration with GitHub CI/CD
+
+Uses GitHub permissions
+
+Doesn’t support multi-regional replication 
+
+Image Retention
+
+Availability since it doesn’t support multi-regional replication
+
+Migrate all our images to GAR (Google Artifact Registry)
+
+Google Artifact Registry
+
+Cloud based image container registry owned by Google 
+
+Integrates with Google Cloud services
+
+Supports Multi-regional replication
+
+N/A
+
+N/A
+
+Harbor   
+
+A secure registry for storing our container images on PREM.
+
+Hosted onPrem
+
+Integrates with Kubernetes
+
+Role-Based Access Control
+
+Limited Support and Documentation
+
+Security issue since its an open source project
+
+Back up our images onPrem with harbour
