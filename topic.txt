@@ -1,6 +1,8 @@
 **&#x2713;**
 **x**
 
+ Purpose                      | To integrate package management with GitHub workflows.    | To provide a single place for managing artifacts across all Google Cloud services. | To offer a secure, scalable, and open-source registry solution for containers and Helm charts. |
+
 | Feature                      | GitHub Packages                    | Google Artifact Registry           | Harbor                            |
 |------------------------------|------------------------------------|------------------------------------|-----------------------------------|
 | Hosting Type                 | Cloud-based                        | Cloud-based                        | Can be hosted on-premises or cloud|
