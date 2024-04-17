@@ -1,11 +1,9 @@
-Current State:
+"NGINX Ingress, when integrated with F5 networks, serves a strategic role by optimizing the management and control of both inbound and outbound traffic in Kubernetes environments.
 
-The apps in the following clusters have been rolled out via F5:
-Future State:
+Just like F5, this is gradually being rolled out with F5 (see the F5 section for details).
 
-Roll out the remaining apps/services through F5.
-Anthos Istio Ingress:
+The network team decided to go with NGINX Ingress instead of Anthos Istio Ingress because:
 
-This is automatically installed via Anthos and cannot be uninstalled.
-Any app/service that is currently not exposed via F5 and Ingress is running through this method.
-Plan to roll out all the apps via F5 and Ingress, and leave this as a redundant Ingress.
+There is a lack of detailed documentation/support for Anthos Istio Ingress.
+NGINX Ingress is owned by F5.
+Vendor Support: F5 officially supports NGINX Ingress, unlike Anthos Istio, which lacks support."
