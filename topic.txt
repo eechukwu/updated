@@ -1,17 +1,9 @@
-All our images are currently being hosted on GitHub Packages.
+Purpose of HPA in Kubernetes:
 
-Replicate a version of our images over to GAR.
+Horizontal Pod Autoscaler (HPA) automatically adjusts the number of pods in a Kubernetes deployment based on observed CPU utilization or other specified metrics. Its primary purpose is to optimize the application performance and resource usage by scaling out (adding more pods) when demand increases and scaling in (removing pods) when demand decreases.
+Current State:
 
-Current issues with GitHub Packages:
+HPA is currently configured on the eCom Clusters via a YAML file. See the linked document for more details.
+Future State:
 
-Image retention issues.
-Availability issue because it doesn't support multi-region replication.
-We are currently working on a POC to migrate a replica of our images from GitHub Packages to GAR.
-
-Migrate a version of our images over to GAR.
-
-We are also working on a POC to install Harbor on-prem (HA).
-Here are the spike tickets on this:
-
-Install (HA) Harbor on-prem.
-Replicate a version of our images over."
+We need to decide if we will be rolling out this feature to the internal clusters because, at the moment, it is not running on any of the clusters.
