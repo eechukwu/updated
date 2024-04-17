@@ -1,4 +1,11 @@
-PRPAS-001 - Orchestration to Run and Manage Web Apps
-AWS Partner has deep understanding of and leverages AWS Elastic Beanstalk as an orchestration platform to handle deployments from capacity provisioning, load balancing, auto-scaling to application health monitoring. If an alternate such as Heroku is leveraged, AWS Partner to describe reasons for leveraging alternative(s).
+Current State:
 
-Evidence must be in the form of demonstration and description of PaaS as part of AWS Partner’s DevOps strategy.
+The apps in the following clusters have been rolled out via F5:
+Future State:
+
+Roll out the remaining apps/services through F5.
+Anthos Istio Ingress:
+
+This is automatically installed via Anthos and cannot be uninstalled.
+Any app/service that is currently not exposed via F5 and Ingress is running through this method.
+Plan to roll out all the apps via F5 and Ingress, and leave this as a redundant Ingress.
