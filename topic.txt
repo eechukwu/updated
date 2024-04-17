@@ -1,7 +1,45 @@
 **&#x2713;**
 **x**
 
-Hey team! Just saw that Terraform is launching a new certification called Terraform Authoring and Operations Professional Cert. 🌟 Definitely something to keep an eye on! Here’s the link to check out the details: https://developer.hashicorp.com/terraform/tutorials/pro-cert/pro-study
+Examples of things to cover:
+
+Secret Management solutions, what we have deployed where, and why, what our desired state is and why
+
+External Secrets? ,why?
+
+Ingress
+
+F5?
+
+Istio, where and why?
+
+Image Repositories, why we are moving away from current one
+
+For DR purposes our Image pull secret approach right now is a big risk
+
+Our retention policy within GitHub is causing us issues
+
+We need GAR and Harbour, put the reasons why
+
+Policy Controller Policies, we haven’t got CIS policies in place yet but we really should, we have image repo policies deployed.
+
+General Statements such as Naming Conventions, Daily, Weekly, Monthly checks
+
+Auto Scaling, what is our approach, where is htis used?
+
+SSL Rotation & DNS
+
+Document how this is currently done
+
+Desired state is onboarding process for applications will auto register SSL/DNS and ssl rotation will be handled by a job updating the F5 certs in the repo
+
+Image / Infra scanning
+
+Currently a hole, we were looking at Snyk, and now infosec are wanting us to look at XMCyber (TODO)
+
+Process required for managing base images if they need an update we need a workflow to automatically trigger a re-deploy based on a newer base image in the docker file. Rob/Ciaran started a process on this.
+
+Work Involved
 
 Argo-repository-credential
 Purpose: Manages repository credentials for Argo projects.
