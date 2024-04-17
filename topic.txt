@@ -1,28 +1,27 @@
-Image Repositories Addons for Frasers Group
-GitHub Packages
-Purpose: To utilize a cloud-based image container registry that is seamlessly integrated with our existing GitHub workflows at Frasers.
+F5
+Purpose: To provide robust load balancing and traffic management solutions that enhance the availability and performance of applications at Frasers.
 Advantages:
-Deep integration with GitHub CI/CD enhances our DevOps pipelines at Frasers.
-Uses GitHub permissions, simplifying access control based on existing GitHub organizational structures at Frasers.
+Delivers enterprise-level load balancing and network optimization features that ensure high availability and performance of Frasers’ applications.
+Offers advanced security features that protect against application threats.
 Disadvantages/Pain Points:
-Lack of multi-regional replication can affect the availability and speed of access across Frasers' global operations.
+Complexity and cost of configuration and maintenance can be challenging for Frasers’ IT team.
 Future State:
-Plan to migrate all our container images at Frasers to Google Artifact Registry (GAR) to leverage better scalability and multi-regional support.
-Google Artifact Registry
-Purpose: To adopt a cloud-based image container registry that supports robust, scalable management of container images and artifacts across Google Cloud services for Frasers.
+Frasers plans to integrate F5 solutions more deeply with cloud services to enhance automation and reduce operational overhead.
+Istio
+Purpose: To manage a robust service mesh framework that provides enhanced security, observability, and traffic management for microservices at Frasers.
 Advantages:
-Supports multi-regional replication, ensuring high availability and quick access to images globally for Frasers.
+Provides automatic load balancing, fine-grained traffic management, and secure service-to-service communication within Frasers’ Kubernetes environments.
+Enhances observability and diagnostics across services, improving operational insights for Frasers.
 Disadvantages/Pain Points:
-N/A (assumes full alignment with Frasers' needs).
+The complexity of Istio’s setup and management might require additional training for Frasers’ IT staff.
 Future State:
-Complete migration of all container images from GitHub Packages and potentially other registries to GAR for improved performance and reliability at Frasers.
-Harbor
-Purpose: To maintain a secure, on-premises registry for storing container images, aligning with Frasers Group’s requirements for data sovereignty and security.
+Frasers is working towards harnessing Istio’s full capabilities to automate and secure microservices communications more efficiently.
+NGINX Ingress
+Purpose: To manage external access to Frasers’ services with an efficient Ingress controller that routes and manages traffic within Kubernetes environments.
 Advantages:
-Hosted on-premises, providing full control over the security and compliance of container images at Frasers.
-Integrates seamlessly with Kubernetes, supporting Frasers' container orchestration platforms with robust access controls.
+NGINX is known for its performance and stability, providing reliable ingress control that efficiently handles routing for Frasers’ applications.
+Configurable and flexible, allowing detailed route and performance optimizations tailored to Frasers’ needs.
 Disadvantages/Pain Points:
-Limited support and documentation may challenge ongoing maintenance and scalability at Frasers.
-Being open-source, it requires rigorous security practices at Frasers to mitigate potential vulnerabilities.
+Requires precise configuration and monitoring to align with Frasers’ operational standards and traffic patterns.
 Future State:
-Implement robust backup strategies at Frasers and potentially expand usage as Harbor evolves to better support its features and community.
+Frasers intends to optimize NGINX Ingress configurations to leverage automated scaling and advanced traffic management techniques for improved resilience and efficiency.
