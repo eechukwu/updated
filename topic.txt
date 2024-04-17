@@ -1,27 +1,3 @@
-F5
-Purpose: To provide robust load balancing and traffic management solutions that enhance the availability and performance of applications at Frasers.
-Advantages:
-Delivers enterprise-level load balancing and network optimization features that ensure high availability and performance of Frasers’ applications.
-Offers advanced security features that protect against application threats.
-Disadvantages/Pain Points:
-Complexity and cost of configuration and maintenance can be challenging for Frasers’ IT team.
-Future State:
-Frasers plans to integrate F5 solutions more deeply with cloud services to enhance automation and reduce operational overhead.
-Istio
-Purpose: To manage a robust service mesh framework that provides enhanced security, observability, and traffic management for microservices at Frasers.
-Advantages:
-Provides automatic load balancing, fine-grained traffic management, and secure service-to-service communication within Frasers’ Kubernetes environments.
-Enhances observability and diagnostics across services, improving operational insights for Frasers.
-Disadvantages/Pain Points:
-The complexity of Istio’s setup and management might require additional training for Frasers’ IT staff.
-Future State:
-Frasers is working towards harnessing Istio’s full capabilities to automate and secure microservices communications more efficiently.
-NGINX Ingress
-Purpose: To manage external access to Frasers’ services with an efficient Ingress controller that routes and manages traffic within Kubernetes environments.
-Advantages:
-NGINX is known for its performance and stability, providing reliable ingress control that efficiently handles routing for Frasers’ applications.
-Configurable and flexible, allowing detailed route and performance optimizations tailored to Frasers’ needs.
-Disadvantages/Pain Points:
-Requires precise configuration and monitoring to align with Frasers’ operational standards and traffic patterns.
-Future State:
-Frasers intends to optimize NGINX Ingress configurations to leverage automated scaling and advanced traffic management techniques for improved resilience and efficiency.
+Precision Routing: Enables specific user targeting and controlled rollouts.
+Enhanced Security: Enforces mutual TLS for secure, authenticated traffic.
+Streamlined Monitoring: Offers integrated tools for detailed traffic insights.
