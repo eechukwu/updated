@@ -1,9 +1,17 @@
-"NGINX Ingress, when integrated with F5 networks, serves a strategic role by optimizing the management and control of both inbound and outbound traffic in Kubernetes environments.
+All our images are currently being hosted on GitHub Packages.
 
-Just like F5, this is gradually being rolled out with F5 (see the F5 section for details).
+Replicate a version of our images over to GAR.
 
-The network team decided to go with NGINX Ingress instead of Anthos Istio Ingress because:
+Current issues with GitHub Packages:
 
-There is a lack of detailed documentation/support for Anthos Istio Ingress.
-NGINX Ingress is owned by F5.
-Vendor Support: F5 officially supports NGINX Ingress, unlike Anthos Istio, which lacks support."
+Image retention issues.
+Availability issue because it doesn't support multi-region replication.
+We are currently working on a POC to migrate a replica of our images from GitHub Packages to GAR.
+
+Migrate a version of our images over to GAR.
+
+We are also working on a POC to install Harbor on-prem (HA).
+Here are the spike tickets on this:
+
+Install (HA) Harbor on-prem.
+Replicate a version of our images over."
