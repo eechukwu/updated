@@ -1,3 +1,11 @@
-Sealed secrets are currently being used in production clusters for imagePullSecrets. For F5: All the F5 configuration files can be found in the F5 repositories.
+Non-Prod and Prod Internal Clusters:
+Currently being used in all internal clusters to mount secrets to pods.
 
-We have replaced the imagePullSecret with clusterExternalSecret for the non-prod environments. We need to do the same for the prod clusters, and here is the ticket for it.
+Ecom Clusters:
+External secrets are currently in use, so they have not been used in any of the Ecom clusters.
+
+Non-Prod and Prod Internal Clusters:
+
+Replace it with ExternalSecrets to match the Ecom clusters.
+Remove it from the bootstrap pipeline.
+Clean up the clusters.
