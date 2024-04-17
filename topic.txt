@@ -1,20 +1,5 @@
-SSL (Secure Sockets Layer):
+Currently installed via Bootstrap script, running version: xxxxx.
 
-SSL is used to secure data transmitted over the internet by encrypting the connection between a user's browser and the server.
-It ensures data integrity, security, and privacy, helping protect against eavesdropping and tampering.
-Current SSL State:
-
-We manually generate SSL certificates via a bash script that only a few people can run.
-Future SSL State:
-
-The goal is for SSL certificates to be automatically generated during the application deployment process, and SSL rotation will be handled by a job updating the F5 certs in the repository.
-DNS (Domain Name System):
-
-DNS translates domain names into IP addresses, allowing browsers to load internet resources by name rather than IP address.
-It acts like a phonebook for the internet, making websites accessible through familiar names instead of numerical IP addresses.
-Current DNS State:
-
-We manually generate DNS records by submitting a request to the infrastructure team.
-Future DNS State:
-
-The plan is to provide developers with an input form where they can enter the required application information, and the DNS will be automatically generated immediately.
+Check for version updates.
+Create a ticket to test the update on a single cluster.
+Roll out the update to other clusters once tested.
