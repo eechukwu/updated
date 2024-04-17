@@ -1,3 +1,11 @@
-Precision Routing: Enables specific user targeting and controlled rollouts.
-Enhanced Security: Enforces mutual TLS for secure, authenticated traffic.
-Streamlined Monitoring: Offers integrated tools for detailed traffic insights.
+What NGINX Ingress is Used For:
+NGINX Ingress is used as a controller in Kubernetes to manage access to services from outside the Kubernetes cluster. It directs incoming traffic to the right services based on the rules defined in the ingress resource.
+
+Two Advantages of NGINX Ingress:
+
+Performance: NGINX is known for its high performance and efficiency. It handles large volumes of traffic smoothly and is very fast.
+Flexibility: NGINX Ingress allows detailed configuration options. You can fine-tune the behavior of your ingress traffic extensively, which is great for specific needs.
+Two Disadvantages of NGINX Ingress:
+
+Complex Configuration: While its flexibility is an advantage, it also means that NGINX can be complex to configure correctly, especially for users who are not familiar with its setup and syntax.
+Limited Native Support for Advanced Traffic Routing: NGINX Ingress primarily focuses on basic load balancing and doesn’t natively support advanced traffic management features like canary releases or A/B testing unless integrated with additional tools.
