@@ -1,7 +1,7 @@
 **&#x2713;**
 **x**
 
-Hi Dan, With regards to Vaibhav's Kubernetes access, I assume he needs the same permissions as myself, right?
+Hi Dan, just wanted to let you know I passed the CKAD exam! 🌟 https://www.credly.com/badges/aa07d1cd-3903-42d1-9159-5f69e39624c5/public_url
 
 Argo-repository-credential
 Purpose: Manages repository credentials for Argo projects.
