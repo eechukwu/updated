@@ -1,4 +1,4 @@
-External-secrets automates integrating external secrets into Kubernetes, enabling secure generation and access of secrets from GCP Secrets Manager, simplifying sensitive information management in Kubernetes.
 
 
-Config-management simplifies the management of configurations across multiple Kubernetes clusters. This includes streamlining processes such as synchronizing common RBAC roles like "admin" across clusters and implementing policy controller policies.
+
+(maybe mention that for internal we used internally signed certs and for ecom its ‘proper’ externally issued certs) talk about rotation too - there currently isnt any i think? Timmy might have done something to alert on rotation requirements - check with him
