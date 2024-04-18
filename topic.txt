@@ -1,25 +1,14 @@
 External-secrets automates integrating external secrets into Kubernetes, enabling secure generation and access of secrets from GCP Secrets Manager, simplifying sensitive information management in Kubernetes.
 
 
-Config-management
-Simplifies how we manage configurations across multiple Kubernetes clusters.
-
-(expand to include our use case e.g. Sync common RBAC roles like admin across clusters and policy controller policies)
+Config-management simplifies managing configurations across multiple Kubernetes clusters, including syncing common RBAC roles like admin and policy controller policies.
 
 
-SealedSecrets
-Encrypts secrets to enhance the security of our sensitive information in Kubernetes.  
-
-(expand to say it that it allows secrets to be stored in repo in an encrypted form)
+SealedSecrets encrypts secrets, enhancing security in Kubernetes by securely storing secrets in a repository, ensuring sensitive information remains protected.
 
 
-ArgoWorkflows
-Manages complex job sequences, improving how we handle automation tasks.  
-
-(too generic - used in tandom with ArgoEvents to trigger jobs)
+At Frasers, we use ArgoWorkflows in tandem with ArgoEvents to streamline job sequences, enhancing automation task handling. This combination triggers jobs based on events, enabling dynamic task execution and workflow orchestration.
 
 
-ArgoEvents
-Enables our systems to react automatically to a wide range of events. (pods, deployments etc)
 
-(too generic - what do we use it for e.g. Allowing Jobs to be triggered via events such as http post)
+ArgoEvents empowers our systems to automatically respond to a diverse array of events, including pods, deployments, and more. Specifically, we use it for triggering jobs via events such as HTTP POST requests, enabling seamless automation of various tasks based on specific triggers.
