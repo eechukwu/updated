@@ -1,34 +1,17 @@
-Platform as a Service
-PRPAS-001 - Orchestration to Run and Manage Web Apps
-AWS Partner has deep understanding of and leverages AWS Elastic Beanstalk as an orchestration platform to handle deployments from capacity provisioning, load balancing, auto-scaling to application health monitoring. If an alternate such as Heroku is leveraged, AWS Partner to describe reasons for leveraging alternative(s).
+Auto-Scaling Based on Metrics
+Elastic Beanstalk allows you to define auto-scaling policies that automatically adjust the number of EC2 instances in your environment based on predefined metrics. This ensures that your application has sufficient resources to handle traffic spikes while also scaling down during periods of low demand to optimize costs.
+Scale Out (Add Instances)
+You can configure a scale-out policy to add more instances when certain thresholds are exceeded. For example:
+Metric: Average CPU Utilization across instances
+Threshold: 80%
+Action: Add 1 instance
+With this policy, Elastic Beanstalk will monitor the average CPU utilization across all instances in your environment. If the average CPU utilization exceeds 80%, it will automatically launch an additional EC2 instance to handle the increased load.
+You can also use other metrics like network traffic, disk I/O, or custom application-specific metrics to trigger scale-out events.
+Scale In (Remove Instances)
+Similarly, you can define a scale-in policy to remove instances when demand decreases, ensuring you don't over-provision resources and incur unnecessary costs.
+Metric: Average Network Traffic
+Threshold: 2 MB/second
+Action: Remove 1 instance
+In this example, Elastic Beanstalk will monitor the average network traffic across all instances. If the average traffic drops below 2 MB/second, it will terminate one EC2 instance, as the remaining instances can handle the reduced load.
+You can adjust the thresholds, metrics, and scaling actions based on your application's specific requirements and resource utilization patterns.
 
-Choosing the right EC2 instance size is crucial for effective capacity provisioning in AWS Elastic Beanstalk. Here are some key points:
-
-## Start Small
-
-- Begin with `t2.micro` instances for minimal initial traffic.[1]
-- Scale up to larger instances like `m5.large` as demands grow.[1]
-
-## Match Instance Type to Workload 
-
-- Use compute-optimized (C5, C6) for compute-heavy apps.[1]
-- Use memory-optimized (R4, R5, X1) for data-intensive, in-memory apps.[1]  
-- Use storage-optimized (I3, D2) for apps with large storage I/O.[1]
-
-## Leverage Auto Scaling
-
-- Configure auto-scaling based on metrics like CPU utilization or network traffic.[1][4]
-- Automatically provision capacity to match demand without manual effort.
-
-## Growth Example  
-
-For startups, start with cost-effective `t2.micro`, and auto-scale to `m5.large` as user base and processing needs grow. This supports growth without downtime while only paying for needed capacity.[1][4]
-
-By selecting the right instance types and using Elastic Beanstalk auto-scaling, you can optimize capacity provisioning, maintain performance, and control costs as your application scales.[1][4]
-
-Citations:
-[1] https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.concepts.design.html
-[2] https://aws.amazon.com/blogs/devops/optimizing-the-cost-of-running-aws-elastic-beanstalk-workloads/
-[3] https://aws.plainenglish.io/elastic-beanstalk-101-a-comprehensive-walkthrough-for-all-8216de6b8696?gi=40b8458a29b8
-[4] https://ubertasconsulting.com/modernising-in-aws-elastic-beanstalk-to-fargate/
-[5] https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html
