@@ -1,7 +1,4 @@
-External-secrets
-Automates the integration of external secrets into our K8S environment.       
-
-(expand to say this alows us to generate secrets from data stored in GCP Secrets Manager)
+External-secrets automates integrating external secrets into Kubernetes, enabling secure generation and access of secrets from GCP Secrets Manager, simplifying sensitive information management in Kubernetes.
 
 
 Config-management
