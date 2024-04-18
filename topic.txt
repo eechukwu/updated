@@ -1,5 +1,5 @@
-Currently installed via Bootstrap script, running version: xxxxx.
+Platform as a Service
+PRPAS-001 - Orchestration to Run and Manage Web Apps
+AWS Partner has deep understanding of and leverages AWS Elastic Beanstalk as an orchestration platform to handle deployments from capacity provisioning, load balancing, auto-scaling to application health monitoring. If an alternate such as Heroku is leveraged, AWS Partner to describe reasons for leveraging alternative(s).
 
-Check for version updates.
-Create a ticket to test the update on a single cluster.
-Roll out the update to other clusters once tested.
+Evidence must be in the form of demonstration and description of PaaS as part of AWS Partner’s DevOps strategy.
