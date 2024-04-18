@@ -1,1 +1,28 @@
-Manually installed on the TE Cluster for now, with rollout to other clusters via a bootstrap script. Uninstall if not needed again.
+External-secrets
+Automates the integration of external secrets into our K8S environment.       
+
+(expand to say this alows us to generate secrets from data stored in GCP Secrets Manager)
+
+
+Config-management
+Simplifies how we manage configurations across multiple Kubernetes clusters.
+
+(expand to include our use case e.g. Sync common RBAC roles like admin across clusters and policy controller policies)
+
+
+SealedSecrets
+Encrypts secrets to enhance the security of our sensitive information in Kubernetes.  
+
+(expand to say it that it allows secrets to be stored in repo in an encrypted form)
+
+
+ArgoWorkflows
+Manages complex job sequences, improving how we handle automation tasks.  
+
+(too generic - used in tandom with ArgoEvents to trigger jobs)
+
+
+ArgoEvents
+Enables our systems to react automatically to a wide range of events. (pods, deployments etc)
+
+(too generic - what do we use it for e.g. Allowing Jobs to be triggered via events such as http post)
