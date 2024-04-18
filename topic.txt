@@ -4,11 +4,4 @@ External-secrets automates integrating external secrets into Kubernetes, enablin
 Config-management simplifies managing configurations across multiple Kubernetes clusters, including syncing common RBAC roles like admin and policy controller policies.
 
 
-SealedSecrets encrypts secrets, enhancing security in Kubernetes by securely storing secrets in a repository, ensuring sensitive information remains protected.
-
-
-At Frasers, we use ArgoWorkflows in tandem with ArgoEvents to streamline job sequences, enhancing automation task handling. This combination triggers jobs based on events, enabling dynamic task execution and workflow orchestration.
-
-
-
-ArgoEvents empowers our systems to automatically respond to a diverse array of events, including pods, deployments, and more. Specifically, we use it for triggering jobs via events such as HTTP POST requests, enabling seamless automation of various tasks based on specific triggers.
+SealedSecrets encrypts secrets, enhancing the security of sensitive information in Kubernetes. This allows us at Frasers to securely store secrets in a repository in an encrypted form, mitigating the risk of unauthorized access.
