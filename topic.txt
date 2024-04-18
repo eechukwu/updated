@@ -48,3 +48,29 @@ You can adjust the thresholds, metrics, and scaling actions based on your applic
 +-------------------------+
 
 
+Certainly! Here's the content formatted for Confluence:
+
+---
+
+h2. Auto-Scaling Based on Metrics
+
+Elastic Beanstalk allows defining auto-scaling policies to automatically adjust EC2 instance count based on metrics, ensuring sufficient resources during traffic spikes and cost optimization during low demand.
+
+h3. Scale Out
+
+* Configure scale-out policy with metric (e.g., CPU utilization), threshold (e.g., 80%), and action (e.g., add 1 instance).
+* Elastic Beanstalk monitors the metric and launches instances when the threshold is exceeded.
+* Other metrics like network traffic, disk I/O, or custom metrics can also trigger scale-out.
+
+h3. Scale In
+
+* Define scale-in policy with metric (e.g., network traffic), threshold (e.g., 2 MB/second), and action (e.g., remove 1 instance).
+* Elastic Beanstalk terminates instances when the metric drops below the threshold.
+* Adjust thresholds, metrics, and actions based on your application's needs.
+
+By leveraging auto-scaling based on metrics, Elastic Beanstalk dynamically adjusts capacity to match demand, optimizing performance and cost-effectiveness without manual intervention.
+
+--- 
+
+This should display the content neatly in Confluence with proper headings and bullet points.
+
