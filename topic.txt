@@ -15,3 +15,36 @@ Action: Remove 1 instance
 In this example, Elastic Beanstalk will monitor the average network traffic across all instances. If the average traffic drops below 2 MB/second, it will terminate one EC2 instance, as the remaining instances can handle the reduced load.
 You can adjust the thresholds, metrics, and scaling actions based on your application's specific requirements and resource utilization patterns.
 
+
++-------------------+
+|   Elastic Beanstalk   |
+|   +---------------+   |
+|   | Auto-Scaling  |   |
+|   | Policies      |   |
+|   +---------------+   |
+|          |             |
+|          |             |
++----------+-------------+
+           |
+           |
++----------+-------------+
+|   Monitoring Service   |
+|     (e.g., CloudWatch) |
+|                         |
+| +-------+ +-------+     |
+| | Metric| | Metric|     |
+| |   1   | |   2   |     |
+| +-------+ +-------+     |
++-------------------------+
+           |
+           |
++----------+-------------+
+|   EC2 Instance Pool    |
+|                         |
+| +-------+ +-------+     |
+| |Instance| |Instance|    |
+| |   1   | |   2   |     |
+| +-------+ +-------+     |
++-------------------------+
+
+
