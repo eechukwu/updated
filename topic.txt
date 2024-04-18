@@ -2,7 +2,33 @@ Platform as a Service
 PRPAS-001 - Orchestration to Run and Manage Web Apps
 AWS Partner has deep understanding of and leverages AWS Elastic Beanstalk as an orchestration platform to handle deployments from capacity provisioning, load balancing, auto-scaling to application health monitoring. If an alternate such as Heroku is leveraged, AWS Partner to describe reasons for leveraging alternative(s).
 
-Evidence must be in the form of demonstration and description of PaaS as part of AWS Partner’s DevOps strategy.
+Choosing the right EC2 instance size is crucial for effective capacity provisioning in AWS Elastic Beanstalk. Here are some key points:
 
+## Start Small
 
-At xDesign, we help our customers fully leverage AWS Elastic Beanstalk to streamline their application deployments. Our approach focuses on optimizing performance through capacity provisioning, enhancing scalability by implementing auto-scaling and load balancing, and ensuring robust application health monitoring. Below are our top recommendations for deploying this PaaS tool effectively:
+- Begin with `t2.micro` instances for minimal initial traffic.[1]
+- Scale up to larger instances like `m5.large` as demands grow.[1]
+
+## Match Instance Type to Workload 
+
+- Use compute-optimized (C5, C6) for compute-heavy apps.[1]
+- Use memory-optimized (R4, R5, X1) for data-intensive, in-memory apps.[1]  
+- Use storage-optimized (I3, D2) for apps with large storage I/O.[1]
+
+## Leverage Auto Scaling
+
+- Configure auto-scaling based on metrics like CPU utilization or network traffic.[1][4]
+- Automatically provision capacity to match demand without manual effort.
+
+## Growth Example  
+
+For startups, start with cost-effective `t2.micro`, and auto-scale to `m5.large` as user base and processing needs grow. This supports growth without downtime while only paying for needed capacity.[1][4]
+
+By selecting the right instance types and using Elastic Beanstalk auto-scaling, you can optimize capacity provisioning, maintain performance, and control costs as your application scales.[1][4]
+
+Citations:
+[1] https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.concepts.design.html
+[2] https://aws.amazon.com/blogs/devops/optimizing-the-cost-of-running-aws-elastic-beanstalk-workloads/
+[3] https://aws.plainenglish.io/elastic-beanstalk-101-a-comprehensive-walkthrough-for-all-8216de6b8696?gi=40b8458a29b8
+[4] https://ubertasconsulting.com/modernising-in-aws-elastic-beanstalk-to-fargate/
+[5] https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html
