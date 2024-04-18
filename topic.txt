@@ -1,4 +1,4 @@
 
 
 
-(maybe mention that for internal we used internally signed certs and for ecom its ‘proper’ externally issued certs) talk about rotation too - there currently isnt any i think? Timmy might have done something to alert on rotation requirements - check with him
+For the Internal Cluster, we use internally signed certificates, while for ecom Clusters, we use externally issued certificates. Regarding Certificate rotation, I don't think we currently have any procedures in place for that. I'll need to check with Timmy on this.
