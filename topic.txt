@@ -1,7 +1,4 @@
 External-secrets automates integrating external secrets into Kubernetes, enabling secure generation and access of secrets from GCP Secrets Manager, simplifying sensitive information management in Kubernetes.
 
 
-Config-management simplifies managing configurations across multiple Kubernetes clusters, including syncing common RBAC roles like admin and policy controller policies.
-
-
-SealedSecrets encrypts secrets, enhancing the security of sensitive information in Kubernetes. This allows us at Frasers to securely store secrets in a repository in an encrypted form, mitigating the risk of unauthorized access.
+Config-management simplifies the management of configurations across multiple Kubernetes clusters. This includes streamlining processes such as synchronizing common RBAC roles like "admin" across clusters and implementing policy controller policies.
