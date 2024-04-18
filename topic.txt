@@ -3,3 +3,97 @@ PRPAS-001 - Orchestration to Run and Manage Web Apps
 AWS Partner has deep understanding of and leverages AWS Elastic Beanstalk as an orchestration platform to handle deployments from capacity provisioning, load balancing, auto-scaling to application health monitoring. If an alternate such as Heroku is leveraged, AWS Partner to describe reasons for leveraging alternative(s).
 
 Evidence must be in the form of demonstration and description of PaaS as part of AWS Partner’s DevOps strategy.
+
+
+PRMLO-001 - Cloud and Network Monitoring
+We recommend to our clients the following best practices for Cloud and Network Monitoring:
+
+
+AWS CloudWatch: We collect and track metrics, monitor logs, set alarms, and automatically react to changes in the environment. We Configure CloudWatch to monitor key performance metrics such as CPU utilization, network traffic, disk I/O, and more.
+
+Enable VPC Flow Logs: By enabling VPC Flow Logs, we can monitor network traffic, detect unusual patterns, and troubleshoot connectivity issues. We analyze these logs using CloudWatch Logs, Amazon S3, or third-party tools.
+
+Implement Network Access Control Lists (ACLs): We use Network ACLs to filter traffic based on IP addresses, protocols, and ports.
+
+Deploy AWS Config
+
+Use AWS CloudTrail: We enable CloudTrail to monitor and audit user activity, detect unauthorized actions, and troubleshoot operational issues. You can integrate CloudTrail with CloudWatch Logs for centralized logging and analysis.
+
+Implement Security Groups
+
+Leverage AWS Trusted Advisor: We encourage the use of Trusted Advisor to identify opportunities for improving the network architecture, enhancing security posture, and reducing operational costs.
+
+Set up Alarms and Notifications: We Define CloudWatch alarms to notify when certain metrics breach predefined thresholds. Configure notifications to be sent via email, SMS, or other communication channels.
+
+PRMLO-002 - Distributed Tracing
+At xDesign, we recommend orchestrating distribution  tracing with X-Ray. It gives complete visibility into traffic across AWS services.
+
+Evidence needed here
+
+Best Practices:
+
+
+Instrumentation: Instrument all of your application components to generate trace data. This includes your application code, AWS SDK calls, and any other external services your application interacts with. Ensure that the X-Ray SDK is integrated with your application's codebase.
+
+Service Maps: Use service maps to visualize the architecture of your application and understand how components interact with each other. This can help identify bottlenecks and optimize performance.
+
+Sampling: Configure sampling rules to control the amount of trace data generated. Sampling helps to reduce costs and overhead while still providing sufficient coverage for monitoring and debugging.
+
+Trace Annotations and Metadata: Add custom annotations and metadata to your traces to provide additional context. This can include information such as user IDs, request parameters, or any other relevant details that can help in troubleshooting issues.
+
+Segmentation: Break down traces into smaller segments to isolate performance issues. This can help pinpoint the root cause of latency or errors within your application.
+
+Integration with AWS Services: Take advantage of X-Ray's integration with other AWS services such as Lambda, API Gateway, and ECS. This provides seamless tracing for serverless applications and containerized workloads.
+
+Alerting and Monitoring: Set up alarms and notifications based on X-Ray metrics to proactively identify and respond to issues. Monitor key performance indicators such as latency, error rates, and throughput.
+
+Continuous Improvement: Use X-Ray insights to continuously optimize and improve your application's performance. Identify areas for optimization and implement changes based on data-driven decisions.
+
+Security: Ensure that sensitive information is not captured in trace data. Implement proper security controls to protect trace data and comply with relevant regulations such as GDPR or HIPAA.
+
+Open Screenshot 2024-04-03 at 16.09.35.png
+Screenshot 2024-04-03 at 16.09.35.png
+ 
+
+Open Screenshot 2024-04-03 at 16.11.37.png
+Screenshot 2024-04-03 at 16.11.37.png
+ 
+
+Open Screenshot 2024-04-03 at 16.12.21.png
+Screenshot 2024-04-03 at 16.12.21.png
+ 
+
+Open Screenshot 2024-04-03 at 16.13.09.png
+Screenshot 2024-04-03 at 16.13.09.png
+ 
+
+PRMLO-003 - Activity and API Usage Tracking
+At xDesign, we recommend using AWS CloudTrail to monitor activity in AWS accounts and enabling it across all accounts and regions.
+
+CloudTrail gives the client an audit trail of actions taken in their accounts and can help alert on unusual activity. 
+
+Our Baseline recommendations 
+
+CloudTrail 
+
+Enable in Organisation and delegate account  to a Logging account
+
+S3 bucket in Logging Account 
+
+Log file Validation: Enabled 
+
+Multi-region: Enabled 
+
+Log file SSE-KMS encryption Enabled 
+
+Evaluate and recommend Clout Trail Lake if needed
+
+ 
+
+Open Screenshot 2024-04-03 at 16.22.14.png
+Screenshot 2024-04-03 at 16.22.14.png
+Add in links to examples of where CloudTrail is enabled in customer examples…
+
+ 
+
+Add label
