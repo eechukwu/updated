@@ -1,4 +1,48 @@
 
+why am i getting this error: 
+
+error: stackdrivers.addons.gke.io "stackdriver" is invalid
+error: stackdrivers.addons.gke.io "stackdriver" is invalid
 
 
-For the Internal Cluster, we use internally signed certificates, while for ecom Clusters, we use externally issued certificates. Regarding Certificate rotation, I don't think we currently have any procedures in place for that. I'll need to check with Timmy on this.
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: addons.gke.io/v1alpha1
+kind: Stackdriver
+metadata:
+  creationTimestamp: "2023-08-15T11:28:15Z"
+  generation: 6
+  labels:
+    bundle.gke.io/component-name: stackdriver-operator-addon
+    bundle.gke.io/component-version: 1.16.3-gke.45
+    bundle.gke.io/package-deployment-name: package-deployment
+    bundle.gke.io/package-deployment-namespace: non-prod-tech-enablement
+  name: stackdriver
+  namespace: kube-system
+  resourceVersion: "131668004"
+  uid: 2ff5df65-bc17-4367-b0aa-4d55ba2817c2
+spec:
+  anthosDistribution: on-prem
+  clusterLocation: europe-west2
+  clusterName: non-prod-tech-enablement
+  resourceAttrOverride:
+  	gke-metrics-agent/gke-metrics-agent:
+  	  requests:
+    		cpu: 250m
+    		memory: 5500Mi
+  	  limits:
+    		cpu: 200m
+    		memory: 4.5Gi
+  enableCloudLoggingForApplications: true
+  enableMultiline: true
+  enableVPC: false
+  featureGates:
+    enableGMPForSystemMetrics: false
+  gcpServiceAccountSecretName: google-cloud-credentials-j6zfn2
+  namespaceProfile: on-prem
+  projectID: corp-test-mgmt-anthos-3578
+  proxyConfigSecretName: proxy-config
+  scalableMonitoring: true
+  scaling: auto
