@@ -1,1 +1,4 @@
-The monitoring data appears to be very accurate and helpful when it comes to debugging applications, but the dashboards are not as useful in delivering the results we want. We should either improve our dashboards or consider looking for another monitoring tool.
+I passed my CKAD exam on Tuesday and also got news that I will be starting at FanDuel on Monday. It was really a good week.
+It was kind of a mixed week. I rolled out from one FanDuel project on Wednesday and was told on Friday that I will be joining another one soon. So, it was a good week—100% better than staying on the bench.
+
+
