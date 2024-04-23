@@ -1,5 +1,7 @@
-Following up on a GCP ticket that we created regarding some PagerDuty alerts we have been receiving, we have decided to roll out the recommended solution suggested by Google to the Prod Clusters.
+Good Morning Everyone!
 
-Here is a link to the GCP tickets:
+Just a quick update: Following up on the GCP ticket we opened due to the PagerDuty alerts we've been receiving, we've decided to implement the solution recommended by Google on the Prod Clusters. We are only increasing the memory and CPU on the Stackdriver pods. This change won’t affect any of Fraser’s current workload running on the cluster.
 
-We are only increasing the memory and CPU on the Stackdriver pods. This change won't affect any of FRASER's workload currently running on the cluster.
+Please feel free to reach out if you have any concerns.
+
+Thanks!
