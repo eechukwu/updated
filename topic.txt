@@ -1,7 +1,13 @@
 Good Morning Everyone!
 
-Just a quick update: Following up on the GCP ticket we opened due to the PagerDuty alerts we've been receiving, we've decided to implement the solution recommended by Google on the Prod Clusters. We are only increasing the memory and CPU on the Stackdriver pods. This change won’t affect any of Fraser’s current workload running on the cluster.
+
+
+Just a quick update: Following up on a GCP support ticket we opened with Google due to a PagerDuty alerts we've been receiving, we've decided to rollout the solution recommended by Google on the Prod Clusters. We are only increasing the memory and CPU on the Stackdriver pods (in-built metrics). This change won’t affect any of Fraser’s current workload running on the cluster.
+
+
 
 Please feel free to reach out if you have any concerns.
+
+
 
 Thanks!
