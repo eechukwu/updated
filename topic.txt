@@ -1,4 +1,5 @@
-I passed my CKAD exam on Tuesday and also got news that I will be starting at FanDuel on Monday. It was really a good week.
-It was kind of a mixed week. I rolled out from one FanDuel project on Wednesday and was told on Friday that I will be joining another one soon. So, it was a good week—100% better than staying on the bench.
+Following up on a GCP ticket that we created regarding some PagerDuty alerts we have been receiving, we have decided to roll out the recommended solution suggested by Google to the Prod Clusters.
 
+Here is a link to the GCP tickets:
 
+We are only increasing the memory and CPU on the Stackdriver pods. This change won't affect any of FRASER's workload currently running on the cluster.
