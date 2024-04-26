@@ -1,9 +1,6 @@
-Update the daily checks documentation to add more information
+Hi Everyone,
 
-Add a list of the argo cd endpoints for each kubernetes cluster (including ecom)
+Please be informed that the daily check documentation has been updated with the following additions:
 
-Add a link to the te-shared-script repo
-
-Share the documentation link with the team.
-
-Identify key metrics on what we are looking for what is 'bad'. This will help us to drive the right monitoring tool in as we know what good/bad looks like.
+Argo CD Endpoints: Included for each Kubernetes cluster, including eCommerce.
+Repository Link: Access the te-shared-script repository here (add the actual link).
