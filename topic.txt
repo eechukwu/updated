@@ -17,3 +17,258 @@ The Python scripts you provided are focused on gathering and monitoring various 
 - **Ingress URLs Health Check**: This involves gathering URLs from Kubernetes ingress resources and checking their health endpoints, primarily validating if the URLs respond with a 200 HTTP status code, indicating they are operational. It also captures other statuses like 404 or unexpected errors, indicating potential issues.
 
 These metrics are crucial for maintaining the operational health and efficiency of Kubernetes clusters, providing administrators with the necessary data to manage cluster resources effectively and troubleshoot issues as they arise.
+
+
+
+
+Checking Kubernetes Anthos cluster logs in Google Cloud Platform (GCP) is crucial for monitoring application health. By analysing logs, you can detect excessive log generation and identify errors or warnings
+ identify problematic applications, and review their sync status and logs.
+ To verify the health of the control plane components, run the following command: 
+ Check Worker Nodes Health: 
+  Verify the status of the networking components in the cluster. You can use kubectl to check the status of services and pods:
+  This can include checking the status of Deployments, StatefulSets, and other application-specific resources:
+  Check Pod Restart Counts Use the following command to get a list of pods along with their restart counts:
+  View Pod Resource Usage To check the resource usage of pods, including CPU and memory utilization, use the following command:
+  
+  
+  
+  
+  Daily Maintenance Tasks
+Here are the daily cluster maintenance tasks and steps to keep our GCP Anthos cluster running smoothly. By following these routine maintenance practices, you can minimize downtime and keep your cluster running efficiently.
+
+GCP Logs
+Checking Kubernetes Anthos cluster logs in Google Cloud Platform (GCP) is crucial for monitoring application health. By analysing logs, you can detect excessive log generation and identify errors or warnings. Follow these steps to easily access and review the logs of your Anthos clusters in GCP. 
+
+Step 1: Open the Google Cloud Console by visiting console.cloud.google.com and log in to your GCP account.
+
+Step 2: In the console, select the project that contains your Anthos clusters.
+
+Open gcpconsole.png
+gcpconsole.png
+Step 3: From the left-side menu, click on "Kubernetes Engine" and Select Clusters from the options. See image below.
+
+Open GCP2.png
+GCP2.png
+Step 4: Select the specific Anthos cluster you want to check the logs for.
+
+Step 6: In the cluster details page, search for "Logs Explorer" to access the logs.
+
+Step 7: By default, the logs will display all log entries. You can use the filters to narrow down the logs based on time range, Kubernetes Container, Kubernetes Node, Audited Resource e.t.c.
+
+Step 8: In our case we are interested in filtering it with the Kubernetes Container. After which you scroll down to the Pod Name section and look for apps with excessive log generation. Its also worth noting that you can filter via Cluster Name. See image below for details.
+
+Open GCP4.png
+GCP4.png
+Step 9: Analyse the logs to identify any recurring log entries, errors, or warnings that might suggest problems or misconfigurations.
+
+Step 10: Once you identify the issue, take the necessary steps to resolve it. This might involve optimizing your application's logging settings, adjusting resource allocation, or addressing any underlying problems.
+
+ArgoCD Console
+To troubleshoot application issues in ArgoCD, log into the Argo instances and access the logs. Follow these steps to easily navigate the interface, identify problematic applications, and review their sync status and logs.
+
+Step 1: To access the ArgoCD interface, open the URL where it is hosted. For example, if you need to log in to the warehouse ArgoCD account, open the argo-warehouse-prod URL in your web browser. Log in to Argo CD using your Azure AD credentials. 
+
+Step 2: Once logged in, you will see the Argo CD dashboard with a list of applications deployed. Identify the application(s) that are out of sync or failing.    
+
+Open argo1.png
+argo1.png
+Step 3: Click on the application name to access its details and status.
+
+Open argo2.png
+argo2.png
+Step 4: Within the application details, you will find information about the sync status, health status, and any errors or warnings related to the application. 
+
+Open argo3.png
+argo3.png
+Step 5: To view more specific logs and details about the application, look for the option to access the logs or event stream. This may vary depending on your Argo CD configuration.
+
+Open argo4.png
+argo4.png
+Click on the appropriate link or button to access the logs or event stream for the application.
+
+Step 6: Analyse the logs or event stream to identify any errors, warnings, or events that indicate the cause of the out-of-sync or failing state.
+
+Step 7: Based on the information gathered from the logs, take the necessary actions to resolve the issues. This might involve troubleshooting the application configuration, fixing code errors, or addressing any underlying infrastructure problems.
+
+Please ensure that this action is carried out on all Argo CD accounts/clusters as listed in the handover documents. 
+
+Warehouse Kubernetes Handover
+
+Ecommerce Internal Kubernetes Handover
+
+Buying Cluster Kubernetes Handover
+
+Retail Cluster Kubernetes Handover
+
+Cluster Health Checks
+To perform routine health checks on an Anthos Kubernetes cluster, you can follow these steps:
+
+Access the Anthos Kubernetes Cluster First, you need to authenticate and connect to your Anthos Kubernetes cluster. Use the following command to authenticate using the Google Cloud SDK:
+
+
+
+gcloud auth login
+gcloud config set project PROJECT_ID
+gcloud container clusters get-credentials CLUSTER_NAME --region REGION_NAME
+Check Control Plane Health: To verify the health of the control plane components, run the following command: 
+
+
+
+kubectl get componentstatuses
+Check Worker Nodes Health: To ensure the worker nodes are healthy and ready to accept workloads, use the following command:
+
+
+
+kubectl get nodes
+Check Networking Verify the status of the networking components in the cluster. You can use kubectl to check the status of services and pods:
+
+
+
+kubectl get services --all-namespaces
+kubectl get pods --all-namespaces
+Check Cluster Events Check for any cluster-level events or issues that may have occurred:
+
+
+
+kubectl get events --all-namespaces
+Perform Application-Level Health Checks Depending on the applications running in the cluster, you may need to perform additional health checks at the application level. This can include checking the status of Deployments, StatefulSets, and other application-specific resources:
+
+
+
+kubectl get deployments --all-namespaces
+kubectl get statefulsets --all-namespaces
+
+Automate this check with a script or a dashboard
+Pod Restart Checks
+Access the Kubernetes Cluster Authenticate and access the Kubernetes cluster using the appropriate command-line tool. 
+
+Check Pod Restart Counts Use the following command to get a list of pods along with their restart counts:
+
+
+
+kubectl get pods --all-namespaces
+This will display the list of pods in all namespaces along with their current restart counts.
+
+Sort by Restart Counts To identify pods with high restart rates easily, you can sort the pods based on the restart counts using the --sort-by flag:
+
+
+
+kubectl get pods --all-namespaces -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,RESTARTS:.status.containerStatuses[0].restartCount | sort -k 3 -nr
+This command will sort the pods in ascending order of restart counts.
+
+Inspect Pod Details: Once you identify pods with high restart counts, you can inspect the specific pod to understand the reason for the frequent restarts. Use the following command to get detailed information about a particular pod:
+
+
+
+kubectl describe pod POD_NAME -n NAMESPACE
+Replace POD_NAME and NAMESPACE with the appropriate values from the previous kubectl get pods command.
+
+Check Pod Logs: Review the pod's logs to look for any error messages or exceptions that might indicate the cause of the restarts:
+
+
+
+kubectl logs POD_NAME -n NAMESPACE
+Check Resource Limits and Requests Inspect the pod's resource limits and requests to ensure they are appropriately configured. Resource constraints can lead to pod restarts due to resource exhaustion:
+
+
+
+kubectl describe pod POD_NAME -n NAMESPACE | grep -A 5 "Limits\|Requests"
+Review Events and Events Logs Check the cluster events to see if there are any events related to the pod restarts: 
+
+
+
+kubectl get events --all-namespaces | grep POD_NAME
+Address the Underlying Issues Based on your investigation, take appropriate actions to address the underlying issues causing the frequent pod restarts. This might involve adjusting resource limits, fixing application code, or optimizing application configurations.
+
+Pod Resource Usage
+Access the Kubernetes Cluster Authenticate and access the Kubernetes cluster using the appropriate command-line tool.
+
+View Pod Resource Usage To check the resource usage of pods, including CPU and memory utilization, use the following command:
+
+
+
+kubectl top pods --all-namespaces
+This will display a list of pods in all namespaces along with their CPU and memory usage.
+
+Sort by Resource Usage To easily identify pods with the highest resource consumption, you can sort the pods based on CPU or memory usage using the --sort-by flag. For example, to sort by CPU usage, run:
+
+
+
+kubectl top pods --all-namespaces --sort-by=cpu
+Inspect Node Resource Usage In addition to monitoring pod resource usage, it's essential to monitor node-level resource consumption. Use the following command to view node resource usage, including CPU and memory:
+
+
+
+kubectl top nodes
+Investigate High Resource Usage For pods or nodes with high resource consumption, investigate the root cause by checking logs and application performance. Look for potential performance bottlenecks, resource constraints, or inefficient code.
+
+Optimize Resource Requests and Limits Ensure that pods have appropriate resource requests and limits defined in their configurations. Resource requests should reflect the minimum amount of resources a pod needs to run, while resource limits indicate the maximum allowed usage. Properly setting these values can prevent resource contention and ensure fair allocation.
+
+You can check the Pod Resource Usage in the Cluster summary dashboard on the GCP console. However, the steps mentioned earlier will help you investigate and figure out the specific reason behind any issues related to resource usage in the pods. These steps allow you to take appropriate actions to optimize the performance of the cluster and fix any problems.
+
+PagerDuty Outstanding Incidents
+To check for outstanding PagerDuty incidents related to Kubernetes (K8s), follow these steps:
+
+Step 1: Log in to PagerDuty:
+Go to the PagerDuty website PagerDuty  and log in using your credentials.
+
+Step 2: Navigate to Incidents:
+Once logged in, navigate to the "Services" and select “Service Directory“ section from the dropdown menu in the PagerDuty dashboard.
+
+Step 3: Filter Incidents by Anthos Kubernetes Tag:
+Look for the filter options or search bar and enter "Anthos Kubernetes" as a search keyword to filter incidents specifically related to Anthos Kubernetes. See image below for example. 
+
+Open pg1.png
+pg1.png
+Step 4: Check Incident Status:
+Review the incidents listed in the search results. Check their status to identify if there are any open or unresolved incidents related to Kubernetes. 
+
+Open pg2.png
+pg2.png
+From the image above, you can see that there is an open incident related to the Anthos Kubernetes Warehouse Platform. Clicking into the incident will redirect you to a detailed incident page, as shown above.
+
+Step 5: Review Incident Details:
+Click on the relevant incidents to view their details. Assess the incident timeline, severity, impact, and any actions taken so far.
+
+Step 6: Take Necessary Actions:
+If there are any outstanding or unresolved incidents, take appropriate actions to address the underlying issues. Escalate the incident to the relevant teams if needed.
+
+Check SSL EndPoints
+Use the script that on the repo below to Check SSL EndPoint.  It provides an automated way to ensure that your applications are properly configured with SSL and return the expected HTTP status codes.
+
+Repository
+
+The script and any associated utilities can be found on our GitHub repository: ssl-endpoint-check
+
+Please ensure to always pull the latest version from the repository before use.
+
+Usage:
+
+Setup:  
+Ensure you have kubectl and curl installed. The script assumes you have access to the desired Kubernetes clusters and their contexts configured correctly.
+
+Configuration:
+Clone the repository and navigate to the script directory. Update the CLUSTERS list in the script to represent your Kubernetes clusters' information, such as name, project, and context.
+
+Execution:  
+Run the script using:
+
+
+
+python ssl_endpoint_check.py
+The script will:
+
+Switch to the specified Kubernetes context for each cluster.
+
+Retrieve a list of all applications (deployments) and their associated ingress URLs.
+
+Check each URL for its SSL configuration and HTTP status.
+
+Interpret Results:  
+The script will group and display results based on the HTTP status codes received (e.g., all 200 OK statuses together, followed by 404 Not Found, etc.). 
+
+Check Microsoft Team Deployments Channel:
+In the Microsoft Teams Deployment Channel, it's crucial to check things daily to ensure everything runs smoothly. Keep an eye on when apps were last updated. If you notice any problems, such as failed deployments or states like Unknown, OutOfSync, Progressing, Suspended, Degraded, or missing, create a ticket to fix them. 
+
+Regularly look at the deployments channel to spot anything unusual, like sync issues or other failed deployments, and make sure everything is working fine. 
+  
