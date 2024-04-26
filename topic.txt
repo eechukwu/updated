@@ -1,1 +1,9 @@
-PagerDuty Incidents: Stay on top of PagerDuty incidents related to Kubernetes. Quickly acknowledge all incidents, contact the relevant app team for app-related issues, and if resolution takes over 30 minutes, create a ticket to track the effort.
+Update the daily checks documentation to add more information
+
+Add a list of the argo cd endpoints for each kubernetes cluster (including ecom)
+
+Add a link to the te-shared-script repo
+
+Share the documentation link with the team.
+
+Identify key metrics on what we are looking for what is 'bad'. This will help us to drive the right monitoring tool in as we know what good/bad looks like.
