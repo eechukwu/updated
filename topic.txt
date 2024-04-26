@@ -1,6 +1,5 @@
-Hi Everyone,
-
-Please be informed that the daily check documentation has been updated with the following additions:
+Hi Everyone, Please be informed that the daily check documentation has been updated with the following info:
 
 Argo CD Endpoints: Included for each Kubernetes cluster, including eCommerce.
-Repository Link: Access the te-shared-script repository here (add the actual link).
+
+Repository Link: Access the te-shared-script repository.  Here is the link to the docs 
