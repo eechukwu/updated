@@ -1,76 +1,23 @@
-import subprocess
-import json
-import sys
-import os
+Absolutely, here's the full personalized content for the monitoring and maintenance of our Kubernetes Anthos cluster at Frasers Group, including the updated information about deployment requirements:
 
-# Setup the path to the common directory to import clusters.py
-common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
-sys.path.insert(0, os.path.abspath(common_dir))
+- **Component Statuses**: Ensure all core components of our cluster are healthy. Alert the team if anything shows as not healthy, as this could impact our entire system.
 
-from clusters import CLUSTERS, switch_context, ANSIColors
+- **Worker Nodes Health**: Regularly verify that all worker nodes are operational. Report any nodes that are in a 'NotReady' state, as this could indicate potential hardware or connectivity issues.
 
-def get_deployments():
-    """
-    Retrieves deployments in the current Kubernetes context,
-    excluding certain namespaces and categorizing based on the replica count and naming convention.
-    Includes the replica count in the output.
-    """
-    ignore_namespaces = [
-        "anthos-identity-service", "argocd", "argoworkflows", "bigip", "cert-manager",
-        "config-management-system", "external-secrets", "gatekeeper-system", "gke-connect",
-        "gke-managed-metrics-server", "gke-system", "kube-system"
-    ]
-    cmd = ['kubectl', 'get', 'deployments', '--all-namespaces', '-o', 'json']
-    result = subprocess.run(cmd, capture_output=True, text=True)
+- **Networking Components Status**: Monitor the performance of services and pods closely. If any are struggling to start or frequently restarting, it might suggest configuration errors or resource limitations.
 
-    if result.returncode != 0:
-        print(f"{ANSIColors.RED}Error retrieving deployments: {result.stderr}{ANSIColors.ENDC}")
-        return [], []
+- **Deployment and StatefulSets Status**: Keep tabs on the status of Deployments and StatefulSets. Watch out for any 'Unavailable' replicas that could affect our application availability and scalability. Importantly, ensure that API-related deployments are running at least two replicas for redundancy and reliability, while other deployments may operate with one replica. This distinction is crucial for maintaining the operational efficiency and robustness of our services.
 
-    deployments = json.loads(result.stdout)
+- **Pod Restart Counts**: Track the restart counts for pods. High numbers typically mean the applications are unstable, potentially due to errors or resource inadequacy. Any pod with a restart count exceeding 5 should be thoroughly investigated to determine the cause and remedy the issue promptly.
 
-    api_deployments_one_replica = []
-    other_deployments_one_replica = []
+- **Pod Resource Usage**: Observe the CPU and memory usage of our pods. Excessive use can lead to performance bottlenecks, so it’s crucial to manage this proactively. Specifically, any pods operating at or near 100% CPU or memory capacity should be investigated immediately to prevent overloads and potential service disruptions.
 
-    for item in deployments['items']:
-        namespace = item['metadata']['namespace']
-        if namespace in ignore_namespaces:
-            continue
+- **Daily Logs Monitoring**: Consistently review the cluster logs to spot any repetitive errors or excessive logging. These can be signs of underlying issues that might need our attention.
 
-        name = item['metadata']['name']
-        replicas = item['spec'].get('replicas', 0)
-        ready_replicas = item['status'].get('readyReplicas', 0)
+- **SSL Endpoints Check**: Ensure that all application endpoints are properly secured with valid SSL certificates and are returning the correct HTTP statuses, maintaining our security standards.
 
-        if replicas == 1 and ready_replicas == 1:
-            deployment_detail = f"{namespace}/{name} - {replicas} replica(s)"
-            if name.endswith('api') or name.endswith('Api'):
-                api_deployments_one_replica.append(deployment_detail)
-            else:
-                other_deployments_one_replica.append(deployment_detail)
+- **PagerDuty Incidents**: Stay on top of PagerDuty incidents related to Kubernetes. Prioritize these based on severity to maintain operational efficiency and minimize service disruption.
 
-    return api_deployments_one_replica, other_deployments_one_replica
+- **Microsoft Teams Deployment Channel**: Regularly monitor updates in our Microsoft Teams Deployment Channel. Address any sync issues or failed deployments promptly to keep everything running smoothly.
 
-def print_table(deployments, title):
-    if deployments:
-        print(f"{ANSIColors.GREEN}{title}:{ANSIColors.ENDC}")
-        headers = ['Namespace/Deployment', 'Replicas']
-        col_width = max(len(dep) for dep in deployments + headers) + 10  # Adjusted for better formatting
-        print(f"{headers[0].ljust(col_width)} | {headers[1]}")
-        print('-' * (col_width + 3 + len(headers[1])))
-        for dep in deployments:
-            namespace_deployment, replicas = dep.rsplit(' - ', 1)
-            print(f"{namespace_deployment.ljust(col_width)} | {replicas}")
-    else:
-        print(f"{ANSIColors.RED}No {title.lower()} found.{ANSIColors.ENDC}")
-
-def main():
-    for cluster in CLUSTERS:
-        if switch_context(cluster):
-            print(f"\n{ANSIColors.CYAN}Checking cluster: {cluster['name']}{ANSIColors.ENDC}")
-            api_deployments, other_deployments = get_deployments()
-
-            print_table(api_deployments, "API Deployments running one replica")
-            print_table(other_deployments, "Other Deployments running one replica")
-
-if __name__ == "__main__":
-    main()
+These measures form a crucial part of our commitment to maintaining a robust and efficient operational environment at Frasers Group, ensuring that our systems are always performing at their best.
