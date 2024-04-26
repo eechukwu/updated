@@ -1,1 +1,1 @@
-Here is the repository that contains all the automated scripts we use for daily, weekly, and monthly checks
+PagerDuty Incidents: Stay on top of PagerDuty incidents related to Kubernetes. Quickly acknowledge all incidents, contact the relevant app team for app-related issues, and if resolution takes over 30 minutes, create a ticket to track the effort.
