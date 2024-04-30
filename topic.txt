@@ -1,3 +1,6 @@
-Hi Alex,
-
-I am writing to confirm that your account has been given access to the Blabla account. Below, you will find some documentation that can help you moving forward. Please feel free to get in touch if you need any assistance.
+I need to have your advice on this, we are running API for transactions submission to SD_LQM database.
+It has requested RAM: 1Gi, CPU 2, Limited RAM 2Gi and CPU 4. 
+CPU utilization is fine but for RAM it reaching on requested 40% and limited to 20% approximately. 
+Branches that using API are 292, 917
+Regions 2, 3, 12, 99
+According to logs it's 30%, would you suggest to raise the RAM for the full transition?
