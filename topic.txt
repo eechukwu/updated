@@ -1,4 +1,5 @@
+Good morning to you both,
 
-Good morning, everyone. Just a quick message to let you know that I have resumed work on this project. I will be making all the required CRD changes and will reach out for your assistance with testing and advancing the project as needed. Thank you.
+I will be updating the F5 CRD that is currently running on the Non-Prod Tech Enablement Cluster. The main reason for this update is that as we started the rollout of the F5 ingress to our clusters, our network team requested better health checks be added to the F5 ingress configuration. Unfortunately, our current version doesn’t support the required parameters.
 
-As we started the rollout of the F5 ingress to our clusters our network team asked for better health checks to be added to the F5 ingress configuration but our current version didn’t support the required parameters.
+Please note that these changes won't affect any of the current workloads running on the cluster. This update will only be implemented on the Non-Prod Tech Enablement Cluster.
