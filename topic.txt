@@ -1,6 +1,3 @@
+Hi Alex,
 
-Good morning to you both,
-
-I am updating the F5 CRD on the Non-Prod Tech Enablement Cluster. We need this update because, with the rollout of the F5 ingress across our clusters, the network team has requested improved health checks. Our current F5 version does not support these enhancements.
-
-Rest assured, this update will not impact any existing workloads and is limited to the Non-Prod Tech Enablement Cluster.
+I am writing to confirm that your account has been given access to the Blabla account. Below, you will find some documentation that can help you moving forward. Please feel free to get in touch if you need any assistance.
