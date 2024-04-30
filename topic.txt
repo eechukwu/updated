@@ -1,5 +1,6 @@
+
 Good morning to you both,
 
-I will be updating the F5 CRD that is currently running on the Non-Prod Tech Enablement Cluster. The main reason for this update is that as we started the rollout of the F5 ingress to our clusters, our network team requested better health checks be added to the F5 ingress configuration. Unfortunately, our current version doesn’t support the required parameters.
+I am updating the F5 CRD on the Non-Prod Tech Enablement Cluster. We need this update because, with the rollout of the F5 ingress across our clusters, the network team has requested improved health checks. Our current F5 version does not support these enhancements.
 
-Please note that these changes won't affect any of the current workloads running on the cluster. This update will only be implemented on the Non-Prod Tech Enablement Cluster.
+Rest assured, this update will not impact any existing workloads and is limited to the Non-Prod Tech Enablement Cluster.
