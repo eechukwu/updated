@@ -1,2 +1,4 @@
 
 Good morning, everyone. Just a quick message to let you know that I have resumed work on this project. I will be making all the required CRD changes and will reach out for your assistance with testing and advancing the project as needed. Thank you.
+
+As we started the rollout of the F5 ingress to our clusters our network team asked for better health checks to be added to the F5 ingress configuration but our current version didn’t support the required parameters.
