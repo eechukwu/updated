@@ -1,1 +1,16 @@
 
+    buying_viewer = {
+      ad = "FG-Global-AAD-GCP-GKE-Buying-SecretViewer@frasers.group"
+      role = "roles/secretmanager.secretAccessor"
+      prefix = "bd"
+    },
+    buying_editor = {
+      ad = "FG-Global-AAD-GCP-GKE-Buying-SecretEditor@frasers.group"
+      role = "roles/secretmanager.secretVersionAdder"
+      prefix = "bd"
+    },
+    buying_editor_view = {
+      ad = "FG-Global-AAD-GCP-GKE-Buying-SecretEditor@frasers.group"
+      role = "roles/secretmanager.secretAccessor"
+      prefix = "bd"
+    },
