@@ -1,3 +1,40 @@
-Hi Melinda,
+Your "Cluster Rebuild Incident Report" mostly communicates the necessary information, but there are a few grammatical and stylistic adjustments needed to enhance clarity and professionalism. Here's a revised version of your report:
 
-I’m reaching out because I noticed that the app-name is currently syncing to your dev branch and it’s failing. Is there a particular reason why this app is syncing to your dev branch? I have checked the app repository but I can't find any dev branch on it. Am I okay to switch the app to sync with the main branch?
+---
+
+**Cluster Rebuild Incident Report**
+
+Due to a recent issue we encountered while attempting to manually update CRDs, we mistakenly deleted all CRDs running in the cluster. After manually reinstalling the CRDs, some of the workloads ceased operation, and the worker node status changed to Unschedulable.
+
+After troubleshooting the issue for a few hours, we decided to rebuild the clusters.
+
+Below are some of the steps we took while rebuilding the cluster:
+
+1) **Backup Sealed Secrets:**
+   - Command: [Insert Command Here]
+   - Note: In our case, the sealed secrets were deleted when the CRDs were deleted, so the command returned empty resources.
+
+2) **GitOps Principle:**
+   - Since we practice the GitOps principle, which means that all our resources were deployed via code, there was no need to back up any of their manifest files.
+
+3) **Destroy the Cluster:**
+   - Command: [Insert Command Here]
+   - Note: After destroying the cluster, make sure to clean up VMware. We noticed that the destroy command did not delete all the VMs; we had to manually delete one. Also, refer to the Google documentation for additional checks. [Insert link to GCP docs]
+
+4) **Build the Cluster:**
+   - Command: [Insert Command Here]
+   - You can find more information about building the cluster in the links below. Please refer to the documentation if unsure.
+
+5) **Manual Installation of Script:**
+   - This script grants the GitHub Actions Bootstrap pipeline permission to operate on the newly built cluster via RBAC.
+
+6) **Run the Bootstrap Script:**
+   - This will install all the Add-ons.
+   - Issue encountered: Version issue on [specify detail].
+
+7) **Login into ArgoCD and Create the Application Apps:**
+   - Once this step is completed, the applications should be deployed automatically into the cluster.
+   - Issues encountered:
+     - Some applications were still utilizing GitHub secrets instead of cluster external secrets, which required updating those apps.
+     - Some apps were using sealed secrets, which also meant that I had to reseal the secrets on the cluster since the secrets were stored in the admin cluster.
+
