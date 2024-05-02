@@ -1,6 +1,1 @@
 
-These are the two most popular options that we can implement:
-Let's discuss these with the rest of the team and create follow-up tickets for rolling them out.
-
-Implement Role-Based Access Control (RBAC): Control who can create, update, and delete CRDs through defined roles.
-Use Admission Controllers: Deploy controllers like Gatekeeper to enforce policies that reject delete operations on CRDs.
