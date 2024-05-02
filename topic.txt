@@ -1,3 +1,10 @@
+Could you please confirm the following details:
+
+What is the full meaning of "ED Group"?
+Do they already have an active AD group?
+I will need to update the details below with this information once you provide it.
+
+Thank you.
 
     buying_viewer = {
       ad = "FG-Global-AAD-GCP-GKE-Buying-SecretViewer@frasers.group"
