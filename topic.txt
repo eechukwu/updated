@@ -1,27 +1,44 @@
-locals {
-  google_artifact = {
-    "wh" = {
-      push_service_account = "sa-registry-wh-push",
-      repositories = jsondecode(file("../common/repositories-warehouse.json"))
-    },
-    "rt" = {
-      push_service_account = "sa-registry-rt-push",
-      repositories = jsondecode(file("../common/repositories-retail.json"))
-    },
-    "bd" = {
-      push_service_account = "sa-registry-bd-push",
-      repositories = jsondecode(file("../common/repositories-buying.json"))
-    },
-    "ec-internal" = {
-      push_service_account = "sa-registry-ec-internal-push",
-      repositories = jsondecode(file("../common/repositories-ecommerce-internal.json"))
-    }
-  }
-}
+Terraform encountered an error while generating this plan.
 
-resource "google_service_account_iam_member" "sa_members" {
-  for_each           = { for sa, details in local.google_artifact : sa => details.repositories }
-  service_account_id = data.google_service_account.existing[each.key].id
-  role               = "roles/iam.workloadIdentityUser"
-  member             = format("principalSet://iam.googleapis.com/projects/%s/locations/global/workloadIdentityPools/%s/attribute.repository/frasers-group/%s", data.google_project.this.number, var.identity_pool_name, each.value)
-}
+╷
+│ Error: Invalid template interpolation value
+│ 
+│   on openidconnect.tf line 33, in resource "google_service_account_iam_member" "sa_members":
+│   33:   member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.value}"
+│     ├────────────────
+│     │ each.value is tuple with 5 elements
+│ 
+│ Cannot include the given value in a string template: string required.
+╵
+╷
+│ Error: Invalid template interpolation value
+│ 
+│   on openidconnect.tf line 33, in resource "google_service_account_iam_member" "sa_members":
+│   33:   member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.value}"
+│     ├────────────────
+│     │ each.value is tuple with 30 elements
+│ 
+│ Cannot include the given value in a string template: string required.
+╵
+╷
+│ Error: Invalid template interpolation value
+│ 
+│   on openidconnect.tf line 33, in resource "google_service_account_iam_member" "sa_members":
+│   33:   member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.value}"
+│     ├────────────────
+│     │ each.value is tuple with 21 elements
+│ 
+│ Cannot include the given value in a string template: string required.
+╵
+╷
+│ Error: Invalid template interpolation value
+│ 
+│   on openidconnect.tf line 33, in resource "google_service_account_iam_member" "sa_members":
+│   33:   member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.value}"
+│     ├────────────────
+│     │ each.value is tuple with 42 elements
+│ 
+│ Cannot include the given value in a string template: string required.
+╵
+
+Error: Process completed with exit code 1.
