@@ -1,49 +1,27 @@
 locals {
   google_artifact = {
     "wh" = {
-      push_service_account = "sa-registry-wh-push"
-    }
+      push_service_account = "sa-registry-wh-push",
+      repositories = jsondecode(file("../common/repositories-warehouse.json"))
+    },
     "rt" = {
-      push_service_account = "sa-registry-rt-push"
-      repositories         = jsondecode(file("../common/repositories-retail.json"))
-    }
+      push_service_account = "sa-registry-rt-push",
+      repositories = jsondecode(file("../common/repositories-retail.json"))
+    },
     "bd" = {
-      push_service_account = "sa-registry-bd-push"
+      push_service_account = "sa-registry-bd-push",
+      repositories = jsondecode(file("../common/repositories-buying.json"))
     },
     "ec-internal" = {
-      push_service_account = "sa-registry-ec-internal-push"
+      push_service_account = "sa-registry-ec-internal-push",
+      repositories = jsondecode(file("../common/repositories-ecommerce-internal.json"))
     }
   }
-    wh_repositories = jsondecode(file("../common/repositories-warehouse.json"))
-    rt_repositories = jsondecode(file("../common/repositories-warehouse.json"))
-    bd_repositories = jsondecode(file("../common/repositories-buying.json"))
-    ec_internal_repositories = jsondecode(file("../common/repositories-ecommerce-internal.json"))
 }
 
-resource "google_service_account_iam_member" "wh_sa_members" {
-  for_each           = toset(local.wh_repositories)
-  service_account_id = data.google_service_account.existing["wh"].id
+resource "google_service_account_iam_member" "sa_members" {
+  for_each           = { for sa, details in local.google_artifact : sa => details.repositories }
+  service_account_id = data.google_service_account.existing[each.key].id
   role               = "roles/iam.workloadIdentityUser"
-  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.key}"
-}
-
-resource "google_service_account_iam_member" "rt_sa_members" {
-  for_each           = toset(local.rt_repositories)
-  service_account_id = data.google_service_account.existing["rt"].id
-  role               = "roles/iam.workloadIdentityUser"
-  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.key}"
-}
-
-resource "google_service_account_iam_member" "bd_sa_members" {
-  for_each           = toset(local.bd_repositories)
-  service_account_id = data.google_service_account.existing["bd"].id
-  role               = "roles/iam.workloadIdentityUser"
-  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.key}"
-}
-
-resource "google_service_account_iam_member" "ec_internal_sa_members" {
-  for_each           = toset(local.ec_internal_repositories)
-  service_account_id = data.google_service_account.existing["ec-internal"].id
-  role               = "roles/iam.workloadIdentityUser"
-  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.identity_pool_name}/attribute.repository/frasers-group/${each.key}"
+  member             = format("principalSet://iam.googleapis.com/projects/%s/locations/global/workloadIdentityPools/%s/attribute.repository/frasers-group/%s", data.google_project.this.number, var.identity_pool_name, each.value)
 }
