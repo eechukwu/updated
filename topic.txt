@@ -1,1 +1,57 @@
-Basically, I need you to gather the content of our current pain points with regards to monitoring, as you demonstrated on Friday, because that's going to be the content of the ticket.
+Good Morning All,
+
+I can confirm that the CRD has been successfully upgraded on the Non-Prod Tech Enablement Cluster.
+And I can also confirm that we now have the required variable in the updated CRD
+
+minimumMonitors:
+  anyOf:
+  - type: integer
+  - type: string
+  x-kubernetes-int-or-string: true
+  
+Following up on the above as well, I have gone ahead and tested the new configuration with an internal test app on the tech_enablement cluster and i can confirm that it was successfully applied, below are the apps configuration: 
+
+apiVersion: "cis.f5.com/v1"
+kind: VirtualServer
+metadata:
+  name: test-te-internal-test-app-vs
+  namespace: nginx-ingress
+  labels:
+    f5cr: "true"
+spec:
+  virtualServerAddress: 172.16.110.224
+  host: test-te-internal-test-app.anthos.sportski.com
+  # hostGroup: tech_enablement   # Allows to share IP with other Apps
+  # tlsProfileName: test-te-internal-test-app-tls
+  policyName: fg-bigip-bp-tcp-xff-policy
+  pools:
+  - name: nginx_ingress_tech_enablement_hg # Confirm with Paul or Rob
+    path: /
+    service: nginx-ingress-nginx-controller
+    servicePort: 80
+    minimumMonitors: 1
+    monitor:
+      name: "/Common/http"
+      reference: "bigip"
+      type: http
+      interval: 10
+      timeout: 31
+      send: "GET /health HTTP/1.1\r\nHost: test-te-internal-test-app.anthos.sportski.com\r\nConnection: Close\r\n\r\n"
+      recv: "Healthy"
+	  
+
+Output:
+
+ubuntu@non-prod-gke-admin-ws-230210-132552:~$ kubectl apply -f  f5test1.yaml
+virtualserver.cis.f5.com/test-te-internal-test-app-vs created
+
+ubuntu@non-prod-gke-admin-ws-230210-132552:~$ kubectl get virtualserver.cis.f5.com  -A
+NAMESPACE       NAME                           HOST                                            TLSPROFILENAME   HTTPTRAFFIC   IPADDRESS        IPAMLABEL   IPAMVSADDRESS   STATUS   AGE
+nginx-ingress   test-te-internal-test-app-vs   test-te-internal-test-app.anthos.sportski.com                                  172.16.110.224                                        41s
+
+
+Following up on all the above, Here is a PR for the test App. 
+Note: This is just a test app, The application will be tested internally on my local system. Hence why i have commented out the secret bit. Finally the application will be deleted once you the 
+network team agrees that you are happy with the configuration. 
+
+Feel free to get intouch if you have any question. 
