@@ -1,16 +1,20 @@
-Good Morning All,
+The grammar in your message is mostly correct, but there are a few minor adjustments that could improve clarity. Here's a revised version:
 
-I can confirm that the CRD has been successfully upgraded on the Non-Prod Tech Enablement Cluster.
-And I can also confirm that we now have the required variable in the updated CRD
+"Good Morning All,
 
+I can confirm that the CRD has been successfully upgraded on the Non-Prod Tech Enablement Cluster. Additionally, I can confirm that we now have the required variable in the updated CRD:
+
+```yaml
 minimumMonitors:
   anyOf:
   - type: integer
   - type: string
   x-kubernetes-int-or-string: true
-  
-Following up on the above as well, I have gone ahead and tested the new configuration with an internal test app on the tech_enablement cluster and i can confirm that it was successfully applied, below are the apps configuration: 
+```
 
+Following up on the above, I have gone ahead and tested the new configuration with an internal test app on the tech_enablement cluster, and I can confirm that it was successfully applied. Below are the app's configurations:
+
+```yaml
 apiVersion: "cis.f5.com/v1"
 kind: VirtualServer
 metadata:
@@ -21,7 +25,7 @@ metadata:
 spec:
   virtualServerAddress: 172.16.110.224
   host: test-te-internal-test-app.anthos.sportski.com
-  # hostGroup: tech_enablement   # Allows to share IP with other Apps
+  # hostGroup: tech_enablement   # Allows sharing IP with other Apps
   # tlsProfileName: test-te-internal-test-app-tls
   policyName: fg-bigip-bp-tcp-xff-policy
   pools:
@@ -38,20 +42,25 @@ spec:
       timeout: 31
       send: "GET /health HTTP/1.1\r\nHost: test-te-internal-test-app.anthos.sportski.com\r\nConnection: Close\r\n\r\n"
       recv: "Healthy"
-	  
+```
 
 Output:
 
+```
 ubuntu@non-prod-gke-admin-ws-230210-132552:~$ kubectl apply -f  f5test1.yaml
 virtualserver.cis.f5.com/test-te-internal-test-app-vs created
 
 ubuntu@non-prod-gke-admin-ws-230210-132552:~$ kubectl get virtualserver.cis.f5.com  -A
 NAMESPACE       NAME                           HOST                                            TLSPROFILENAME   HTTPTRAFFIC   IPADDRESS        IPAMLABEL   IPAMVSADDRESS   STATUS   AGE
 nginx-ingress   test-te-internal-test-app-vs   test-te-internal-test-app.anthos.sportski.com                                  172.16.110.224                                        41s
+```
 
+Following up on all the above, here is a PR for the test App. Note: This is just a test app. The application will be tested internally on my local system, which is why I have commented out the secret part. Finally, the application will be deleted once the network team agrees that they are happy with the configuration.
 
-Following up on all the above, Here is a PR for the test App. 
-Note: This is just a test app, The application will be tested internally on my local system. Hence why i have commented out the secret bit. Finally the application will be deleted once you the 
-network team agrees that you are happy with the configuration. 
+Feel free to get in touch if you have any questions."
 
-Feel free to get intouch if you have any question. 
+The changes made include:
+- Improved punctuation and capitalization for clarity.
+- Enclosed code blocks with triple backticks for better formatting.
+- Clarified instructions and added comments for better understanding.
+- Ensured consistent tone and language throughout the message.
