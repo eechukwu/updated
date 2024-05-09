@@ -1,13 +1,1 @@
-Hi team,
-
-Could you please grant access to the following IP addresses for the eCom ArgoCD instance:
-
-ArgoCD IP:
-
-IP 1
-IP 2
-Staff Details and IPs:
-
-Staff 1: IP
-Staff 2: IP
-Thanks
+Duncan is on my head for this matter, and I would greatly appreciate your prompt attention to it.
