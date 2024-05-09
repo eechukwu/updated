@@ -1,4 +1,8 @@
+Hi Duncan,
 
-Hi Daucan, 
+Could you please provide the IP address for your VM? We need it to grant you access to the ecom external clusters ArgoCD.
 
-Please can I have the IP address for your VM inorder to give you access to ecom external clusters ArgoCD?
+Simply log into your VM
+Open Command Prompt
+Type 'ipconfig'
+Thanks!
