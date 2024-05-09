@@ -1,1 +1,4 @@
 
+Hi Daucan, 
+
+Please can I have the IP address for your VM inorder to give you access to ecom external clusters ArgoCD?
