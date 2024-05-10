@@ -1,17 +1,7 @@
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: test-wh-putwall-api
-  name: wh-putwall-api
-spec:
-  selector:
-    app: test-wh-putwall-api
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
+Good Afternoon,
 
-Hi Duncan,
+I am writing to confirm that I have completed the F5 health check testing with our te-internal-test-app, and it seems to be working fine. Below are the results of the testing:
 
-I wanted to update you that the Network team has completed their task. Could you please test it to ensure everything is working as expected on your end. Thanks
+Tom, are you satisfied with the health check configuration? Can we go ahead and roll this out to the rest of the apps?
+
+Thanks
