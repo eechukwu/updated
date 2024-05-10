@@ -1,7 +1,1 @@
-Good Afternoon,
-
-I am writing to confirm that I have completed the F5 health check testing with our te-internal-test-app, and it seems to be working fine. Below are the results of the testing:
-
-Tom, are you satisfied with the health check configuration? Can we go ahead and roll this out to the rest of the apps?
-
-Thanks
+I can confirm that the access issue has been resolved. XXXX was able to connect successfully. I will now inform the rest of the users that it is sorted.
