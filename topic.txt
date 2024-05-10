@@ -11,3 +11,7 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
+
+Hi Duncan,
+
+I wanted to update you that the Network team has completed their task. Could you please test it to ensure everything is working as expected on your end. Thanks
