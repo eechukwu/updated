@@ -1,1 +1,28 @@
-Writing to confirm that the access issues have been sorted out. Thanks.
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: test-wh-putwall-api
+  name: wh-putwall-api
+spec:
+  selector:
+    app: test-wh-putwall-api
+
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-te-internal-test-app-nginx
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: test-te-internal-test-app.anthos.sportski.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: test-te-internal-test-app
+            port:
+              number: 80
