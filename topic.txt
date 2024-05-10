@@ -7,22 +7,7 @@ metadata:
 spec:
   selector:
     app: test-wh-putwall-api
-
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: ingress-te-internal-test-app-nginx
-spec:
-  ingressClassName: nginx
-  rules:
-  - host: test-te-internal-test-app.anthos.sportski.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: test-te-internal-test-app
-            port:
-              number: 80
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
