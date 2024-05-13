@@ -1,1 +1,10 @@
-I can confirm that the access issue has been resolved. XXXX was able to connect successfully. I will now inform the rest of the users that it is sorted.
+  # Update kustomize with images from GAR
+        - name: Authenticate with GAR
+          uses: google-github-actions/auth@35b0e87d162680511bf346c299f71c9c5c379033  # v1.1.1
+          if: ${{github.event.inputs.TEAM_PREFIX != ''}}
+          id: auth
+          with:
+            token_format: access_token
+            workload_identity_provider: 'projects/279795997641/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+            service_account: 'sa-registry-${{inputs.TEAM_PREFIX}}-push@${{inputs.ARTIFACT_PROJECT}}.iam.gserviceaccount.com'
+            access_token_lifetime: 600s
