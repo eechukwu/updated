@@ -1,2 +1,1 @@
-
-This task has now been completed. The CRDs were successfully updated on all the Non-prod clusters.
+Morning Tom, Following up on this, I found some examples in the F5 repo for configuring two monitors. I'll update the manifest file and submit a new PR.
