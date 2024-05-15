@@ -5,7 +5,7 @@ metadata:
 spec:
   replicas: 0
   revisionHistoryLimit: 5
-  strategy: # set strategy, considering if the app can have multiple replicas or not https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  strategy: # set strategy, considering if the app can have multiple replicas or not
     rollingUpdate:
       maxSurge: 25%
       maxUnavailable: 25%
@@ -19,56 +19,54 @@ spec:
         app: prod-bd-inbound-source-producer-app-1
     spec:
       serviceAccountName: gcp-access
-      securityContext:
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-            - ALL
-      resources:
-        requests:
-          memory: "512Mi"
-          cpu: "250m"
-        limits:
-          memory: "1024Mi"
-          cpu: "500m"
-      livenessProbe: # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-        httpGet:
-          path: /health
-          port: 8080
-        initialDelaySeconds: 20
-        periodSeconds: 10
-      readinessProbe: # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-        httpGet:
-          path: /health
-          port: 8080
-        initialDelaySeconds: 20
-        periodSeconds: 10
       imagePullSecrets:
-      - name: prod-github-imagepull
+        - name: prod-github-imagepull
       volumes:
         - name: gcp-secrets-volume
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: prod-gcp-secrets # this doesn't get automatically prefixed by kustomize
+              secretProviderClass: prod-gcp-secrets
         - name: appsettings-volume
           configMap:
-           name: appsettings-1
-           items:
-            - key: appsettings.mounted-1.json
-              path: appsettings.mounted.json
+            name: appsettings-1
+            items:
+              - key: appsettings.mounted-1.json
+                path: appsettings.mounted.json
       containers:
-      - image: app # overwritten by images block in environment specific kustomization.yaml
-        name: bd-inbound-source-producer-app-2
+      - name: bd-inbound-source-producer-app-2
+        image: app # overwritten by images block in environment-specific kustomization.yaml
         imagePullPolicy: Always
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 10
         volumeMounts:
-        - name: gcp-secrets-volume
-          readOnly: true
-          mountPath: "/secret-volume"
-        - name: appsettings-volume
-          mountPath: /app/appsettings.mounted.json
-          subPath: appsettings.mounted.json
+          - name: gcp-secrets-volume
+            mountPath: "/secret-volume"
+            readOnly: true
+          - name: appsettings-volume
+            mountPath: /app/appsettings.mounted.json
+            subPath: appsettings.mounted.json
         env:
           - name: ASPNETCORE_ENVIRONMENT
             value: Development
@@ -76,8 +74,6 @@ spec:
             value: corp-test-mgmt-anthos-3578
           - name: ENV_CLUSTERNAME
             value: non-prod-buying
-          - name: ASPNETCORE_ENVIRONMENT
-            value: Development
           - name: ASPNETCORE_URLS 
             value: http://*:8080
           - name: ENV_NODENAME
@@ -89,19 +85,16 @@ spec:
               fieldRef:
                 fieldPath: metadata.name
           - name: ENV_PODNAMESPACE
-            valueFrom:
+            value_from:
               fieldRef:
                 fieldPath: metadata.namespace
-          - name: ENV_PROJECTID
-            value: corp-test-mgmt-anthos-3578
-          - name: ENV_CLUSTERNAME
-            value: non-prod-buying
-        ports:
-        - containerPort: 8080
-          protocol: TCP
         dnsPolicy: ClusterFirst
         restartPolicy: Always
-        securityContext: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         terminationGracePeriodSeconds: 30
         imagePullSecrets:
           - name: regcred
