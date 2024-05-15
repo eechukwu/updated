@@ -1,1 +1,2 @@
 
+I need to submit a change request to delete a redundant SQS queue (xxxx) related to user status changes. Could anyone assist? Thanks!
