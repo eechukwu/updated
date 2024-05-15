@@ -1,2 +1,38 @@
+upcoming maintenance for unit B upcoming disk maintenance 
 
-I need to submit a change request to delete a redundant SQS queue (xxxx) related to user status changes. Could anyone assist? Thanks!
+
+
+
+
+Task:
+
+Send out comms to the Cluster Main Contacts
+Setup a meeting with the Infra team
+Put physical host into Maintainance mood 
+turn off the maintenance mood after the maintenance
+Verify that everything is working fine after the maintenance
+
+
+Problem Statement:
+
+
+Work Involved:
+
+
+Test Criteria:
+
+
+Dependencies:
+N/A
+
+
+its fairly easy - set the hosts in site B for both vmware clusters in main mode so vmware evacuates the hosts
+a few days before
+then we can fail it back a few days after the work - no need to do anything on the day
+yeah you maint mode a physical host - and it will snapshot the machines memory, pause it very briefly then move it to another host
+without even restarting it
+Find and sign in to your Slack workspace.
+you will have to do that 1 by 1 for each of the 3 hosts in site B
+the only annoyance is when you maint mode Site B Host 1, it might move everything to Site B Host 2
+and you cant do much about that but once all 3 are done you are good
+if you just pulled the plug on site B, it would start all the vms up from cold on site A
