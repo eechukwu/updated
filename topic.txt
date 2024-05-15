@@ -1,111 +1,87 @@
-### Monitoring in Elastic Beanstalk: Recommendations by xDesign
+Capacity Provisioning: 
 
-At xDesign, we recommend using AWS CloudWatch for comprehensive monitoring of your Elastic Beanstalk applications. By implementing these best practices and monitoring key metrics, you can ensure optimal performance and reliability for your Elastic Beanstalk applications.
+Choosing the right EC2 instance size is crucial for effective capacity provisioning in AWS Elastic Beanstalk. Here are some key points:
 
-#### Key Components
+Start Small
 
-- **AWS CloudWatch:** Serves as a central monitoring solution, collecting metrics and providing enhanced health reporting for instances and components within your Elastic Beanstalk environment.
-- **Enhanced Health Reporting:** Offers detailed visibility into the health status of individual instances and components, empowering proactive troubleshooting and issue resolution.
-- **Environment Health Dashboard:** Displays the overall health status of the environment, including instance health and request statistics.
-- **Logs and Metrics:** Integrates with Amazon CloudWatch to provide detailed logs and metrics, enabling proactive monitoring and troubleshooting.
-- **Alarms and Notifications:** Configurable alarms to notify of any changes in the environment's health or performance metrics.
+Begin with t2.micro instances for minimal initial traffic.
 
-#### Best Practices
+Scale up to larger instances like m5.large as demands grow.
 
-Our recommended best practices include:
+Match Instance Type to Workload
 
-1. **Define Key Metrics:**
-   Identify critical performance metrics such as CPU utilisation, memory usage, and network traffic for effective monitoring.
+Use compute-optimized (C5, C6) for compute-heavy apps.
 
-2. **Set Up Alarms:**
-   Configure CloudWatch alarms to receive notifications of performance anomalies, enabling timely intervention and resolution.
+Use memory-optimized (R4, R5, X1) for data-intensive, in-memory apps.
 
-3. **Customise Dashboards:**
-   Create tailored CloudWatch dashboards for real-time visibility into key metrics and trends.
+Use storage-optimized (I3, D2) for apps with large storage I/O.
 
-4. **Utilise Logs and Traces:**
-   Leverage CloudWatch Logs and AWS X-Ray for detailed insights into application behaviour and performance bottlenecks.
+Leverage Auto Scaling
 
-5. **Monitor Auto-Scaling:**
-   Track auto-scaling activities to ensure dynamic resource adjustments, optimising responsiveness to demand fluctuations.
+Configure auto-scaling based on metrics like CPU utilisation or network traffic.
 
-#### Key Metrics to Monitor
+Automatically provision capacity to match demand without manual effort.
 
-We emphasise monitoring the following key metrics:
+Example
 
-1. **CPU Utilisation:**
-   Ensure sufficient processing power for application workloads. High CPU usage can indicate the need for scaling or optimisation.
+For startups, start with cost-effective t2.micro, and auto-scale to m5.large as user base and processing needs grow. This supports growth without downtime while only paying for needed capacity.
 
-2. **Memory Usage:**
-   Monitor memory usage to prevent issues and ensure smooth operation. Memory leaks or insufficient memory allocation can lead to application crashes.
+By selecting the right instance types and using Elastic Beanstalk auto-scaling, you can optimise capacity provisioning, maintain performance, and control costs as your application scales.
 
-3. **Network Traffic:**
-   Detect and address potential bottlenecks to ensure optimal connectivity and data transfer rates. Monitoring network traffic can help identify abnormal patterns or potential DDoS attacks.
+Auto-Scaling: 
 
-4. **Latency and Response Time:**
-   Assess user experience by monitoring application performance metrics. High latency or slow response times can negatively impact user satisfaction and indicate underlying issues.
+Elastic Beanstalk provides various auto-scaling policies to dynamically adjust EC2 instance count based on specific metrics, catering to diverse application needs for optimal performance and cost-effectiveness.
 
-5. **Error Rates:**
-   Monitor application error rates to minimise disruptions and ensure reliability. High error rates can indicate bugs, misconfigurations, or infrastructure problems.
+Auto-Scaling Based on Metrics:
 
-6. **Application Health:**
-   Proactively monitor the health status of load balancers, databases, and dependencies. This includes checking the status of various AWS services integrated with your Elastic Beanstalk environment.
+Elastic Beanstalk allows defining auto-scaling policies to automatically adjust EC2 instance count based on metrics, ensuring sufficient resources during traffic spikes and cost optimisation during low demand.
 
-#### Implementation Example
+Scale Out
 
-Here's an example of how you can implement these best practices:
+Configure scale-out policy with metric (e.g., CPU utilisation), threshold (e.g., 80%), and action (e.g., add 1 instance).
 
-```json
-{
-  "metrics": [
-    "CPUUtilization",
-    "MemoryUsage",
-    "NetworkIn",
-    "NetworkOut",
-    "Latency",
-    "ErrorRate",
-    "HealthStatus"
-  ],
-  "alarm": {
-    "metric": "CPUUtilization",
-    "threshold": 80,
-    "comparisonOperator": "GreaterThanThreshold",
-    "period": 300,
-    "evaluationPeriods": 1,
-    "alarmActions": ["arn:aws:sns:region:account-id:alarm-notification"]
-  },
-  "dashboard": {
-    "widgets": [
-      {
-        "type": "metric",
-        "properties": {
-          "metrics": [
-            ["AWS/EC2", "CPUUtilization", "InstanceId", "i-1234567890abcdef0"],
-            ["AWS/EC2", "MemoryUsage", "InstanceId", "i-1234567890abcdef0"]
-          ],
-          "title": "Instance Metrics",
-          "period": 300
-        }
-      }
-    ]
-  },
-  "autoScaling": {
-    "scalingPolicies": [
-      {
-        "policyName": "scaleUp",
-        "adjustmentType": "ChangeInCapacity",
-        "scalingAdjustment": 1,
-        "cooldown": 300
-      },
-      {
-        "policyName": "scaleDown",
-        "adjustmentType": "ChangeInCapacity",
-        "scalingAdjustment": -1,
-        "cooldown": 300
-      }
-    ]
-  }
-}
-```
+Elastic Beanstalk monitors the metric and launches instances when the threshold is exceeded.
 
-By following these best practices and leveraging AWS CloudWatch, you can effectively monitor and manage your Elastic Beanstalk applications, ensuring they remain performant and reliable.
+Other metrics like network traffic, disk I/O, or custom metrics can also trigger scale-out.
+
+Scale In
+
+Define scale-in policy with metric (e.g., network traffic), threshold (e.g., 2 MB/second), and action (e.g., remove 1 instance).
+
+Elastic Beanstalk terminates instances when the metric drops below the threshold.
+
+Adjust thresholds, metrics, and actions based on your application's needs.
+
+Memory-Based Scaling:
+
+Automatically adjust capacity based on memory utilisation, suitable for memory-intensive applications.
+
+Configure auto-scaling policy based on memory utilisation, ideal for memory-intensive applications.
+
+Example: Set a policy to add instances when average memory utilisation exceeds a threshold.
+
+Disk I/O-Based Scaling:
+
+Scale instances based on disk read/write operations or disk queue length metrics, beneficial for applications with heavy disk I/O requirements.
+
+Support for scaling based on disk read/write operations or disk queue length metrics, beneficial for applications with heavy disk I/O requirements.
+
+Application-Specific Metrics:
+
+Customise auto-scaling based on application-level metrics like active user sessions or queue lengths.
+
+Define custom metrics published by your application to trigger auto-scaling events, allowing scaling based on application-level indicators such as active user sessions or queue lengths.
+
+Target Tracking Scaling:
+
+Automatically adjust capacity to maintain specific metric values, ensuring efficient resource utilisation.
+
+Utilise target tracking scaling policies to automatically adjust capacity to maintain specific metric values, ensuring efficient resource utilisation.
+
+Example: Maintain CPU utilisation around 50%.
+
+Scheduled Scaling:
+
+Define recurring schedules for increasing or decreasing capacity based on anticipated traffic patterns.
+
+Employ scheduled scaling to define recurring schedules for increasing or decreasing capacity based on anticipated traffic patterns.
