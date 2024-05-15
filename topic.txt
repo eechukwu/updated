@@ -37,10 +37,10 @@ Load balancing distributes incoming application traffic across multiple instance
 **Best Practices:**
 
 **Use Elastic Load Balancing (ELB):**
-- **Types of Load Balancers:** Choose the appropriate load balancer type based on your application needs. Elastic Beanstalk supports Application Load Balancers (ALBs), Network Load Balancers (NLBs), and Classic Load Balancers (CLBs).
-  - **Application Load Balancer (ALB):** Ideal for HTTP/HTTPS traffic, provides advanced routing features such as host-based and path-based routing.
-  - **Network Load Balancer (NLB):** Suitable for applications requiring ultra-low latency and high throughput, typically used for TCP/UDP traffic.
-  - **Classic Load Balancer (CLB):** Legacy option for simple load balancing of HTTP/HTTPS and TCP traffic.
+
+- **Application Load Balancer (ALB):** Ideal for HTTP/HTTPS traffic, provides advanced routing features such as host-based and path-based routing.
+- **Network Load Balancer (NLB):** Suitable for applications requiring ultra-low latency and high throughput, typically used for TCP/UDP traffic.
+- **Classic Load Balancer (CLB):** Legacy option for simple load balancing of HTTP/HTTPS and TCP traffic.
 
 **Health Checks:**
 - **Configure Health Checks:** Set up health checks to monitor the health of your instances. Elastic Beanstalk automatically removes unhealthy instances from the load balancer.
@@ -149,9 +149,7 @@ Here's an example of how you can implement these best practices:
       },
       {
         "policyName": "scaleDown",
-        "adjustmentType":
-
- "ChangeInCapacity",
+        "adjustmentType": "ChangeInCapacity",
         "scalingAdjustment": -1,
         "cooldown": 300
       }
@@ -160,7 +158,9 @@ Here's an example of how you can implement these best practices:
 }
 ```
 
-By following these best practices and leveraging AWS CloudWatch, you can effectively monitor and manage your Elastic Beanstalk applications, ensuring they remain performant and reliable.
+By following these best practices and leveraging AWS CloudWatch, you can effectively monitor and manage your Elastic Beanstalk applications,
+
+ ensuring they remain performant and reliable.
 
 ### Heroku as an Alternative to AWS Elastic Beanstalk
 
