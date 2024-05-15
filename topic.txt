@@ -1,3 +1,107 @@
-Hi Jay,
-
-I've looked at this app, and the manifest file doesn't seem right. The resources, livenessProbe, and readinessProbe should be specified inside the containers.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bd-inbound-source-producer-app-1
+spec:
+  replicas: 0
+  revisionHistoryLimit: 5
+  strategy: # set strategy, considering if the app can have multiple replicas or not https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate # Use Recreate here if you can only run 1 copy of your container at a time and remove the rolling update block above
+  selector:
+    matchLabels:
+      app: prod-bd-inbound-source-producer-app-1
+  template:
+    metadata:
+      labels: 
+        app: prod-bd-inbound-source-producer-app-1
+    spec:
+      serviceAccountName: gcp-access
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          memory: "512Mi"
+          cpu: "250m"
+        limits:
+          memory: "1024Mi"
+          cpu: "500m"
+      livenessProbe: # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+        httpGet:
+          path: /health
+          port: 8080
+        initialDelaySeconds: 20
+        periodSeconds: 10
+      readinessProbe: # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+        httpGet:
+          path: /health
+          port: 8080
+        initialDelaySeconds: 20
+        periodSeconds: 10
+      imagePullSecrets:
+      - name: prod-github-imagepull
+      volumes:
+        - name: gcp-secrets-volume
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: prod-gcp-secrets # this doesn't get automatically prefixed by kustomize
+        - name: appsettings-volume
+          configMap:
+           name: appsettings-1
+           items:
+            - key: appsettings.mounted-1.json
+              path: appsettings.mounted.json
+      containers:
+      - image: app # overwritten by images block in environment specific kustomization.yaml
+        name: bd-inbound-source-producer-app-2
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: gcp-secrets-volume
+          readOnly: true
+          mountPath: "/secret-volume"
+        - name: appsettings-volume
+          mountPath: /app/appsettings.mounted.json
+          subPath: appsettings.mounted.json
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: ENV_PROJECTID
+            value: corp-test-mgmt-anthos-3578
+          - name: ENV_CLUSTERNAME
+            value: non-prod-buying
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: ASPNETCORE_URLS 
+            value: http://*:8080
+          - name: ENV_NODENAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: ENV_PODNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: ENV_PODNAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: ENV_PROJECTID
+            value: corp-test-mgmt-anthos-3578
+          - name: ENV_CLUSTERNAME
+            value: non-prod-buying
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        imagePullSecrets:
+          - name: regcred
