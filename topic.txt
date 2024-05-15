@@ -1,3 +1,8 @@
-Good morning Matthew,
+Morning Team,
 
-I'll be taking care of deploying Meex and handling the removal of user status changes. When would be a good time for us to go over this?
+This will just be a quick meeting to:
+
+Go through the new Femi secret implementation.
+Work on the bla bla bla task.
+
+Morning Matthew, could you please guide me on how to raise a change request with DevOps to delete the now redundant SQS queues for user status changed?
