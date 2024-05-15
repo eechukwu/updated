@@ -1,6 +1,8 @@
-I am writing a AWS DevOps Competency on Elastic Beanstalk please can you provide me a detailed report that matches the requirement below
+Alternatives to AWS Elastic Beanstalk
+Heroku:
+Heroku is a popular PaaS alternative to AWS Elastic Beanstalk. It offers a streamlined developer experience and is known for its simplicity and ease of use. Here are reasons why an organization might choose Heroku over Elastic Beanstalk:
 
-PRPAS-001 - Orchestration to Run and Manage Web Apps
-AWS Partner has deep understanding of and leverages AWS Elastic Beanstalk as an orchestration platform to handle deployments from capacity provisioning, load balancing, auto-scaling to application health monitoring. If an alternate such as Heroku is leveraged, AWS Partner to describe reasons for leveraging alternative(s).
-
-Evidence must be in the form of demonstration and description of PaaS as part of AWS Partner’s DevOps strategy.
+Ease of Use: Heroku's user-friendly interface and simplified deployment process can be more appealing for small teams or startups with limited DevOps expertise.
+Integrated Services: Heroku offers a wide range of add-ons and integrated services, making it easier to extend application functionality without managing external dependencies.
+Rapid Prototyping: Heroku is ideal for rapid development and prototyping, allowing developers to quickly deploy and iterate on applications.
+However, for larger scale or enterprise applications, Elastic Beanstalk provides more robust and scalable options that integrate deeply with the broader AWS ecosystem.
