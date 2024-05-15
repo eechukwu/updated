@@ -1,87 +1,49 @@
-Capacity Provisioning: 
+### Best Practices for Using AWS Elastic Beanstalk as an Orchestration Platform for Capacity Provisioning
 
-Choosing the right EC2 instance size is crucial for effective capacity provisioning in AWS Elastic Beanstalk. Here are some key points:
+AWS Elastic Beanstalk is a powerful orchestration platform that simplifies the process of deploying, managing, and scaling web applications. At xDesign, we advise our customers to follow these best practices to fully leverage Elastic Beanstalk’s capabilities for capacity provisioning.
 
-Start Small
+#### Capacity Provisioning
 
-Begin with t2.micro instances for minimal initial traffic.
+Effective capacity provisioning in Elastic Beanstalk involves the strategic allocation of compute resources to meet the demands of your application. This ensures optimal performance, reliability, and cost-efficiency.
 
-Scale up to larger instances like m5.large as demands grow.
+**Best Practices:**
 
-Match Instance Type to Workload
+- **Choosing the Right EC2 Instance Size:**
+  - **Start Small:** Begin with t2.micro instances for minimal initial traffic. As demand grows, scale up to larger instances like m5.large. This approach allows for a cost-effective start with the flexibility to scale as needed.
+  - **Match Instance Type to Workload:** 
+    - **Compute-Optimised (C5, C6):** Use these for compute-heavy applications that require high-performance processors.
+    - **Memory-Optimised (R4, R5, X1):** Ideal for data-intensive and in-memory applications that require significant memory.
+    - **Storage-Optimised (I3, D2):** Suitable for applications with large storage I/O requirements.
 
-Use compute-optimized (C5, C6) for compute-heavy apps.
+- **Leverage Auto-Scaling:**
+  - **Auto-Scaling Based on Metrics:** Configure auto-scaling to automatically adjust the number of EC2 instances based on metrics like CPU utilisation, network traffic, or custom metrics. This ensures that your application has sufficient resources during traffic spikes and cost optimisation during low demand.
+  - **Scale Out:** Set a scale-out policy with metrics such as CPU utilisation, specifying a threshold (e.g., 80%) and an action (e.g., add one instance). Elastic Beanstalk monitors these metrics and launches instances when the threshold is exceeded.
+  - **Scale In:** Define a scale-in policy with metrics like network traffic, specifying a threshold (e.g., 2 MB/second) and an action (e.g., remove one instance). Elastic Beanstalk terminates instances when the metric drops below the threshold. Adjust thresholds, metrics, and actions based on your application’s needs.
+  - **Memory-Based Scaling:** Configure auto-scaling policies based on memory utilisation, which is ideal for memory-intensive applications. For example, set a policy to add instances when average memory utilisation exceeds a specified threshold.
+  - **Disk I/O-Based Scaling:** Scale instances based on disk read/write operations or disk queue length metrics, which is beneficial for applications with heavy disk I/O requirements.
+  - **Application-Specific Metrics:** Customise auto-scaling based on application-level metrics such as active user sessions or queue lengths. Define custom metrics published by your application to trigger auto-scaling events, allowing scaling based on application-level indicators.
+  - **Target Tracking Scaling:** Utilise target tracking scaling policies to automatically adjust capacity to maintain specific metric values, ensuring efficient resource utilisation. For example, maintain CPU utilisation around 50%.
+  - **Scheduled Scaling:** Employ scheduled scaling to define recurring schedules for increasing or decreasing capacity based on anticipated traffic patterns.
 
-Use memory-optimized (R4, R5, X1) for data-intensive, in-memory apps.
+**Example:**
 
-Use storage-optimized (I3, D2) for apps with large storage I/O.
+For startups, start with cost-effective t2.micro instances and use auto-scaling to transition to m5.large instances as your user base and processing needs grow. This approach supports growth without downtime while ensuring you only pay for the capacity you need.
 
-Leverage Auto Scaling
+By selecting the right instance types and utilising Elastic Beanstalk’s auto-scaling features, you can optimise capacity provisioning, maintain performance, and control costs as your application scales.
 
-Configure auto-scaling based on metrics like CPU utilisation or network traffic.
+#### Monitoring and Adjustments
 
-Automatically provision capacity to match demand without manual effort.
+Regular monitoring and adjustments are essential to maintain optimal capacity provisioning.
 
-Example
+**Best Practices:**
 
-For startups, start with cost-effective t2.micro, and auto-scale to m5.large as user base and processing needs grow. This supports growth without downtime while only paying for needed capacity.
+- **Monitoring:** Use AWS CloudWatch to track key performance metrics such as CPU utilisation, memory usage, and network traffic. Regularly review these metrics to understand your resource utilisation patterns.
+- **Adjustments:** Based on monitoring insights, adjust instance types, sizes, and scaling policies to optimise performance and cost. For example, if CPU utilisation consistently exceeds 80%, consider upgrading to a higher instance type or increasing the number of instances.
 
-By selecting the right instance types and using Elastic Beanstalk auto-scaling, you can optimise capacity provisioning, maintain performance, and control costs as your application scales.
+**Environment Health Monitoring:**
 
-Auto-Scaling: 
+- **Environment Health Dashboard:** Utilise the Environment Health Dashboard to monitor the overall health of your environment, including instance health and request statistics. This helps in identifying and addressing capacity-related issues proactively.
+- **Logs and Metrics:** Integrate with Amazon CloudWatch to provide detailed logs and metrics, enabling proactive monitoring and troubleshooting.
+- **Alarms and Notifications:** Configure CloudWatch alarms to notify you of any changes in the environment’s health or performance metrics. This enables timely intervention and resolution.
 
-Elastic Beanstalk provides various auto-scaling policies to dynamically adjust EC2 instance count based on specific metrics, catering to diverse application needs for optimal performance and cost-effectiveness.
-
-Auto-Scaling Based on Metrics:
-
-Elastic Beanstalk allows defining auto-scaling policies to automatically adjust EC2 instance count based on metrics, ensuring sufficient resources during traffic spikes and cost optimisation during low demand.
-
-Scale Out
-
-Configure scale-out policy with metric (e.g., CPU utilisation), threshold (e.g., 80%), and action (e.g., add 1 instance).
-
-Elastic Beanstalk monitors the metric and launches instances when the threshold is exceeded.
-
-Other metrics like network traffic, disk I/O, or custom metrics can also trigger scale-out.
-
-Scale In
-
-Define scale-in policy with metric (e.g., network traffic), threshold (e.g., 2 MB/second), and action (e.g., remove 1 instance).
-
-Elastic Beanstalk terminates instances when the metric drops below the threshold.
-
-Adjust thresholds, metrics, and actions based on your application's needs.
-
-Memory-Based Scaling:
-
-Automatically adjust capacity based on memory utilisation, suitable for memory-intensive applications.
-
-Configure auto-scaling policy based on memory utilisation, ideal for memory-intensive applications.
-
-Example: Set a policy to add instances when average memory utilisation exceeds a threshold.
-
-Disk I/O-Based Scaling:
-
-Scale instances based on disk read/write operations or disk queue length metrics, beneficial for applications with heavy disk I/O requirements.
-
-Support for scaling based on disk read/write operations or disk queue length metrics, beneficial for applications with heavy disk I/O requirements.
-
-Application-Specific Metrics:
-
-Customise auto-scaling based on application-level metrics like active user sessions or queue lengths.
-
-Define custom metrics published by your application to trigger auto-scaling events, allowing scaling based on application-level indicators such as active user sessions or queue lengths.
-
-Target Tracking Scaling:
-
-Automatically adjust capacity to maintain specific metric values, ensuring efficient resource utilisation.
-
-Utilise target tracking scaling policies to automatically adjust capacity to maintain specific metric values, ensuring efficient resource utilisation.
-
-Example: Maintain CPU utilisation around 50%.
-
-Scheduled Scaling:
-
-Define recurring schedules for increasing or decreasing capacity based on anticipated traffic patterns.
-
-Employ scheduled scaling to define recurring schedules for increasing or decreasing capacity based on anticipated traffic patterns.
+By following these best practices for capacity provisioning in AWS Elastic Beanstalk, you can ensure that your applications are highly available, performant, and cost-efficient. Effective capacity provisioning is crucial for maintaining optimal performance and reliability, enabling your applications to scale seamlessly in response to varying demand.
