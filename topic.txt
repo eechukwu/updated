@@ -1,8 +1,39 @@
-Alternatives to AWS Elastic Beanstalk
-Heroku as an Alternative to AWS Elastic Beanstalk
-Heroku is a popular PaaS alternative to AWS Elastic Beanstalk. It offers a streamlined developer experience and is known for its simplicity and ease of use. Here are reasons why an organization might choose Heroku over Elastic Beanstalk:
+Monitoring in Elastic Beanstalk: 
 
-Ease of Use: Heroku's user-friendly interface and simplified deployment process can be more appealing for small teams or startups with limited DevOps expertise.
-Integrated Services: Heroku offers a wide range of add-ons and integrated services, making it easier to extend application functionality without managing external dependencies.
-Rapid Prototyping: Heroku is ideal for rapid development and prototyping, allowing developers to quickly deploy and iterate on applications.
-However, for larger scale or enterprise applications, Elastic Beanstalk provides more robust and scalable options that integrate deeply with the broader AWS ecosystem.
+At xDesign, we recommend using AWS CloudWatch for comprehensive monitoring of your Elastic Beanstalk applications. By implementing these best practices and monitoring key metrics, you can ensure optimal performance and reliability for your Elastic Beanstalk applications.
+
+Key Components
+
+AWS CloudWatch: Serves as a central monitoring solution, collecting metrics and providing enhanced health reporting for instances and components within your Elastic Beanstalk environment.
+
+Enhanced Health Reporting: Offers detailed visibility into the health status of individual instances and components, empowering proactive troubleshooting and issue resolution.
+
+Best Practices
+
+Our recommended best practices include:
+
+Define Key Metrics: Identify critical performance metrics such as CPU utilisation, memory usage, and network traffic for effective monitoring.
+
+Set Up Alarms: Configure CloudWatch alarms to receive notifications of performance anomalies, enabling timely intervention and resolution.
+
+Customise Dashboards: Create tailored CloudWatch dashboards for real-time visibility into key metrics and trends.
+
+Utilise Logs and Traces: Leverage CloudWatch Logs and AWS X-Ray for detailed insights into application behavior and performance bottlenecks.
+
+Monitor Auto-Scaling: Track auto-scaling activities to ensure dynamic resource adjustments, optimising responsiveness to demand fluctuations.
+
+Key Metrics to Monitor
+
+We emphasise monitoring the following key metrics:
+
+CPU Utilisation: Ensure sufficient processing power for application workloads.
+
+Memory Usage: Monitor memory usage to prevent issues and ensure smooth operation.
+
+Network Traffic: Detect and address potential bottlenecks to ensure optimal connectivity and data transfer rates.
+
+Latency and Response Time: Assess user experience by monitoring application performance metrics.
+
+Error Rates: Monitor application error rates to minimise disruptions and ensure reliability.
+
+Application Health: Proactively monitor the health status of load balancers, databases, and dependencies.
