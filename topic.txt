@@ -1,169 +1,111 @@
-PRPAS-001 - ElasticBeanstalk: WIP
+### PRPAS-001 - Elastic Beanstalk: WIP
 
-AWS Elastic Beanstalk is a powerful orchestration platform that simplifies the process of deploying, managing, and scaling web applications. At xDesign, we help our customers fully leverage AWS Elastic Beanstalk to streamline their application deployments. Our approach focuses on optimising performance through capacity provisioning, enhancing scalability by implementing auto-scaling and load balancing, and ensuring robust application health monitoring. Below are our top recommendations for deploying this PAAS tool effectively.
+AWS Elastic Beanstalk is a powerful orchestration platform that simplifies the deployment, management, and scaling of web applications. At xDesign, we help our customers fully leverage AWS Elastic Beanstalk to streamline their application deployments. Our approach focuses on optimising performance through capacity provisioning, enhancing scalability by implementing auto-scaling and load balancing, and ensuring robust application health monitoring. Below are our top recommendations for deploying this PaaS tool effectively.
 
-Capacity Provisioning
+### Capacity Provisioning
 
-Effective capacity provisioning in Elastic Beanstalk involves the strategic allocation of compute resources to meet the demands of your application. This ensures optimal performance, reliability, and cost-efficiency.
+Effective capacity provisioning in Elastic Beanstalk involves strategically allocating compute resources to meet application demands, ensuring optimal performance, reliability, and cost-efficiency.
 
-Best Practices:
+**Best Practices:**
 
-Choosing the Right EC2 Instance Size:
+**Choosing the Right EC2 Instance Size:**
+- **Start Small:** Begin with t2.micro instances for minimal initial traffic. Scale up to larger instances like m5.large as demand grows.
+- **Match Instance Type to Workload:**
+  - **Compute-Optimised (C5, C6):** For compute-heavy applications.
+  - **Memory-Optimised (R4, R5, X1):** For data-intensive and in-memory applications.
+  - **Storage-Optimised (I3, D2):** For applications with large storage I/O requirements.
 
-Start Small: Begin with t2.micro instances for minimal initial traffic. As demand grows, scale up to larger instances like m5.large. This approach allows for a cost-effective start with the flexibility to scale as needed.
+**Leverage Auto-Scaling:**
+- **Auto-Scaling Based on Metrics:** Configure auto-scaling to adjust the number of EC2 instances based on metrics like CPU utilisation, network traffic, or custom metrics.
+- **Scale Out:** Set a scale-out policy with metrics such as CPU utilisation, specifying a threshold (e.g., 80%) and an action (e.g., add one instance).
+- **Scale In:** Define a scale-in policy with metrics like network traffic, specifying a threshold (e.g., 2 MB/second) and an action (e.g., remove one instance).
+- **Memory-Based Scaling:** Configure auto-scaling policies based on memory utilisation, ideal for memory-intensive applications.
+- **Disk I/O-Based Scaling:** Scale instances based on disk read/write operations or disk queue length metrics.
+- **Application-Specific Metrics:** Customise auto-scaling based on metrics such as active user sessions or queue lengths.
+- **Target Tracking Scaling:** Utilise target tracking scaling policies to maintain specific metric values, ensuring efficient resource utilisation.
+- **Scheduled Scaling:** Define schedules for anticipated traffic patterns.
 
-Match Instance Type to Workload: 
+**Example:**
+Start with cost-effective t2.micro instances and use auto-scaling to transition to m5.large instances as your user base and processing needs grow. This supports growth without downtime while ensuring you only pay for the capacity you need.
 
-Compute-Optimised (C5, C6): Use these for compute-heavy applications that require high-performance processors.
+By selecting the right instance types and utilising Elastic Beanstalk’s auto-scaling features, you can optimise capacity provisioning, maintain performance, and control costs as your application scales.
 
-Memory-Optimised (R4, R5, X1): Ideal for data-intensive and in-memory applications that require significant memory.
+### Load Balancing in Elastic Beanstalk
 
-Storage-Optimised (I3, D2): Suitable for applications with large storage I/O requirements.
+Load balancing distributes incoming application traffic across multiple instances, preventing any single instance from becoming a bottleneck and ensuring that applications remain responsive and reliable. Effective load balancing is crucial for ensuring high availability, fault tolerance, and optimal performance.
 
-Leverage Auto-Scaling:
+**Best Practices:**
 
-Auto-Scaling Based on Metrics: Configure auto-scaling to automatically adjust the number of EC2 instances based on metrics like CPU utilisation, network traffic, or custom metrics. This ensures that your application has sufficient resources during traffic spikes and cost optimisation during low demand.
+**Use Elastic Load Balancing (ELB):**
+- **Types of Load Balancers:** Choose the appropriate load balancer type based on your application needs. Elastic Beanstalk supports Application Load Balancers (ALBs), Network Load Balancers (NLBs), and Classic Load Balancers (CLBs).
+  - **Application Load Balancer (ALB):** Ideal for HTTP/HTTPS traffic, provides advanced routing features such as host-based and path-based routing.
+  - **Network Load Balancer (NLB):** Suitable for applications requiring ultra-low latency and high throughput, typically used for TCP/UDP traffic.
+  - **Classic Load Balancer (CLB):** Legacy option for simple load balancing of HTTP/HTTPS and TCP traffic.
 
-Scale Out: Set a scale-out policy with metrics such as CPU utilisation, specifying a threshold (e.g., 80%) and an action (e.g., add one instance). Elastic Beanstalk monitors these metrics and launches instances when the threshold is exceeded.
+**Health Checks:**
+- **Configure Health Checks:** Set up health checks to monitor the health of your instances. Elastic Beanstalk automatically removes unhealthy instances from the load balancer.
+- **Health Check Paths:** Define appropriate health check paths that accurately reflect the health of your application, such as a specific endpoint that returns a 200 OK status if the application is healthy.
 
-Scale In: Define a scale-in policy with metrics like network traffic, specifying a threshold (e.g., 2 MB/second) and an action (e.g., remove one instance). Elastic Beanstalk terminates instances when the metric drops below the threshold. Adjust thresholds, metrics, and actions based on your application’s needs.
+**SSL/TLS Termination:**
+- **Enable SSL/TLS:** Use SSL/TLS termination at the load balancer to encrypt traffic between clients and the load balancer. This enhances security without burdening individual instances.
+- **AWS Certificate Manager (ACM):** Use ACM to manage SSL/TLS certificates easily, simplifying certificate provisioning, renewal, and deployment.
 
-Memory-Based Scaling: Configure auto-scaling policies based on memory utilisation, which is ideal for memory-intensive applications. For example, set a policy to add instances when average memory utilisation exceeds a specified threshold.
+**Cross-Zone Load Balancing:**
+- **Enable Cross-Zone Load Balancing:** Distribute traffic evenly across instances in multiple availability zones to improve fault tolerance.
 
-Disk I/O-Based Scaling: Scale instances based on disk read/write operations or disk queue length metrics, which is beneficial for applications with heavy disk I/O requirements.
+**Sticky Sessions:**
+- **Session Persistence:** Configure sticky sessions if your application requires that a user’s session is consistently served by the same instance.
+- **Considerations for Sticky Sessions:** Use sticky sessions judiciously, as they can lead to uneven load distribution if not managed properly.
 
-Application-Specific Metrics: Customise auto-scaling based on application-level metrics such as active user sessions or queue lengths. Define custom metrics published by your application to trigger auto-scaling events, allowing scaling based on application-level indicators.
+**Scaling and Load Balancing:**
+- **Auto-Scaling Integration:** Integrate auto-scaling with your load balancer to dynamically adjust the number of instances based on traffic patterns.
+- **Scaling Policies:** Define scaling policies based on load balancer metrics such as request count per target or average latency.
 
-Target Tracking Scaling: Utilise target tracking scaling policies to automatically adjust capacity to maintain specific metric values, ensuring efficient resource utilisation. For example, maintain CPU utilisation around 50%.
+**Monitoring and Logging:**
+- **Monitor Load Balancer Metrics:** Use AWS CloudWatch to monitor load balancer metrics such as request count, error rates, and latency. Set up alarms to notify you of anomalies.
+- **Enable Access Logs:** Enable load balancer access logs to capture detailed information about each request, useful for troubleshooting and analysing traffic patterns.
 
-Scheduled Scaling: Employ scheduled scaling to define recurring schedules for increasing or decreasing capacity based on anticipated traffic patterns. 
+**Example Configuration:**
 
-Load Balancing in Elastic Beanstalk
+Here’s how to configure load balancing for a web application in Elastic Beanstalk:
 
-Load balancing distributes incoming application traffic across multiple instances, preventing any single instance from becoming a bottleneck and ensuring that applications remain responsive and reliable. Effective load balancing is crucial for ensuring high availability, fault tolerance, and optimal performance. At xDesign, we recommend the following best practices for implementing load balancing in AWS Elastic Beanstalk.
+- **Choose Application Load Balancer (ALB):** Select ALB when creating your Elastic Beanstalk environment.
+- **Configure Health Checks:** Define the health check path (e.g., `/health`) and set the health check interval and threshold.
+- **Enable SSL/TLS Termination:** Use ACM to provision an SSL/TLS certificate and configure your ALB to use this certificate for HTTPS traffic.
+- **Enable Cross-Zone Load Balancing:** Ensure cross-zone load balancing is enabled to distribute traffic evenly across all instances.
+- **Define Scaling Policies:** Set up auto-scaling based on load balancer metrics, such as scaling out when the request count per target exceeds a certain threshold.
 
-By following these best practices for load balancing in AWS Elastic Beanstalk, you can ensure that your applications remain highly available, fault-tolerant, and performant. Effective load balancing is essential for managing traffic distribution, enhancing security, and maintaining a seamless user experience.
-
-Best Practices:
-
-Use Elastic Load Balancing (ELB):
-
-Types of Load Balancers: Choose the appropriate load balancer type based on your application needs. Elastic Beanstalk supports Application Load Balancers (ALBs), Network Load Balancers (NLBs), and Classic Load Balancers (CLBs).
-
-Application Load Balancer (ALB): Ideal for HTTP/HTTPS traffic, provides advanced routing features such as host-based and path-based routing.
-
-Network Load Balancer (NLB): Suitable for applications requiring ultra-low latency and high throughput, typically used for TCP/UDP traffic.
-
-Classic Load Balancer (CLB): Legacy option for simple load balancing of HTTP/HTTPS and TCP traffic.
-
-Health Checks:
-
-Configure Health Checks: Set up health checks to monitor the health of your instances. Elastic Beanstalk automatically removes unhealthy instances from the load balancer, ensuring that only healthy instances receive traffic.
-
-Health Check Paths: Define appropriate health check paths that accurately reflect the health of your application. For web applications, this is usually a specific endpoint that returns a 200 OK status if the application is healthy.
-
-SSL/TLS Termination:
-
-Enable SSL/TLS: Use SSL/TLS termination at the load balancer to encrypt traffic between clients and the load balancer. This enhances security without burdening individual instances with the overhead of encryption and decryption.
-
-AWS Certificate Manager (ACM): Use ACM to manage SSL/TLS certificates easily. ACM simplifies certificate provisioning, renewal, and deployment.
-
-Cross-Zone Load Balancing:
-
-Enable Cross-Zone Load Balancing: Distribute traffic evenly across instances in multiple availability zones. This improves fault tolerance and ensures that traffic is not disproportionately directed to instances in a single zone.
-
-Sticky Sessions:
-
-Session Persistence: Configure sticky sessions (session persistence) if your application requires that a user’s session is consistently served by the same instance. This is particularly useful for stateful applications.
-
-Considerations for Sticky Sessions: Use sticky sessions judiciously, as they can lead to uneven load distribution if not managed properly.
-
-Scaling and Load Balancing:
-
-Auto-Scaling Integration: Integrate auto-scaling with your load balancer to dynamically adjust the number of instances based on traffic patterns. This ensures that your application can handle varying traffic loads efficiently.
-
-Scaling Policies: Define scaling policies based on load balancer metrics such as request count per target or average latency. This helps maintain optimal performance during traffic spikes.
-
-Monitoring and Logging:
-
-Monitor Load Balancer Metrics: Use AWS CloudWatch to monitor load balancer metrics such as request count, error rates, and latency. Set up alarms to notify you of any anomalies that require attention.
-
-Enable Access Logs: Enable load balancer access logs to capture detailed information about each request. This can be invaluable for troubleshooting and analysing traffic patterns.
-
-Example Configuration:
-
-Here’s an example of how to configure load balancing for a web application in Elastic Beanstalk:
-
-Choose Application Load Balancer (ALB):
-
-Select ALB when creating your Elastic Beanstalk environment.
-
-Configure Health Checks:
-
-Define the health check path (e.g., /health) and set the health check interval and threshold.
-
-Enable SSL/TLS Termination:
-
-Use ACM to provision an SSL/TLS certificate and configure your ALB to use this certificate for HTTPS traffic.
-
-Enable Cross-Zone Load Balancing:
-
-Ensure cross-zone load balancing is enabled to distribute traffic evenly across all instances.
-
-Define Scaling Policies:
-
-Set up auto-scaling based on load balancer metrics, such as scaling out when the request count per target exceeds a certain threshold.
-
-Monitoring in Elastic Beanstalk: Recommendations by xDesign
+### Monitoring in Elastic Beanstalk: Recommendations by xDesign
 
 At xDesign, we recommend using AWS CloudWatch for comprehensive monitoring of your Elastic Beanstalk applications. By implementing these best practices and monitoring key metrics, you can ensure optimal performance and reliability for your Elastic Beanstalk applications.
 
-Key Components
+**Key Components:**
+- **AWS CloudWatch:** Collects metrics and provides enhanced health reporting for instances and components within your Elastic Beanstalk environment.
+- **Enhanced Health Reporting:** Offers detailed visibility into the health status of individual instances and components.
+- **Environment Health Dashboard:** Displays the overall health status of the environment, including instance health and request statistics.
+- **Logs and Metrics:** Integrates with Amazon CloudWatch to provide detailed logs and metrics, enabling proactive monitoring and troubleshooting.
+- **Alarms and Notifications:** Configurable alarms to notify of any changes in the environment's health or performance metrics.
 
-AWS CloudWatch: Serves as a central monitoring solution, collecting metrics and providing enhanced health reporting for instances and components within your Elastic Beanstalk environment.
+**Best Practices:**
+- **Define Key Metrics:** Identify critical performance metrics such as CPU utilisation, memory usage, and network traffic for effective monitoring.
+- **Set Up Alarms:** Configure CloudWatch alarms to receive notifications of performance anomalies, enabling timely intervention and resolution.
+- **Customise Dashboards:** Create tailored CloudWatch dashboards for real-time visibility into key metrics and trends.
+- **Utilise Logs and Traces:** Leverage CloudWatch Logs and AWS X-Ray for detailed insights into application behaviour and performance bottlenecks.
+- **Monitor Auto-Scaling:** Track auto-scaling activities to ensure dynamic resource adjustments, optimising responsiveness to demand fluctuations.
 
-Enhanced Health Reporting: Offers detailed visibility into the health status of individual instances and components, empowering proactive troubleshooting and issue resolution.
+**Key Metrics to Monitor:**
+- **CPU Utilisation:** Ensure sufficient processing power for application workloads.
+- **Memory Usage:** Monitor memory usage to prevent issues and ensure smooth operation.
+- **Network Traffic:** Detect and address potential bottlenecks to ensure optimal connectivity and data transfer rates.
+- **Latency and Response Time:** Assess user experience by monitoring application performance metrics.
+- **Error Rates:** Monitor application error rates to minimise disruptions and ensure reliability.
+- **Application Health:** Proactively monitor the health status of load balancers, databases, and dependencies.
 
-Environment Health Dashboard: Displays the overall health status of the environment, including instance health and request statistics.
-
-Logs and Metrics: Integrates with Amazon CloudWatch to provide detailed logs and metrics, enabling proactive monitoring and troubleshooting.
-
-Alarms and Notifications: Configurable alarms to notify of any changes in the environment's health or performance metrics.
-
-Best Practices
-
-Our recommended best practices include:
-
-Define Key Metrics:Identify critical performance metrics such as CPU utilisation, memory usage, and network traffic for effective monitoring.
-
-Set Up Alarms:Configure CloudWatch alarms to receive notifications of performance anomalies, enabling timely intervention and resolution.
-
-Customise Dashboards:Create tailored CloudWatch dashboards for real-time visibility into key metrics and trends.
-
-Utilise Logs and Traces:Leverage CloudWatch Logs and AWS X-Ray for detailed insights into application behaviour and performance bottlenecks.
-
-Monitor Auto-Scaling:Track auto-scaling activities to ensure dynamic resource adjustments, optimising responsiveness to demand fluctuations.
-
-Key Metrics to Monitor
-
-We emphasise monitoring the following key metrics:
-
-CPU Utilisation:Ensure sufficient processing power for application workloads. High CPU usage can indicate the need for scaling or optimisation.
-
-Memory Usage:Monitor memory usage to prevent issues and ensure smooth operation. Memory leaks or insufficient memory allocation can lead to application crashes.
-
-Network Traffic:Detect and address potential bottlenecks to ensure optimal connectivity and data transfer rates. Monitoring network traffic can help identify abnormal patterns or potential DDoS attacks.
-
-Latency and Response Time:Assess user experience by monitoring application performance metrics. High latency or slow response times can negatively impact user satisfaction and indicate underlying issues.
-
-Error Rates:Monitor application error rates to minimise disruptions and ensure reliability. High error rates can indicate bugs, misconfigurations, or infrastructure problems.
-
-Application Health:Proactively monitor the health status of load balancers, databases, and dependencies. This includes checking the status of various AWS services integrated with your Elastic Beanstalk environment.
-
-Implementation Example
+**Implementation Example:**
 
 Here's an example of how you can implement these best practices:
 
+```json
 {
   "metrics": [
     "CPUUtilization",
@@ -207,25 +149,25 @@ Here's an example of how you can implement these best practices:
       },
       {
         "policyName": "scaleDown",
-        "adjustmentType": "ChangeInCapacity",
+        "adjustmentType":
+
+ "ChangeInCapacity",
         "scalingAdjustment": -1,
         "cooldown": 300
       }
     ]
   }
 }
+```
 
 By following these best practices and leveraging AWS CloudWatch, you can effectively monitor and manage your Elastic Beanstalk applications, ensuring they remain performant and reliable.
 
-Heroku as an Alternative to AWS Elastic Beanstalk:
-
+### Heroku as an Alternative to AWS Elastic Beanstalk
 
 Heroku is a popular PaaS alternative to AWS Elastic Beanstalk. It offers a streamlined developer experience and is known for its simplicity and ease of use. Here are reasons why an organisation might choose Heroku over Elastic Beanstalk:
 
-Ease of Use: Heroku's user-friendly interface and simplified deployment process can be more appealing for small teams or startups with limited DevOps expertise.
-
-Integrated Services: Heroku offers a wide range of add-ons and integrated services, making it easier to extend application functionality without managing external dependencies.
-
-Rapid Prototyping: Heroku is ideal for rapid development and prototyping, allowing developers to quickly deploy and iterate on applications.
+- **Ease of Use:** Heroku's user-friendly interface and simplified deployment process can be more appealing for small teams or startups with limited DevOps expertise.
+- **Integrated Services:** Heroku offers a wide range of add-ons and integrated services, making it easier to extend application functionality without managing external dependencies.
+- **Rapid Prototyping:** Heroku is ideal for rapid development and prototyping, allowing developers to quickly deploy and iterate on applications.
 
 However, for larger scale or enterprise applications, Elastic Beanstalk provides more robust and scalable options that integrate deeply with the broader AWS ecosystem.
