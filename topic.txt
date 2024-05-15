@@ -1,5 +1,5 @@
 Alternatives to AWS Elastic Beanstalk
-Heroku:
+Heroku as an Alternative to AWS Elastic Beanstalk
 Heroku is a popular PaaS alternative to AWS Elastic Beanstalk. It offers a streamlined developer experience and is known for its simplicity and ease of use. Here are reasons why an organization might choose Heroku over Elastic Beanstalk:
 
 Ease of Use: Heroku's user-friendly interface and simplified deployment process can be more appealing for small teams or startups with limited DevOps expertise.
