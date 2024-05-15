@@ -1,8 +1,3 @@
-Morning Team,
+Hi Jay,
 
-This will just be a quick meeting to:
-
-Go through the new Femi secret implementation.
-Work on the bla bla bla task.
-
-Morning Matthew, could you please guide me on how to raise a change request with DevOps to delete the now redundant SQS queues for user status changed?
+I've looked at this app, and the manifest file doesn't seem right. The resources, livenessProbe, and readinessProbe should be specified inside the containers.
