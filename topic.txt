@@ -1,29 +1,41 @@
-### Ticket Details
+Migration of Tech Enablements Apps to F5 Ingress
 
-**Title:** Identify All Failed Apps in All Our Clusters
+Problem Statement:
 
-**Description:**
-Identify all failed applications in our Kubernetes clusters using ArgoCD, notify the respective application developers, and list the affected applications.
+We need to migrate the Tech Enablements Apps from Istio Ingress to F5 Ingress. This involves coordinating with various teams, identifying and listing the apps to be moved, and updating the infrastructure accordingly.
 
-#### Problem Statement:
-Several applications in our Kubernetes clusters have failed. We need to identify these applications using ArgoCD, inform the respective development teams, and compile a list of all affected applications.
+Work Involved:
 
-#### Work Involved:
-1. **Identify Failed Applications:**
-   - Use ArgoCD to list all applications in a failed state across all clusters.
+	1.	Send Out Communications:
+	•	Notify Key Cluster Contacts.
+	•	Inform the Infra team on the project.
+	•	Inform the Network team on the project.
+	2.	Identify and Prioritise Apps:
+	•	Identify and create a list of apps that need to be moved.
+	•	Choose the apps in batches based on importance and work on them.
+	3.	Fix and Migrate Apps:
+	•	Fix the old Tech Enablements Apps.
+	•	Migrate the new ones to F5 Ingress.
+	4.	Create and Approve F5 Manifest Files:
+	•	Create F5 manifest files for the apps (including moving SSL certificates).
+	•	Get the Network Team to approve the F5 manifest files.
+	5.	DNS and Connectivity:
+	•	Reach out to the Infra Team for DNS support.
+	•	Test the connection after migration.
+	6.	Clean Up:
+	•	Remove the old Istio Ingress resource definitions.
 
-2. **Reach Out to Application Developers:**
-   - Notify the respective application developers about the failures.
-   - Provide relevant diagnostic information to the developers for troubleshooting.
+Test Criteria:
 
-3. **List Affected Applications:**
-   - Compile a comprehensive list of all failed applications, including application name, namespace, and cluster name.
+	•	All communications are sent to the relevant teams and contacts.
+	•	A comprehensive list of apps to be moved is created and prioritised.
+	•	Old Tech Enablements Apps are fixed, and new ones are successfully migrated to F5 Ingress.
+	•	F5 manifest files are created, approved, and implemented.
+	•	DNS updates are completed, and connections are tested.
+	•	Old Istio Ingress resources are removed.
 
-#### Test Criteria:
-- All failed applications are accurately identified using ArgoCD.
-- Developers for each failed application are informed with sufficient diagnostic information.
-- A detailed report of all affected applications is prepared.
+Dependencies:
 
-#### Dependencies:
-- Access to ArgoCD with necessary permissions.
-- Collaboration with application development teams for communication and resolution.
+	•	Collaboration with the Key Cluster Contacts, Infra Team, and Network Team.
+	•	Approval from the Network Team for F5 manifest files.
+	•	DNS support from the Infra Team.
