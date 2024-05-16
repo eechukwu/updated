@@ -1,13 +1,14 @@
 Happy Birthday! 🎉 Wishing you a day filled with joy and happiness. Enjoy your special day! 🎂✨
 
 
-could someone please check that these urls no longer get sniffed by inspection going out from kubernetes
-https://api.tradersupportservice.co.uk/
-api.tsstestenv.co.uk
 
 
-[10:15] Rob Whittle
-he wants to know if that url is accessible from a pod running in the cluster
-[10:16] Rob Whittle
-so need to know which cluster pod is running on.  Then probably need to spin up a test pod (e.g ubuntu) and try curling it from inside the pod
- like 1
+Set the Correct Kubernetes Context:
+Create a Test Pod: kubectl run testpod --image=ubuntu --restart=Never -- sleep 3600
+Access the Test Pod: kubectl exec -it testpod -- bash
+Install Curl in the Test Pod:
+apt-get update
+apt-get install -y curl
+Test the URLs:
+curl -v https://api.tradersupportservice.co.uk/
+curl -v https://api.tsstestenv.co.uk/
