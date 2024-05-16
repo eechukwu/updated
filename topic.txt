@@ -4,3 +4,10 @@ Happy Birthday! 🎉 Wishing you a day filled with joy and happiness. Enjoy your
 could someone please check that these urls no longer get sniffed by inspection going out from kubernetes
 https://api.tradersupportservice.co.uk/
 api.tsstestenv.co.uk
+
+
+[10:15] Rob Whittle
+he wants to know if that url is accessible from a pod running in the cluster
+[10:16] Rob Whittle
+so need to know which cluster pod is running on.  Then probably need to spin up a test pod (e.g ubuntu) and try curling it from inside the pod
+ like 1
