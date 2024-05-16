@@ -1,14 +1,53 @@
-Happy Birthday! 🎉 Wishing you a day filled with joy and happiness. Enjoy your special day! 🎂✨
+### JumpBox: Do’s and Don’ts
 
+The purpose of this document is to outline the permitted and prohibited tasks when using the Kubernetes JumpBox. This ensures proper usage and prevents any unintended changes or disruptions in the cluster.
 
+#### Allowed Tasks:
 
+1. **Anthos K8S Cluster Upgrade:**
+   - Ensure the cluster is up-to-date with the latest versions and patches.
+   - Regularly check for updates and apply them to maintain the cluster’s security and performance.
 
-Set the Correct Kubernetes Context:
-Create a Test Pod: kubectl run testpod --image=ubuntu --restart=Never -- sleep 3600
-Access the Test Pod: kubectl exec -it testpod -- bash
-Install Curl in the Test Pod:
-apt-get update
-apt-get install -y curl
-Test the URLs:
-curl -v https://api.tradersupportservice.co.uk/
-curl -v https://api.tsstestenv.co.uk/
+2. **Generate Backup for GCP Support:**
+   - Create and manage backups as required by GCP support.
+   - Ensure backups are performed regularly and stored securely to assist in troubleshooting and recovery.
+
+3. **Monitoring and Logging:**
+   - Set up and manage monitoring tools to ensure cluster health.
+   - Ensure logging mechanisms are in place for tracking and auditing purposes.
+
+4. **User and Access Management:**
+   - Manage user roles and permissions to ensure appropriate access controls.
+   - Regularly review and update access policies to maintain security.
+
+5. **Security Updates:**
+   - Apply security patches to the JumpBox and cluster components promptly.
+   - Regularly scan for vulnerabilities and address them proactively.
+
+#### Prohibited Tasks:
+
+1. **Run Kubectl Commands:**
+   - Avoid running any `kubectl` commands directly from the JumpBox.
+   - This restriction is in place to prevent unintended changes or disruptions in the cluster, which could impact its stability and performance.
+
+2. **Install Unapproved Software:**
+   - Do not install any software or packages on the JumpBox that have not been approved by the IT or security teams.
+   - This prevents potential security risks and ensures compliance with organisational policies.
+
+3. **Make Configuration Changes:**
+   - Avoid making any configuration changes to the JumpBox or cluster components without proper authorisation.
+   - Unauthorised changes can lead to instability or security vulnerabilities.
+
+4. **Access Sensitive Data:**
+   - Do not use the JumpBox to access sensitive data directly unless absolutely necessary and authorised.
+   - Ensure that any data access complies with organisational data protection policies.
+
+5. **Direct Internet Access:**
+   - Avoid using the JumpBox for direct internet browsing or unrelated activities.
+   - This minimises the risk of exposing the JumpBox to external threats.
+
+6. **Do Not Run `kubectl delete` Commands:**
+   - **Never run `kubectl delete` commands from the JumpBox.**
+   - **This is critical to prevent accidental deletion of resources, which could lead to significant disruptions and data loss.**
+
+By adhering to these guidelines, users can ensure the secure and efficient use of the Kubernetes JumpBox, maintaining the integrity and stability of the cluster environment.
