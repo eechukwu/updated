@@ -2,20 +2,29 @@ The purpose of this document is to outline the permitted and prohibited tasks wh
 
 Allowed Tasks:
 
-Building New Cluster
+Generally, any task involving cluster management should be done from the JumpBox.
 
-Anthos K8S Cluster Upgrade
-
-Generate Backup for GCP Support
+	1.	Building New Clusters:
+	•	Create and configure new Kubernetes clusters as required.
+	2.	Anthos K8S Cluster Upgrade:
+	•	Perform upgrades for both the Admin and User clusters during cluster upgrade processes.
+	3.	Generate Backup for GCP Support:
+	•	Generate backups of the cluster when raising a ticket with GCP support, as required.
 
 Prohibited Tasks:
 
-Run Kubectl Commands: Avoid running any kubectl commands directly from the JumpBox. This restriction is in place to prevent unintended changes or disruptions in the cluster, which could impact its stability and performance.
-
-Install Unapproved Software: Do not install any software or packages on the JumpBox that have not been approved.
-
-Make Configuration Changes:  Avoid making any configuration changes to the JumpBox or cluster components without proper authorisation.
-
-Access Sensitive Data: Do not use the JumpBox to access sensitive data directly unless absolutely necessary and authorised
-
-Do Not Run kubectl delete Commands: Never run kubectl delete commands from the JumpBox. This is critical to prevent accidental deletion of resources, which could lead to significant disruptions and data loss.
+	1.	Run Kubectl Commands:
+	•	Avoid running any kubectl commands directly from the JumpBox.
+	•	This restriction is in place to prevent unintended changes or disruptions in the cluster, which could impact its stability and performance.
+	2.	Install Unapproved Software:
+	•	Do not install any software or packages on the JumpBox that have not been approved.
+	•	This prevents potential security risks and ensures compliance with organisational policies.
+	3.	Make Configuration Changes:
+	•	Avoid making any configuration changes to the JumpBox or cluster components without proper authorisation.
+	•	Unauthorised changes can lead to instability or security vulnerabilities.
+	4.	Access Sensitive Data:
+	•	Do not use the JumpBox to access sensitive data directly unless absolutely necessary and authorised.
+	•	Ensure that any data access complies with organisational data protection policies.
+	5.	Do Not Run kubectl delete Commands:
+	•	Never run kubectl delete commands from the JumpBox.
+	•	This is critical to prevent accidental deletion of resources, which could lead to significant disruptions and data loss.
