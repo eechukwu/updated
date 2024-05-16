@@ -1,43 +1,29 @@
-Problem Statement:
+### Ticket Details
 
-Scheduled disk maintenance for Unit B requires putting all physical hosts in Site B into maintenance mode to ensure smooth VM evacuation and service continuity for our K8S Clusters.
+**Title:** Identify All Failed Apps in All Our Clusters
 
-Work Involved:
+**Description:**
+Identify all failed applications in our Kubernetes clusters using ArgoCD, notify the respective application developers, and list the affected applications.
 
-Notify Cluster Key Contacts about the maintenance schedule.
+#### Problem Statement:
+Several applications in our Kubernetes clusters have failed. We need to identify these applications using ArgoCD, inform the respective development teams, and compile a list of all affected applications.
 
-Set up a meeting with the Infra team to discuss the maintenance plan and assign tasks.
+#### Work Involved:
+1. **Identify Failed Applications:**
+   - Use ArgoCD to list all applications in a failed state across all clusters.
 
-Sequentially put the 3 physical hosts in Site B into maintenance mode:
+2. **Reach Out to Application Developers:**
+   - Notify the respective application developers about the failures.
+   - Provide relevant diagnostic information to the developers for troubleshooting.
 
-Site B Host 1
+3. **List Affected Applications:**
+   - Compile a comprehensive list of all failed applications, including application name, namespace, and cluster name.
 
-Site B Host 2
+#### Test Criteria:
+- All failed applications are accurately identified using ArgoCD.
+- Developers for each failed application are informed with sufficient diagnostic information.
+- A detailed report of all affected applications is prepared.
 
-Site B Host 3
-
-Ensure VMware evacuates VMs smoothly.
-
-Take the hosts out of maintenance mode in reverse order:
-
-Site B Host 3
-
-Site B Host 2
-
-Site B Host 1
-
-Verify all systems and VMs are operational.
-
-Test Criteria:
-
-Successful VM evacuation.
-
-Maintenance completed without service interruption.
-
-All systems and VMs operational post-maintenance.
-
-No service disruptions during and after maintenance.
-
-Dependencies:
-
-Infra team
+#### Dependencies:
+- Access to ArgoCD with necessary permissions.
+- Collaboration with application development teams for communication and resolution.
