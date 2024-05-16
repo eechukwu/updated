@@ -1,30 +1,107 @@
-The purpose of this document is to outline the permitted and prohibited tasks when using the Kubernetes JumpBox. This ensures proper usage and prevents any unintended changes or disruptions in the cluster.
-
-Allowed Tasks:
-
-Generally, any task involving cluster management should be done from the JumpBox.
-
-	1.	Building New Clusters:
-	•	Create and configure new Kubernetes clusters as required.
-	2.	Anthos K8S Cluster Upgrade:
-	•	Perform upgrades for both the Admin and User clusters during cluster upgrade processes.
-	3.	Generate Backup for GCP Support:
-	•	Generate backups of the cluster when raising a ticket with GCP support, as required.
-
-Prohibited Tasks:
-
-	1.	Run Kubectl Commands:
-	•	Avoid running any kubectl commands directly from the JumpBox.
-	•	This restriction is in place to prevent unintended changes or disruptions in the cluster, which could impact its stability and performance.
-	2.	Install Unapproved Software:
-	•	Do not install any software or packages on the JumpBox that have not been approved.
-	•	This prevents potential security risks and ensures compliance with organisational policies.
-	3.	Make Configuration Changes:
-	•	Avoid making any configuration changes to the JumpBox or cluster components without proper authorisation.
-	•	Unauthorised changes can lead to instability or security vulnerabilities.
-	4.	Access Sensitive Data:
-	•	Do not use the JumpBox to access sensitive data directly unless absolutely necessary and authorised.
-	•	Ensure that any data access complies with organisational data protection policies.
-	5.	Do Not Run kubectl delete Commands:
-	•	Never run kubectl delete commands from the JumpBox.
-	•	This is critical to prevent accidental deletion of resources, which could lead to significant disruptions and data loss.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bd-inbound-source-producer-app-10
+spec:
+  replicas: 0
+  revisionHistoryLimit: 5
+  strategy: # set strategy, considering if the app can have multiple replicas or not https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate # Use Recreate here if you can only run 1 copy of your container at a time and remove the rolling update block above
+  selector:
+    matchLabels:
+      app: dev-bd-inbound-source-producer-app-10
+  template:
+    metadata:
+      labels: 
+        app: dev-bd-inbound-source-producer-app-10
+    spec:
+      serviceAccountName: gcp-access
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+      imagePullSecrets:
+      - name: github-imagepull
+      volumes:
+        - name: gcp-secrets-volume
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: dev-gcp-secrets # this doesn't get automatically prefixed by kustomize
+        - name: appsettings-volume
+          configMap:
+           name: appsettings-10
+           items:
+            - key: appsettings.mounted-10.json
+              path: appsettings.mounted.json
+      containers:
+      - image: app # overwritten by images block in environment specific kustomization.yaml
+        name: bd-inbound-source-producer-app-10
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        livenessProbe: # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 10
+        readinessProbe: # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 10
+        volumeMounts:
+        - name: gcp-secrets-volume
+          readOnly: true
+          mountPath: "/secret-volume"
+        - name: appsettings-volume
+          mountPath: /app/appsettings.mounted.json
+          subPath: appsettings.mounted.json
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: ENV_PROJECTID
+            value: corp-test-mgmt-anthos-3578
+          - name: ENV_CLUSTERNAME
+            value: non-prod-buying
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: ASPNETCORE_URLS 
+            value: http://*:8080
+          - name: ENV_NODENAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: ENV_PODNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: ENV_PODNAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: ENV_PROJECTID
+            value: corp-test-mgmt-anthos-3578
+          - name: ENV_CLUSTERNAME
+            value: non-prod-buying
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        imagePullSecrets:
+          - name: regcred
