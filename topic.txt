@@ -1,1 +1,6 @@
 Happy Birthday! 🎉 Wishing you a day filled with joy and happiness. Enjoy your special day! 🎂✨
+
+
+could someone please check that these urls no longer get sniffed by inspection going out from kubernetes
+https://api.tradersupportservice.co.uk/
+api.tsstestenv.co.uk
