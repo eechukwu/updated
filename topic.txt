@@ -1,24 +1,30 @@
-DevOps Cloud Engineer, Bourne Leisure Limited  
-(March 2020 – October 2021)
+1. **Innovative** - "Barisi consistently demonstrated innovative thinking in designing and implementing solutions."
 
-In this role I was responsible for designing and building infrastructure to support the customer journeys for https://www.haven.com, https://www.butlins.com and internally hosted applications. This involved writing the terraform to deploy the EKS Kubernetes clusters and associated infrastructure, designing and implementing the CI/CD pipelines using Jenkins & Spinnaker, packaging the applications using HELM and deploying monitoring for visibility of app and infrastructure performance.
-•	Designed & implemented Kubernetes platform solution.
-•	Designed & Implemented CI/CD pipelines for both application & infrastructure delivery.
-•	Scaled platform to support circa 7500 peak transactions per second.
-•	Designed & implemented observability platform on Elastic stack.
+2. **Proactive** - "He was proactive in identifying and resolving potential issues before they became major problems."
 
+3. **Technical Expertise** - "Barisi has strong technical expertise, particularly in Kubernetes, Terraform, and CI/CD pipelines."
 
-Dear Emmanuel,
+4. **Collaborative** - "He excelled in collaborative environments, often working seamlessly with team members to achieve common goals."
 
-I hope this email finds you well. My name is Alex Zhebrak, and I am the VP of Engineering at Relation Therapeutics. We are currently considering Barisi for the position of Senior Platform Engineer within our team.
+5. **Dependable** - "Barisi was extremely dependable, consistently delivering high-quality work on time."
 
+6. **Adaptable** - "He showed great adaptability in a rapidly changing environment, quickly learning new technologies and methodologies."
 
-As part of our hiring process, Barisi has provided your contact as a reference. Your insights into his performance, skills, and work ethic would be invaluable to us in making an informed decision. Would it be possible for us to arrange a 15-minute call at your convenience? I am available after 2 PM on Friday or after 3 PM on Monday.
+7. **Leadership** - "Barisi exhibited leadership qualities, often taking initiative and guiding team efforts effectively."
 
+8. **Problem-Solver** - "He is an excellent problem-solver, able to troubleshoot complex issues efficiently."
 
-Please let me know a time that works for you. Thank you in advance for your time and assistance! I look forward to your valuable feedback.
+9. **Detail-Oriented** - "Barisi's attention to detail ensured that our infrastructure and applications were robust and reliable."
 
+10. **Results-Driven** - "He was results-driven, always focusing on achieving the best outcomes for the projects he worked on."
 
+11. **Scalability** - "Barisi played a key role in scaling our platform to support high transaction volumes."
 
-Sincerely,
-Alex
+12. **Observability** - "He designed and implemented an observability platform that significantly improved our visibility into app and infrastructure performance."
+
+Example Sentences:
+- "Barisi's innovative approach was evident in the way he designed and built our Kubernetes platform solution."
+- "His proactive attitude and technical expertise were crucial in scaling our platform to handle peak transactions efficiently."
+- "Barisi's collaborative and dependable nature made him an invaluable team member."
+
+Feel free to customize these suggestions based on your specific experiences with Barisi at Bourne Leisure Limited.
