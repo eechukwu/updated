@@ -1,3 +1,8 @@
-Morning Jay,
+DevOps Cloud Engineer, Bourne Leisure Limited  
+(March 2020 – October 2021)
 
-I have had a detailed look at this app again with Rob. The base deployment manifest file looks perfect. Please replicate that format for the rest of the deployment as well
+In this role I was responsible for designing and building infrastructure to support the customer journeys for https://www.haven.com, https://www.butlins.com and internally hosted applications. This involved writing the terraform to deploy the EKS Kubernetes clusters and associated infrastructure, designing and implementing the CI/CD pipelines using Jenkins & Spinnaker, packaging the applications using HELM and deploying monitoring for visibility of app and infrastructure performance.
+•	Designed & implemented Kubernetes platform solution.
+•	Designed & Implemented CI/CD pipelines for both application & infrastructure delivery.
+•	Scaled platform to support circa 7500 peak transactions per second.
+•	Designed & implemented observability platform on Elastic stack.
