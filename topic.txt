@@ -1,5 +1,3 @@
-Hi,
+Morning Jay,
 
-Sorry for the late response. Can we schedule the call for 4 PM today? If that time doesn’t work for you, please let me know your availability, and I will do my best to accommodate.
-
-Thank you.
+I have had a detailed look at this app again with Rob. The base deployment manifest file looks perfect. Please replicate that format for the rest of the deployment as well
