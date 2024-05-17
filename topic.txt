@@ -6,3 +6,19 @@ In this role I was responsible for designing and building infrastructure to supp
 •	Designed & Implemented CI/CD pipelines for both application & infrastructure delivery.
 •	Scaled platform to support circa 7500 peak transactions per second.
 •	Designed & implemented observability platform on Elastic stack.
+
+
+Dear Emmanuel,
+
+I hope this email finds you well. My name is Alex Zhebrak, and I am the VP of Engineering at Relation Therapeutics. We are currently considering Barisi for the position of Senior Platform Engineer within our team.
+
+
+As part of our hiring process, Barisi has provided your contact as a reference. Your insights into his performance, skills, and work ethic would be invaluable to us in making an informed decision. Would it be possible for us to arrange a 15-minute call at your convenience? I am available after 2 PM on Friday or after 3 PM on Monday.
+
+
+Please let me know a time that works for you. Thank you in advance for your time and assistance! I look forward to your valuable feedback.
+
+
+
+Sincerely,
+Alex
