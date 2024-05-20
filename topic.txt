@@ -1,13 +1,5 @@
-Good Morning All,
+Good Morning Team,
 
-Following the successful update of the F5 CRD on the Non-Prod Clusters last week, we will be proceeding with updating the health checks on F5 for all Non-Prod applications today.
+Just to give you a heads-up, we will be updating the health checks on F5 for all Non-Prod applications today. I will be sending lots of PRs over here in batches.
 
-Please be assured that these changes will not impact any of the current workloads running on the clusters, as we are merely adding the health checks to the F5 configuration.
-
-This update has been thoroughly tested in the Non-Prod Tech Enablement Cluster and has performed without any issues. For now, the update will be implemented exclusively on the NON-PROD CLUSTERS.
-
-Here is the list of applications that will be affected:
-
-[List of apps]
-
-If you have any concerns or require further information, please do not hesitate to get in touch.
+Thanks
