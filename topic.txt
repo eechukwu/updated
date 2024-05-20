@@ -1,48 +1,26 @@
 Problem Statement:
-We need to migrate the Non Prod Tech Enablements Apps from Istio Ingress to F5 Ingress. This involves coordinating with various teams, identifying and listing the apps to be moved, and updating the infrastructure accordingly.
+We need to add F5 health check to all Non-Prod Apps. Below is a list of affected apps
+
 
 Work Involved:
 
 Notify Key Cluster Contacts.
-
-Inform the Infra team on the project.
-
 Inform the Network team on the project.
-
 Identify and create a list of apps that need to be moved.
-
-Choose the apps in batches based on importance and work on them.
-
-Fix the old Tech Enablements Apps.
-
-Migrate the new ones to F5 Ingress.
-
-Create F5 manifest files for the apps (including moving SSL certificates).
-
+Update F5 manifest files for the apps with the health check configuration
 Get the Network Team to approve the F5 manifest files.
-
-Reach out to the Infra Team for DNS support.
-
+Check and make sure that the DNS is redirecting to the F5 ingress 
 Test the connection after migration.
-
 Remove the old Istio Ingress resource definitions.
 
 Test Criteria:
+
 All communications are sent to the relevant teams and contacts.
-
 A comprehensive list of apps to be moved is created and prioritised.
-
-Old Tech Enablements Apps are fixed, and new ones are successfully migrated to F5 Ingress.
-
-F5 manifest files are created, approved, and implemented.
-
-DNS updates are completed, and connections are tested.
-
+F5 manifest files are updated, approved, and implemented.
 Old Istio Ingress resources are removed.
 
 Dependencies:
-Collaboration with the Key Cluster Contacts, Infra Team, and Network Team.
 
+Collaboration with the Key Cluster Contacts and Network Team.
 Approval from the Network Team for F5 manifest files.
-
-DNS support from the Infra Team.
