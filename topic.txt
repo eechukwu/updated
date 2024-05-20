@@ -1,5 +1,5 @@
-Good Morning Team,
+Good Morning All,
 
-Just to give you a heads-up, we will be updating the health checks on F5 for all Non-Prod applications today. I will be sending lots of PRs over here in batches.
+Dan has asked me to share this document with all the K8s admins. It contains a list of Do’s and Don’ts for the K8s admin workstation.
 
-Thanks
+Thanks,
