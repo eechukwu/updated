@@ -1,1 +1,25 @@
-Thanks for approving that, Matthew. Could you please help me merge the PR? Neither Luke nor I have the permission to merge it.
+Problem Statement:
+We need to add F5 health check to Prod rt-event-booking-account-handler-api App. Below is a list of affected apps
+
+Work Involved:
+
+Notify Key Cluster Contacts. 
+Inform the Network team on the project. 
+Identify and create a list of apps that need to be moved. 
+Update F5 manifest files for the apps with the health check configuration
+Get the Network Team to approve the F5 manifest files.
+Check and make sure that the DNS is redirecting to the F5 ingress
+Test the connection after migration.
+Remove the old Istio Ingress resource definitions.
+
+Test Criteria:
+
+All communications are sent to the relevant teams and contacts.
+A comprehensive list of apps to be moved is created and prioritised.
+F5 manifest files are updated, approved, and implemented.
+Old Istio Ingress resources are removed.
+
+Dependencies:
+
+Collaboration with the Key Cluster Contacts and Network Team.
+Approval from the Network Team for F5 manifest files.
