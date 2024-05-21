@@ -1,3 +1,4 @@
-Hi Matt,
-
-Could we please reschedule our 1-on-1 meeting today to another time? I won’t be able to make it at the scheduled time.
+curl -LO https://github.com/bitnami-labs/sealed-secrets/releases/download/vx.y.z/kubeseal-x.y.z-windows-amd64.tar.gz
+tar -xvzf kubeseal-x.y.z-windows-amd64.tar.gz
+mv kubeseal.exe /c/Program\ Files/Git/usr/local/bin/
+kubeseal --version
