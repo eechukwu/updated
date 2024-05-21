@@ -1,4 +1,1 @@
-curl -LO https://github.com/bitnami-labs/sealed-secrets/releases/download/vx.y.z/kubeseal-x.y.z-windows-amd64.tar.gz
-tar -xvzf kubeseal-x.y.z-windows-amd64.tar.gz
-mv kubeseal.exe /c/Program\ Files/Git/usr/local/bin/
-kubeseal --version
+https://github.com/christianlempa/videos/tree/main/windows-terminal-powerlevel10k
