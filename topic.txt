@@ -1,1 +1,2 @@
 https://github.com/christianlempa/videos/tree/main/windows-terminal-powerlevel10k
+https://github.com/devopsjourney1/dotfiles-public
