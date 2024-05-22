@@ -1,1 +1,21 @@
-cd /mnt/c/Users/echukwu
+Good morning to you both, Craig Teeder Melinda Kaszoni
+ 
+I am updating the F5 CRD on the Non-Prod Tech Enablement Cluster. We need this update because, with the rollout of the F5 ingress across our clusters, the network team has requested improved health checks. Our current F5 version does not support these enhancements.
+ 
+Please note that these changes won't affect any of the current workloads running on the cluster. This update will only be implemented on the Non-Prod Tech Enablement Cluster for now.
+
+As we started the rollout of the F5 ingress to our clusters our network team asked for better health checks to be added to the F5 ingress configuration but our current version didn’t support the required parameters.
+
+Upon a lengthy conversation with F5, we identified that we must manually update the F5 ingress CRD to 2.15 to enable this feature.
+
+We will require change approval before deploying any changes and will need to be sensible about how we distribute this through the day
+
+This deployment won’t require any downtime and shouldn’t affect any running workloads
+
+Work Involved
+
+Communicate to all kubernetes teams that we are starting this work on their prod clusters and why, let them know this shouldn't impact them but if they could let us know if they see anything odd.
+
+Request change approval!
+
+Update the CRD on the cluster by manually running the required commands.
