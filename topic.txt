@@ -1,21 +1,72 @@
-Good morning to you both, Craig Teeder Melinda Kaszoni
- 
-I am updating the F5 CRD on the Non-Prod Tech Enablement Cluster. We need this update because, with the rollout of the F5 ingress across our clusters, the network team has requested improved health checks. Our current F5 version does not support these enhancements.
- 
-Please note that these changes won't affect any of the current workloads running on the cluster. This update will only be implemented on the Non-Prod Tech Enablement Cluster for now.
 
-As we started the rollout of the F5 ingress to our clusters our network team asked for better health checks to be added to the F5 ingress configuration but our current version didn’t support the required parameters.
-
-Upon a lengthy conversation with F5, we identified that we must manually update the F5 ingress CRD to 2.15 to enable this feature.
-
-We will require change approval before deploying any changes and will need to be sensible about how we distribute this through the day
-
-This deployment won’t require any downtime and shouldn’t affect any running workloads
-
-Work Involved
-
-Communicate to all kubernetes teams that we are starting this work on their prod clusters and why, let them know this shouldn't impact them but if they could let us know if they see anything odd.
 
 Request change approval!
 
 Update the CRD on the cluster by manually running the required commands.
+
+
+Change Request
+
+Title: Update of F5 CRD to Version 2.15 on Prod Cluster
+
+Requestor: [Your Name]
+
+Date: [Today’s Date]
+
+Affected Systems: Prod Cluster
+
+Priority: High
+
+Description of Change:
+
+Good morning Craig Teeder and Melinda Kaszoni,
+
+I am proposing an update to the F5 CRD on the Prod Cluster. This update is necessary to address a request from our network team for improved health checks as part of the rollout of the F5 ingress across our clusters. Our current F5 version does not support these enhancements, and thus, we need to upgrade to version 2.15 of the F5 ingress CRD.
+
+Reason for Change:
+
+As we initiated the rollout of the F5 ingress across our clusters, the network team identified the need for better health checks. However, our current F5 version does not support the required parameters for these health checks. After extensive discussions with F5, it has been determined that an update to version 2.15 of the F5 ingress CRD is necessary to enable this feature.
+
+Impact Analysis:
+
+	•	Affected Systems: Prod Cluster
+	•	Impact on Current Workloads: None. This change will not affect any of the current workloads running on the cluster.
+	•	Downtime Required: None. The deployment will not require any downtime.
+
+Change Implementation Plan:
+
+	1.	Obtain change approval from the necessary stakeholders.
+	2.	Schedule the update to be performed during off-peak hours to minimize any potential risk.
+	3.	Manually update the F5 ingress CRD to version 2.15 on the Prod Cluster.
+	4.	Monitor the update process and perform necessary checks to ensure the health checks are functioning as expected.
+	5.	Communicate the completion of the update to all stakeholders.
+
+Rollback Plan:
+
+In the unlikely event that the update causes issues, the following rollback plan will be executed:
+
+	1.	Revert the F5 ingress CRD to the previous version.
+	2.	Verify that the system is functioning as expected.
+	3.	Communicate the rollback to all stakeholders.
+
+Approval:
+
+This change request requires approval from the following stakeholders before implementation:
+
+	•	Craig Teeder
+	•	Melinda Kaszoni
+
+Communication Plan:
+
+All relevant parties will be notified prior to the change implementation, and updates will be provided throughout the process. Post-implementation, a summary of the changes and any observed effects will be communicated.
+
+Requested Approval:
+
+Please review this change request and provide your approval at your earliest convenience. Your cooperation is greatly appreciated.
+
+Thank you.
+
+Best regards,
+[Your Name]
+
+Please fill in [Your Name] and [Today's Date] with the appropriate details. This template provides a structured format for the change request, ensuring that all necessary information is communicated clearly and professionally.
