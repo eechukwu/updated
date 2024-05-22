@@ -1,27 +1,2 @@
-Message 1:
-
-Subject: Update on the New Project
-
-Hi [Recipient’s Name],
-
-I hope this message finds you well.
-
-I wanted to share that I am feeling positive about our new project; it seems to be progressing smoothly. Collaborating more with the DevOps team has been incredibly helpful. Everything is going well at the moment.
-
-Best regards,
-[Your Name]
-
-Message 2:
-
-Subject: Request for Feedback on FanDuel Project
-
-Good morning, [Recipient’s Name],
-
-I hope you are doing well.
-
-I am currently gathering feedback on my recent engagement, specifically the FanDuel project we worked on together. Could you kindly provide a brief review of my contributions? Your insights would be greatly appreciated.
-
-Thank you in advance for your time and assistance.
-
-Best regards,
-[Your Name]
+Good morning Shaun, I hope you are doing well. I am currently gathering feedback on my last engagement, specifically the FanDuel project we worked on together. Could you kindly provide a brief review of my contributions? 
+Will send you a short lattice feedback form shortly. Thank you in advance for your time and assistance.
