@@ -1,7 +1,12 @@
-Good morning, Team,
+Cluster Update Status:
 
-I just received this message from the Cyber Defence Team:
+Started the CRD upgrade this morning:
+TE Cluster: Started time 11am - Completed time 11.20am
+Note: I was shadowed by Rob during the cluster upgrade and everything worked fine. Unfornately we couldn't test the Apps because
+we currently don't have any that is using F5 running on it. 
+Upgrade was successfully updated
 
-“”
-
-Is anyone aware of this service account?
+Buying Cluster: Started time 12am - Completed time 12.20am
+Note: I was shadowed by Rob during the cluster upgrade and everything worked fine. Unfornately we couldn't test the Apps because
+we currently don't have any that is using F5 running on it. 
+Upgrade was successfully updated
