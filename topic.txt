@@ -1,7 +1,7 @@
-Dear Team,
+Good morning, Team,
 
-Following the successful update of the F5 CRD on the Non-Prod cluster, we will proceed with updating the F5 CRD on the Production clusters tomorrow. Please be assured that this update will not affect any of your current workloads, and there will be no downtime during the deployment.
+I just received this message from the Cyber Defence Team:
 
-A change request has been created for this update to ensure proper tracking and approval.
+“”
 
-Feel free to get in touch if you need any clarifications.
+Is anyone aware of this service account?
