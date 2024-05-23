@@ -1,1 +1,13 @@
 cd /mnt/c/Users/echukwu
+
+
+I am pleased to inform you that we have successfully updated the F5 CRD on all the production clusters.
+
+Thank you for your support.
+
+
+Hi Mate,
+
+Do you have any updates regarding the VPN access? I have successfully migrated User Created over. The next step will be removing User Created from Meex, and I need VPN access for that in order to work with devstacks.
+
+Thank you.
