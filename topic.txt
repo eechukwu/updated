@@ -1,3 +1,1 @@
-Afternoon Tom,
-
-Have you had time to verify that the health checks are working fine?
+So, we had a quick chat with Ben today, and he confirmed that the update won’t affect any of our clusters. He also informed us that the VMs are not required to be put in maintenance mode because they are running on replicated VM clusters. The only thing that will happen is that the path to unit B storage will be unavailable while the path to unit A will remain available.
