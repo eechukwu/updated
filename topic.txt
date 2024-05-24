@@ -1,1 +1,1 @@
-Apologies, Dan. That one is on me. I completely forgot about it because there was no corresponding ticket to track it.
+Following up on this, how do I grant people access to GCP support tickets?
