@@ -1,6 +1,16 @@
-Hi Tom, 
+**Problem Statement:**
 
-I have had a chat with the rest of the team , It is currently impossible to have the same healthy check for all the Apps because
-it will require a lot of work in the sense that all the teams needs to modify their apps to fit that structure.
+Provide the listed users access to the specified AD groups to enable them to monitor e-commerce internal clusters and view secrets.
 
-Have you got any update for me with regards to this? 
+**Work Involved:**
+
+   - Add the listed users to the specified AD groups.
+   - Ensure permissions allow monitoring of clusters and viewing secrets.
+   - Inform the users of their new access rights and provide necessary guidelines.
+
+**Test Criteria:**
+
+   - Confirm users can access internal clusters and view secrets.
+
+
+**Dependencies:**
