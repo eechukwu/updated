@@ -1,2 +1,6 @@
-cd /mnt/c/Users/YourUsername
-I hope these details help. Otherwise, let me know when you are free for a quick call.
+Hi Tom, 
+
+I have had a chat with the rest of the team , It is currently impossible to have the same healthy check for all the Apps because
+it will require a lot of work in the sense that all the teams needs to modify their apps to fit that structure.
+
+Have you got any update for me with regards to this? 
