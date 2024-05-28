@@ -1,16 +1,1 @@
-**Problem Statement:**
-
-Provide the listed users access to the specified AD groups to enable them to monitor e-commerce internal clusters and view secrets.
-
-**Work Involved:**
-
-   - Add the listed users to the specified AD groups.
-   - Ensure permissions allow monitoring of clusters and viewing secrets.
-   - Inform the users of their new access rights and provide necessary guidelines.
-
-**Test Criteria:**
-
-   - Confirm users can access internal clusters and view secrets.
-
-
-**Dependencies:**
+Hi Tom, Do you have availability for a quick 15-minute meeting tomorrow to go over the latest stumbling block regarding this health check issue?
