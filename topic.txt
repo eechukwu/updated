@@ -1,1 +1,1 @@
-@{} Done. @{} Aren’t we supposed to raise a simple ticket for something like this, for auditing purposes?
+cd /mnt/c/Users/YourUsername
