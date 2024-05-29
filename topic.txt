@@ -1,53 +1,22 @@
-Sure, here's a simplified version, split into two different tickets:
+Problem Statement:
+We need better monitoring and alerting for cluster resource issues to prevent potential bottlenecks and resource shortages during application deployments. Especially when it comes to monitoring the total CPU used vs Available CPU’s
 
-### Ticket 1: Improve CronJob Alerting Policies
+Work Involved:
 
-**Title:** Improve CronJob Alerting Policies
+Implement monitoring tools and dashboards to track resource usage across clusters.
 
-**Description:**
-Our current alerting system for CronJob pending pods is not effective. Alerts are generated but get closed immediately without any action.
+Write a script that will pull up the total CPU’s usage from the clusters
 
-**Problem Statement:**
-CronJob alerting policies are not working. Alerts automatically get closed immediately.
+Set up alerts for high resource usage, potential bottlenecks, and other critical metrics.
 
-**Work Involved:**
-1. Investigate and identify issues with current CronJob alerting policies.
-2. Update or recreate alerting policies to ensure they remain active until resolved.
-3. Test the updated policies to verify they work as expected.
+Test the new monitoring setup to ensure accurate tracking and alerting.
 
-**Test Criteria:**
-- Alerts for pending CronJob pods should remain open until manually closed or resolved.
-- The alerting system should generate accurate and actionable alerts for pending pods.
+Test Criteria:
 
-**Dependencies:**
-- Access to current alerting configuration and policies.
-- Coordination with the monitoring and DevOps teams for testing.
+Monitoring tools should accurately reflect resource usage.
 
----
+Alerts should be generated for high resource usage and potential issues.
 
-### Ticket 2: Proactive Monitoring for Cluster Resource Issues
+Dependencies:
 
-**Title:** Proactive Monitoring for Cluster Resource Issues
-
-**Description:**
-We need to be more proactive in spotting cluster resource issues, particularly focusing on alerting for pending pods and high resource usage.
-
-**Problem Statement:**
-We need better monitoring and alerting for cluster resource issues to prevent potential bottlenecks and resource shortages.
-
-**Work Involved:**
-1. Implement monitoring tools and dashboards to track resource usage across clusters.
-2. Set up alerts for high resource usage, potential bottlenecks, and other critical metrics.
-3. Test the new monitoring setup to ensure accurate tracking and alerting.
-
-**Test Criteria:**
-- Monitoring tools should accurately reflect resource usage.
-- Alerts should be generated for high resource usage and potential issues.
-
-**Dependencies:**
-- Access to the cluster environment to deploy monitoring tools.
-- Coordination with the DevOps team to set up and test monitoring tools.
-
----
-
-These versions are more concise and split the tasks into two separate tickets for better management.
+N/A
