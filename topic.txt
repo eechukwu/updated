@@ -1,5 +1,4 @@
-Problem Statement:
-We need better monitoring and alerting for cluster resource issues to prevent potential bottlenecks and resource shortages during application deployments. Especially when it comes to monitoring the total CPU used vs Available CPU’s
+We need improved monitoring and alerting for cluster resource issues to prevent bottlenecks and resource shortages, especially in monitoring total CPU usage versus available CPUs during application deployments.
 
 Work Involved:
 
