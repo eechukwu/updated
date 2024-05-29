@@ -1,1 +1,1 @@
-Hi Tom, Do you have availability for a quick 15-minute meeting tomorrow to go over the latest stumbling block regarding this health check issue?
+you can use the successfulJobsHistoryLimit and failedJobsHistoryLimit fields in your CronJob definition. These fields allow you to specify how many successful and failed jobs should be retained, respectively.
