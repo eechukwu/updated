@@ -1,12 +1,15 @@
-So here is a summary of the tasks carried out in this ticket:
-
-1. Created a Python script to calculate the total vCPU usage against allocated vCPU: Done
-2. Created a Python script to calculate the total memory usage against allocated memory: Done
-3. Created a GCP dashboard to represent the above calculation: Done 
-4. Created a Python script that loops through all clusters and displays pending pods in each cluster: Done
-5. Separated the initial `cluster_check.py` into two different files:
-   - `cluster_check.py`: Displays cluster-specific information.
-   - `application_check.py`: Displays application-specific information.
-6. Updated the daily check documentation.
-7. Updated the daily check Jira tickets.
-8. Informed the daily check team about the latest updates.
+ALLOCATED_MEMORY = {
+    "non-prod-warehouse": 98,
+    "non-prod-ecommerce-internal": 130.66,
+    "non-prod-retail": 130.66,
+    "non-prod-tech-enablement": 98,
+    "non-prod-buying": 98,
+    "prod-warehouse": 98,
+    "prod-ecommerce-internal": 98,
+    "prod-retail": 98,
+    "prod-tech-enablement": 98,
+    "prod-buying": 98,
+    "non-prod-ecom": 262.59,
+    "prod-prem": 196.94,
+    "prod-sports": 262.59
+}
