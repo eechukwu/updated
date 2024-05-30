@@ -9,13 +9,13 @@ sys.path.insert(0, os.path.abspath(common_dir))
 
 from clusters import CLUSTERS, switch_context, ANSIColors
 
-# Allocated vCPUs for each cluster (assuming for demonstration purposes)
-ALLOCATED_VCPUS = {
-    "non-prod-warehouse": 24,
-    "non-prod-ecommerce-internal": 32,
-    "non-prod-retail": 32,
-    "non-prod-tech-enablement": 24,
-    "non-prod-buying": 24,
+# Allocated memory (in GB) for each cluster
+ALLOCATED_MEMORY = {
+    "non-prod-warehouse": 98,
+    "non-prod-ecommerce-internal": 130.66,
+    "non-prod-retail": 130.66,
+    "non-prod-tech-enablement": 98,
+    "non-prod-buying": 98,
     "prod-warehouse": 24,
     "prod-ecommerce-internal": 24,
     "prod-retail": 24,
@@ -26,9 +26,9 @@ ALLOCATED_VCPUS = {
     "prod-sports": 40
 }
 
-def get_total_cpu_requests():
+def get_total_memory_requests():
     """
-    Retrieves the total CPU requests for all running pods in the current cluster.
+    Retrieves the total memory requests for all running pods in the current cluster.
     """
     cmd = ['kubectl', 'get', 'pods', '-A', '-o', 'json']
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -39,27 +39,27 @@ def get_total_cpu_requests():
         return None
 
     pods = json.loads(out.decode())
-    total_cpu_millicores = 0
+    total_memory_mib = 0
 
     for pod in pods['items']:
         containers = pod['spec']['containers']
         for container in containers:
             if 'resources' in container and 'requests' in container['resources']:
-                if 'cpu' in container['resources']['requests']:
-                    cpu_request = container['resources']['requests']['cpu']
-                    # Convert CPU request to millicores (m)
-                    if 'm' in cpu_request:
-                        total_cpu_millicores += int(cpu_request[:-1])
-                    else:
-                        total_cpu_millicores += int(cpu_request) * 1000
+                if 'memory' in container['resources']['requests']:
+                    memory_request = container['resources']['requests']['memory']
+                    # Convert memory request to MiB
+                    if memory_request.endswith('Mi'):
+                        total_memory_mib += int(memory_request[:-2])
+                    elif memory_request.endswith('Gi'):
+                        total_memory_mib += int(memory_request[:-2]) * 1024
 
-    # Convert total millicores to vCPUs
-    total_vcpus = total_cpu_millicores / 1000
-    return total_vcpus
+    # Convert total MiB to GB
+    total_memory_gb = total_memory_mib / 1024
+    return total_memory_gb
 
 def monitor_cluster(cluster_name):
     """
-    Monitors the total CPU requests for the specified cluster and prints a warning if usage is over 85%.
+    Monitors the total memory requests for the specified cluster and prints a warning if usage is over 85%.
     """
     cluster_info = next((c for c in CLUSTERS if c['name'] == cluster_name), None)
     if not cluster_info:
@@ -69,21 +69,21 @@ def monitor_cluster(cluster_name):
     if not switch_context(cluster_info):
         return
 
-    total_vcpus = get_total_cpu_requests()
-    if total_vcpus is None:
+    total_memory_gb = get_total_memory_requests()
+    if total_memory_gb is None:
         return
 
-    allocated_vcpus = ALLOCATED_VCPUS.get(cluster_name)
-    if allocated_vcpus is None:
-        print(f"{ANSIColors.RED}Allocated vCPUs for cluster {cluster_name} not found.{ANSIColors.ENDC}")
+    allocated_memory_gb = ALLOCATED_MEMORY.get(cluster_name)
+    if allocated_memory_gb is None:
+        print(f"{ANSIColors.RED}Allocated memory for cluster {cluster_name} not found.{ANSIColors.ENDC}")
         return
 
-    usage_percentage = (total_vcpus / allocated_vcpus) * 100
+    usage_percentage = (total_memory_gb / allocated_memory_gb) * 100
 
     if usage_percentage > 85:
-        print(f"{ANSIColors.RED}Warning: Cluster {cluster_name} is using {usage_percentage:.2f}% of its allocated vCPUs ({total_vcpus}/{allocated_vcpus}).{ANSIColors.ENDC}")
+        print(f"{ANSIColors.RED}Warning: Cluster {cluster_name} is using {usage_percentage:.2f}% of its allocated memory ({total_memory_gb:.2f} GB / {allocated_memory_gb:.2f} GB).{ANSIColors.ENDC}")
     else:
-        print(f"{ANSIColors.GREEN}Cluster {cluster_name} is using {usage_percentage:.2f}% of its allocated vCPUs ({total_vcpus}/{allocated_vcpus}).{ANSIColors.ENDC}")
+        print(f"{ANSIColors.GREEN}Cluster {cluster_name} is using {usage_percentage:.2f}% of its allocated memory ({total_memory_gb:.2f} GB / {allocated_memory_gb:.2f} GB).{ANSIColors.ENDC}")
 
 if __name__ == "__main__":
     # Monitor all clusters
