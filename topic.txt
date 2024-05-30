@@ -1,13 +1,18 @@
 import subprocess
 import sys
 import os
-import json
 
 # Setup the path to the common directory to import clusters.py
 common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
 sys.path.insert(0, os.path.abspath(common_dir))
 
 from clusters import CLUSTERS, switch_context, ANSIColors
+
+ignore_namespaces = [
+    "anthos-identity-service", "argocd", "argoworkflows", "bigip", "cert-manager",
+    "config-management-system", "external-secrets", "gatekeeper-system", "gke-connect",
+    "gke-managed-metrics-server", "gke-system", "kube-system"
+]
 
 def run_kubectl_command(cmd):
     """
@@ -20,51 +25,61 @@ def run_kubectl_command(cmd):
         print(f"{ANSIColors.RED}Command failed: {' '.join(cmd)}\n{e.stderr}{ANSIColors.ENDC}")
         return None
 
-def print_node_conditions():
+def filter_namespaces(output):
     """
-    Prints out only the important information about the nodes.
+    Filters out lines that include any of the namespaces to ignore.
     """
-    nodes_output = run_kubectl_command(['kubectl', 'get', 'nodes', '-o', 'json'])
-    if nodes_output:
-        nodes = json.loads(nodes_output)
-        for node in nodes['items']:
-            node_name = node['metadata']['name']
-            conditions = node['status']['conditions']
-            print(f"{ANSIColors.GREEN}Node: {node_name}{ANSIColors.ENDC}")
-            for condition in conditions:
-                print(f"  {condition['type']}: {condition['status']}")
-                if condition['status'] != "True":
-                    print(f"    Reason: {condition.get('reason', 'N/A')}")
-                    print(f"    Message: {condition.get('message', 'N/A')}")
+    lines = output.split('\n')
+    filtered_lines = [line for line in lines if not any(ns in line for ns in ignore_namespaces)]
+    return '\n'.join(filtered_lines)
 
-def print_cluster_info():
+def print_application_info():
     for cluster in CLUSTERS:
         if switch_context(cluster):
-            print(f"{ANSIColors.CYAN}Information for cluster: {cluster['name']}{ANSIColors.ENDC}")
-            
-            # Component statuses
-            print(f"{ANSIColors.GREEN}Component Statuses:{ANSIColors.ENDC}")
-            print(run_kubectl_command(['kubectl', 'get', 'componentstatuses']))
+            print(f"{ANSIColors.CYAN}Application Information for cluster: {cluster['name']}{ANSIColors.ENDC}")
 
-            # Nodes
-            print(f"{ANSIColors.GREEN}Nodes:{ANSIColors.ENDC}")
-            print(run_kubectl_command(['kubectl', 'get', 'nodes']))
+            # Deployments
+            print(f"{ANSIColors.GREEN}Deployments:{ANSIColors.ENDC}")
+            deployments_output = run_kubectl_command(['kubectl', 'get', 'deployments', '--all-namespaces'])
+            print(filter_namespaces(deployments_output))
 
-            # Node Conditions
-            print(f"{ANSIColors.GREEN}Node Conditions:{ANSIColors.ENDC}")
-            print_node_conditions()
+            # Pods
+            print(f"{ANSIColors.GREEN}Pods:{ANSIColors.ENDC}")
+            pods_output = run_kubectl_command(['kubectl', 'get', 'pods', '--all-namespaces'])
+            print(filter_namespaces(pods_output))
 
-            # Top Nodes by CPU usage
-            print(f"{ANSIColors.GREEN}Top Nodes by CPU:{ANSIColors.ENDC}")
-            print(run_kubectl_command(['kubectl', 'top', 'nodes']))
+            # Pods with Restart Counts
+            print(f"{ANSIColors.GREEN}Pods by Restart Count:{ANSIColors.ENDC}")
+            pods_restarts_output = run_kubectl_command([
+                'kubectl', 'get', 'pods', '--all-namespaces', 
+                '-o', 'custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,RESTARTS:.status.containerStatuses[0].restartCount'
+            ])
+            print(filter_namespaces(pods_restarts_output))
 
-            # Cluster Events
-            print(f"{ANSIColors.GREEN}Recent Cluster Events:{ANSIColors.ENDC}")
-            print(run_kubectl_command(['kubectl', 'get', 'events', '--sort-by=.metadata.creationTimestamp']))
+            # Top Pods by CPU usage
+            print(f"{ANSIColors.GREEN}Top Pods by CPU:{ANSIColors.ENDC}")
+            top_pods_cpu_output = run_kubectl_command(['kubectl', 'top', 'pods', '--all-namespaces', '--sort-by=cpu'])
+            print(filter_namespaces(top_pods_cpu_output))
 
-            # Persistent Volume Claims
-            print(f"{ANSIColors.GREEN}Persistent Volume Claims:{ANSIColors.ENDC}")
-            print(run_kubectl_command(['kubectl', 'get', 'pvc', '--all-namespaces']))
+            # Top Pods by Memory usage
+            print(f"{ANSIColors.GREEN}Top Pods by Memory:{ANSIColors.ENDC}")
+            top_pods_memory_output = run_kubectl_command(['kubectl', 'top', 'pods', '--all-namespaces', '--sort-by=memory'])
+            print(filter_namespaces(top_pods_memory_output))
+
+            # Services
+            print(f"{ANSIColors.GREEN}Services:{ANSIColors.ENDC}")
+            services_output = run_kubectl_command(['kubectl', 'get', 'services', '--all-namespaces'])
+            print(filter_namespaces(services_output))
+
+            # ReplicaSets
+            print(f"{ANSIColors.GREEN}ReplicaSets:{ANSIColors.ENDC}")
+            replicasets_output = run_kubectl_command(['kubectl', 'get', 'replicasets', '--all-namespaces'])
+            print(filter_namespaces(replicasets_output))
+
+            # StatefulSets
+            print(f"{ANSIColors.GREEN}StatefulSets:{ANSIColors.ENDC}")
+            statefulsets_output = run_kubectl_command(['kubectl', 'get', 'statefulsets', '--all-namespaces'])
+            print(filter_namespaces(statefulsets_output))
 
 if __name__ == "__main__":
-    print_cluster_info()
+    print_application_info()
