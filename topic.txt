@@ -1,1 +1,1 @@
-kubectl get jobs --all-namespaces -o json | jq -r '.items[] | select(.status.active > 0) | "\(.metadata.namespace) \(.metadata.name)"'
+kubectl get jobs --all-namespaces -o json | jq -r '.items[] | select(.status.active > 0 and .metadata.ownerReferences[].kind == "CronJob") | "\(.metadata.namespace) \(.metadata.ownerReferences[].name) \(.metadata.name)"'
