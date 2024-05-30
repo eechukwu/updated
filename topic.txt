@@ -86,5 +86,6 @@ def monitor_cluster(cluster_name):
         print(f"{ANSIColors.GREEN}Cluster {cluster_name} is using {usage_percentage:.2f}% of its allocated vCPUs ({total_vcpus}/{allocated_vcpus}).{ANSIColors.ENDC}")
 
 if __name__ == "__main__":
-    # Monitor the 'non-prod-warehouse' cluster for now
-    monitor_cluster('non-prod-warehouse')
+    # Monitor all clusters
+    for cluster in CLUSTERS:
+        monitor_cluster(cluster['name'])
