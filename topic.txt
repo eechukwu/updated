@@ -1,27 +1,4 @@
-❯ kubectl get cronjobs --all-namespaces -o json | jq -r '.items[] | "\(.metadata.namespace) \(.metadata.name)"' | while read namespace cronjob; do                                                                                                         ─╯
-pipe pipe while>   echo "CronJob: $namespace/$cronjob"
-pipe pipe while>   kubectl get jobs --namespace $namespace -o json | jq -r --arg cronjob "$cronjob" '.items[] | select(.metadata.ownerReferences[].name == $cronjob and .status.conditions[] | select(.type == "Complete") | not) | select(.status.active > 0) | "  Job: \(.metadata.name) - Status: Pending"'
-pipe pipe while> done
-CronJob: dev-rt-appriss-location-update-cron/dev-rt-appriss-location-update-cron
-jq: error (at <stdin>:519): Cannot index boolean with string "type"
-CronJob: dev-rt-enactor-acquirer-con/dev-rt-enactor-acquirer-connection-adder-cron
-jq: error (at <stdin>:507): Cannot index boolean with string "type"
-CronJob: dev-rt-game-trade-resubmitter/dev-cronjob-rt-game-trade-resubmitter
-jq: error (at <stdin>:495): Cannot index boolean with string "type"
-CronJob: dev-rt-missing-trans-comp-svc/dev-cronjob-daily-rt-missing-trans-comp-svc
-jq: error (at <stdin>:981): Cannot index boolean with string "type"
-CronJob: dev-rt-missing-trans-comp-svc/dev-cronjob-hourly-rt-missing-trans-comp-svc
-jq: error (at <stdin>:981): Cannot index boolean with string "type"
-CronJob: dev-rt-stock-take-rfid-import/dev-cronjob-hourly-rt-stock-take-rfid-import
-jq: error (at <stdin>:495): Cannot index boolean with string "type"
-CronJob: dev-rt-store-password-manager-cron/dev-rt-store-password-manager-cron
-jq: error (at <stdin>:519): Cannot index boolean with string "type"
-CronJob: test-rt-appriss-location-update-cron/test-rt-appriss-location-update-cron
-jq: error (at <stdin>:507): Cannot index boolean with string "type"
-CronJob: test-rt-enactor-acquirer-con/test-rt-enactor-acquirer-connection-adder-cron
-CronJob: test-rt-missing-trans-comp-svc/test-cronjob-daily-rt-missing-trans-comp-svc
-jq: error (at <stdin>:1029): Cannot index boolean with string "type"
-CronJob: test-rt-missing-trans-comp-svc/test-cronjob-hourly-rt-missing-trans-comp-svc
-jq: error (at <stdin>:1029): Cannot index boolean with string "type"
-CronJob: test-rt-stock-take-rfid-import/test-cronjob-hourly-rt-stock-take-rfid-import
-jq: error (at <stdin>:495): Cannot index boolean with string "type"
+kubectl get cronjobs --all-namespaces -o json | jq -r '.items[] | "\(.metadata.namespace) \(.metadata.name)"' | while read namespace cronjob; do
+  echo "CronJob: $namespace/$cronjob"
+  kubectl get jobs --namespace $namespace -o json | jq -r --arg cronjob "$cronjob" '.items[] | select(.metadata.ownerReferences[].name == $cronjob and (.status.conditions // []) | not) | select(.status.active > 0) | "  Job: \(.metadata.name) - Status: Pending"'
+done
