@@ -1,21 +1,45 @@
-We need improved monitoring and alerting for cluster resource issues to prevent bottlenecks and resource shortages, especially in monitoring total CPU usage versus available CPUs during application deployments.
+# Define your clusters as a list of dictionaries, each containing information about a cluster.
+CLUSTERS = [
+    {"name": "non-prod-warehouse", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-warehouse"},
+    {"name": "non-prod-ecommerce-internal", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-ecommerce-internal"},
+    {"name": "non-prod-retail", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-retail"},
+    {"name": "non-prod-tech-enablement", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-tech-enablement"},
+    {"name": "non-prod-buying", "project": "corp-test-mgmt-anthos-3578", "context": "connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-buying"},
+    {"name": "prod-warehouse", "project": "corp-prod-mgmt-anthos-9061", "context": "connectgateway_corp-prod-mgmt-anthos-9061_global_prod-warehouse"},
+    {"name": "prod-ecommerce-internal", "project": "corp-prod-mgmt-anthos-9061", "context": "connectgateway_corp-prod-mgmt-anthos-9061_global_prod-ecommerce-internal"},
+    {"name": "prod-retail", "project": "corp-prod-mgmt-anthos-9061", "context": "connectgateway_corp-prod-mgmt-anthos-9061_global_prod-retail"},
+    {"name": "prod-tech-enablement", "project": "corp-prod-mgmt-anthos-9061", "context": "connectgateway_corp-prod-mgmt-anthos-9061_global_prod-tech-enablement"},
+    {"name": "prod-buying", "project": "corp-prod-mgmt-anthos-9061", "context": "connectgateway_corp-prod-mgmt-anthos-9061_global_prod-buying"},
+    {"name": "non-prod-ecom", "project": "ecom-dev-fgp-anthos-2885", "context": "connectgateway_ecom-dev-fgp-anthos-2885_global_non-prod-ecom"},
+    {"name": "prod-prem", "project": "ecom-dev-fgp-anthos-5383", "context": "connectgateway_ecom-dev-fgp-anthos-5383_global_prod-prem"},
+    {"name": "prod-sports", "project": "ecom-dev-fgp-anthos-5383", "context": "connectgateway_ecom-dev-fgp-anthos-5383_global_prod-sports"}
+]
 
-Work Involved:
+def switch_context(cluster_info):
+    """
+    Switches the kubectl context to the specified cluster.
+    """
+    import subprocess
 
-Implement monitoring tools and dashboards to track resource usage across clusters.
+    context = cluster_info['context']
+    cmd = ['kubectl', 'config', 'use-context', context]
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = proc.communicate()
 
-Write a script that will pull up the total CPU’s usage from the clusters
+    if proc.returncode != 0:
+        print(f"Error switching to context {context}: {err.decode()}")
+        return False
 
-Set up alerts for high resource usage, potential bottlenecks, and other critical metrics.
+    print(f"Switched to context {context}")
+    return True
 
-Test the new monitoring setup to ensure accurate tracking and alerting.
-
-Test Criteria:
-
-Monitoring tools should accurately reflect resource usage.
-
-Alerts should be generated for high resource usage and potential issues.
-
-Dependencies:
-
-N/A
+# ANSI escape codes for coloring text.
+class ANSIColors:
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    BLUE = '\033[94m'
+    MAGENTA = '\033[95m'
+    CYAN = '\033[96m'
+    WHITE = '\033[97m'
+    ENDC = '\033[0m'
