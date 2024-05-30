@@ -1,4 +1,4 @@
 kubectl get cronjobs --all-namespaces -o json | jq -r '.items[] | "\(.metadata.namespace) \(.metadata.name)"' | while read namespace cronjob; do
   echo "CronJob: $namespace/$cronjob"
-  kubectl get jobs --namespace $namespace -o json | jq -r --arg cronjob "$cronjob" '.items[] | select(.metadata.ownerReferences[].name == $cronjob) | "  Job: \(.metadata.name)"'
+  kubectl get jobs --namespace $namespace -o json | jq -r --arg cronjob "$cronjob" '.items[] | select(.metadata.ownerReferences[].name == $cronjob and .status.conditions[] | select(.type == "Complete") | not) | select(.status.active > 0) | "  Job: \(.metadata.name) - Status: Pending"'
 done
