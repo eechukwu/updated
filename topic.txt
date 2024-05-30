@@ -1,16 +1,82 @@
-CronJobs:
-NAMESPACE                                NAME                                           SCHEDULE       SUSPEND   ACTIVE   LAST SCHEDULE   AGE
-dev-wh-dematic-shuttle-data-cron         dev-wh-dematic-shuttle-data-cron               0 * * * *      True      0        141d            209d
-dev-wh-descartes-removal-revenue-cron    dev-wh-descartes-removal-revenue-cron-des-1    */15 * * * *   True      0        98d             103d
-dev-wh-descartes-removal-revenue-cron    dev-wh-descartes-removal-revenue-cron-des-2    10 0 * * *     True      0        99d             103d
-test-wh-dematic-shuttle-data-cron        test-wh-dematic-shuttle-data-cron              0 * * * *      True      0        199d            265d
-test-wh-descartes-removal-revenue-cron   test-wh-descartes-removal-revenue-cron-des-1   */15 * * * *   True      0        98d             103d
-test-wh-descartes-removal-revenue-cron   test-wh-descartes-removal-revenue-cron-des-2   10 0 * * *     True      0        99d             103d
+import subprocess
+import sys
+import os
+import json
 
-Traceback (most recent call last):
-  File "c:\Users\echukwu\OneDrive - Frasers Group\Desktop\ProjectFiles\te-shared-script\k8s\daily-checks\job_check.py", line 78, in <module>
+# Setup the path to the common directory to import clusters.py
+common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
+sys.path.insert(0, os.path.abspath(common_dir))
+
+from clusters import CLUSTERS, switch_context, ANSIColors
+
+ignore_namespaces = [
+    "anthos-identity-service", "argocd", "argoworkflows", "bigip", "cert-manager",
+    "config-management-system", "external-secrets", "gatekeeper-system", "gke-connect",
+    "gke-managed-metrics-server", "gke-system", "kube-system"
+]
+
+def run_kubectl_command(cmd):
+    """
+    Runs a given kubectl command and returns its output.
+    """
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        return result.stdout
+    except subprocess.CalledProcessError as e:
+        print(f"{ANSIColors.RED}Command failed: {' '.join(cmd)}\n{e.stderr}{ANSIColors.ENDC}")
+        return None
+
+def filter_namespaces(output):
+    """
+    Filters out lines that include any of the namespaces to ignore.
+    """
+    lines = output.split('\n')
+    filtered_lines = [line for line in lines if not any(ns in line for ns in ignore_namespaces)]
+    return '\n'.join(filtered_lines)
+
+def print_job_info():
+    for cluster in CLUSTERS:
+        if switch_context(cluster):
+            print(f"{ANSIColors.CYAN}Job Information for cluster: {cluster['name']}{ANSIColors.ENDC}")
+
+            # Jobs
+            print(f"{ANSIColors.GREEN}Jobs:{ANSIColors.ENDC}")
+            jobs_output = run_kubectl_command(['kubectl', 'get', 'jobs', '--all-namespaces', '-o', 'wide'])
+            if jobs_output:
+                print(filter_namespaces(jobs_output))
+
+            # Detailed Jobs Info including Status
+            print(f"{ANSIColors.GREEN}Detailed Jobs Info:{ANSIColors.ENDC}")
+            detailed_jobs_output = run_kubectl_command([
+                'kubectl', 'get', 'jobs', '--all-namespaces', 
+                '-o', 'custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,COMPLETIONS:.spec.completions,SUCCESSFUL:.status.succeeded,FAILED:.status.failed,START-TIME:.status.startTime,COMPLETION-TIME:.status.completionTime'
+            ])
+            if detailed_jobs_output:
+                print(filter_namespaces(detailed_jobs_output))
+
+            # CronJobs
+            print(f"{ANSIColors.GREEN}CronJobs:{ANSIColors.ENDC}")
+            cronjobs_output = run_kubectl_command(['kubectl', 'get', 'cronjobs', '--all-namespaces'])
+            if cronjobs_output:
+                print(filter_namespaces(cronjobs_output))
+
+            # Check Pending Jobs for CronJobs
+            cronjobs_json = run_kubectl_command(['kubectl', 'get', 'cronjobs', '--all-namespaces', '-o', 'json'])
+            if cronjobs_json:
+                cronjobs = json.loads(cronjobs_json)
+                for cronjob in cronjobs['items']:
+                    namespace = cronjob['metadata']['namespace']
+                    name = cronjob['metadata']['name']
+                    print(f"{ANSIColors.GREEN}CronJob: {namespace}/{name}{ANSIColors.ENDC}")
+                    jobs_output = run_kubectl_command(['kubectl', 'get', 'jobs', '--namespace', namespace, '-o', 'json'])
+                    if jobs_output:
+                        jobs = json.loads(jobs_output)
+                        for job in jobs['items']:
+                            owner_references = job['metadata'].get('ownerReferences', [])
+                            if any(ref['name'] == name for ref in owner_references):
+                                conditions = job['status'].get('conditions', [])
+                                if not conditions and job['status'].get('active', 0) > 0:
+                                    print(f"{ANSIColors.RED}⚠️  Job: {job['metadata']['name']} - Status: Pending{ANSIColors.ENDC}")
+
+if __name__ == "__main__":
     print_job_info()
-  File "c:\Users\echukwu\OneDrive - Frasers Group\Desktop\ProjectFiles\te-shared-script\k8s\daily-checks\job_check.py", line 62, in print_job_info
-    cronjobs = json.loads(cronjobs_json)
-               ^^^^
-NameError: name 'json' is not defined
