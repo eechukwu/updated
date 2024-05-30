@@ -1,91 +1,12 @@
-import subprocess
-import json
-import sys
-import os
+So here is a summary of the tasks carried out in this ticket:
 
-# Setup the path to the common directory to import clusters.py
-common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
-sys.path.insert(0, os.path.abspath(common_dir))
-
-from clusters import CLUSTERS, switch_context, ANSIColors
-
-# Allocated memory (in GB) for each cluster
-ALLOCATED_MEMORY = {
-    "non-prod-warehouse": 98,
-    "non-prod-ecommerce-internal": 130.66,
-    "non-prod-retail": 130.66,
-    "non-prod-tech-enablement": 98,
-    "non-prod-buying": 98,
-    "prod-warehouse": 24,
-    "prod-ecommerce-internal": 24,
-    "prod-retail": 24,
-    "prod-tech-enablement": 24,
-    "prod-buying": 24,
-    "non-prod-ecom": 40,
-    "prod-prem": 30,
-    "prod-sports": 40
-}
-
-def get_total_memory_requests():
-    """
-    Retrieves the total memory requests for all running pods in the current cluster.
-    """
-    cmd = ['kubectl', 'get', 'pods', '-A', '-o', 'json']
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out, err = proc.communicate()
-
-    if proc.returncode != 0:
-        print(f"Error retrieving pod information: {err.decode()}")
-        return None
-
-    pods = json.loads(out.decode())
-    total_memory_mib = 0
-
-    for pod in pods['items']:
-        containers = pod['spec']['containers']
-        for container in containers:
-            if 'resources' in container and 'requests' in container['resources']:
-                if 'memory' in container['resources']['requests']:
-                    memory_request = container['resources']['requests']['memory']
-                    # Convert memory request to MiB
-                    if memory_request.endswith('Mi'):
-                        total_memory_mib += int(memory_request[:-2])
-                    elif memory_request.endswith('Gi'):
-                        total_memory_mib += int(memory_request[:-2]) * 1024
-
-    # Convert total MiB to GB
-    total_memory_gb = total_memory_mib / 1024
-    return total_memory_gb
-
-def monitor_cluster(cluster_name):
-    """
-    Monitors the total memory requests for the specified cluster and prints a warning if usage is over 85%.
-    """
-    cluster_info = next((c for c in CLUSTERS if c['name'] == cluster_name), None)
-    if not cluster_info:
-        print(f"{ANSIColors.RED}Cluster {cluster_name} not found.{ANSIColors.ENDC}")
-        return
-
-    if not switch_context(cluster_info):
-        return
-
-    total_memory_gb = get_total_memory_requests()
-    if total_memory_gb is None:
-        return
-
-    allocated_memory_gb = ALLOCATED_MEMORY.get(cluster_name)
-    if allocated_memory_gb is None:
-        print(f"{ANSIColors.RED}Allocated memory for cluster {cluster_name} not found.{ANSIColors.ENDC}")
-        return
-
-    usage_percentage = (total_memory_gb / allocated_memory_gb) * 100
-
-    if usage_percentage > 85:
-        print(f"{ANSIColors.RED}Warning: Cluster {cluster_name} is using {usage_percentage:.2f}% of its allocated memory ({total_memory_gb:.2f} GB / {allocated_memory_gb:.2f} GB).{ANSIColors.ENDC}")
-    else:
-        print(f"{ANSIColors.GREEN}Cluster {cluster_name} is using {usage_percentage:.2f}% of its allocated memory ({total_memory_gb:.2f} GB / {allocated_memory_gb:.2f} GB).{ANSIColors.ENDC}")
-
-if __name__ == "__main__":
-    # Monitor all clusters
-    for cluster in CLUSTERS:
-        monitor_cluster(cluster['name'])
+1. Created a Python script to calculate the total vCPU usage against allocated vCPU: Done
+2. Created a Python script to calculate the total memory usage against allocated memory: Done
+3. Created a GCP dashboard to represent the above calculation: Done 
+4. Created a Python script that loops through all clusters and displays pending pods in each cluster: Done
+5. Separated the initial `cluster_check.py` into two different files:
+   - `cluster_check.py`: Displays cluster-specific information.
+   - `application_check.py`: Displays application-specific information.
+6. Updated the daily check documentation.
+7. Updated the daily check Jira tickets.
+8. Informed the daily check team about the latest updates.
