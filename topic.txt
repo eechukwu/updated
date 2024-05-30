@@ -1,14 +1,21 @@
 import subprocess
 import json
-from cluster import CLUSTERS, switch_context, ANSIColors
+import sys
+import os
+
+# Setup the path to the common directory to import clusters.py
+common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
+sys.path.insert(0, os.path.abspath(common_dir))
+
+from clusters import CLUSTERS, switch_context, ANSIColors
 
 # Allocated vCPUs for each cluster (assuming for demonstration purposes)
 ALLOCATED_VCPUS = {
     "non-prod-warehouse": 24,
-    "non-prod-ecommerce-internal": 16,
-    "non-prod-retail": 20,
-    "non-prod-tech-enablement": 18,
-    "non-prod-buying": 22,
+    "non-prod-ecommerce-internal": 32,
+    "non-prod-retail": 32,
+    "non-prod-tech-enablement": 24,
+    "non-prod-buying": 24,
     "prod-warehouse": 48,
     "prod-ecommerce-internal": 32,
     "prod-retail": 40,
