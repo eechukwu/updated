@@ -1,3 +1,1 @@
-kubectl get jobs --all-namespaces --field-selector=status.phase=Pending -o jsonpath='{range .items[*]}{.metadata.namespace}{" "}{.metadata.ownerReferences[0].name}{" "}{.metadata.name}{"\n"}{end}'
-
-Error from server (BadRequest): Unable to find "batch/v1, Resource=jobs" that match label selector "", field selector "status.phase=Pending": field label "status.phase" not supported for Job
+kubectl get jobs --all-namespaces -o json | jq -r '.items[] | select(.status.active > 0) | "\(.metadata.namespace) \(.metadata.name)"'
