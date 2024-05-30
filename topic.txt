@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import os
+import json
 
 # Setup the path to the common directory to import clusters.py
 common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
@@ -19,6 +20,23 @@ def run_kubectl_command(cmd):
         print(f"{ANSIColors.RED}Command failed: {' '.join(cmd)}\n{e.stderr}{ANSIColors.ENDC}")
         return None
 
+def print_node_conditions():
+    """
+    Prints out only the important information about the nodes.
+    """
+    nodes_output = run_kubectl_command(['kubectl', 'get', 'nodes', '-o', 'json'])
+    if nodes_output:
+        nodes = json.loads(nodes_output)
+        for node in nodes['items']:
+            node_name = node['metadata']['name']
+            conditions = node['status']['conditions']
+            print(f"{ANSIColors.GREEN}Node: {node_name}{ANSIColors.ENDC}")
+            for condition in conditions:
+                print(f"  {condition['type']}: {condition['status']}")
+                if condition['status'] != "True":
+                    print(f"    Reason: {condition.get('reason', 'N/A')}")
+                    print(f"    Message: {condition.get('message', 'N/A')}")
+
 def print_cluster_info():
     for cluster in CLUSTERS:
         if switch_context(cluster):
@@ -34,7 +52,7 @@ def print_cluster_info():
 
             # Node Conditions
             print(f"{ANSIColors.GREEN}Node Conditions:{ANSIColors.ENDC}")
-            print(run_kubectl_command(['kubectl', 'describe', 'nodes']))
+            print_node_conditions()
 
             # Top Nodes by CPU usage
             print(f"{ANSIColors.GREEN}Top Nodes by CPU:{ANSIColors.ENDC}")
