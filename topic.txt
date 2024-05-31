@@ -1,11 +1,19 @@
+Morning All,
 
-Sure! Here are the revised paragraphs with the addition about sample output:
+I’ve updated the daily check scripts with new functionality:
 
-### Cluster Capacity Check
-As part of our daily checks, it's important to monitor the CPU and memory usage of our clusters. To do this, simply run the `check_cpu_capacity.py` and `check_memory_capacity.py` scripts. These scripts will give you a clear picture of the current resource utilization, helping us ensure that the clusters are operating efficiently and have enough capacity to handle the workload. See some sample output below.
+	•	check_cpu_capacity.py: Calculates total vCPU usage against allocated vCPUs.
+	•	check_memory_capacity.py: Calculates total memory usage against allocated memory.
+	•	job_check.py: Loops through all clusters and displays pending pods.
 
-### Checked for Pending or Failed Cron Jobs
-Another crucial part of our daily routine is to monitor for any pending or failed cron jobs. This can be done by running the `job_check.py` script. By regularly checking for failed or stuck jobs, we can quickly address any issues and maintain the smooth operation of our scheduled tasks. See some sample output below.
+The original cluster_check.py script is now split into two:
+
+	•	cluster_check.py: Displays cluster-specific information.
+	•	application_check.py: Displays application-specific information.
+
+I’ll be uploading these updated scripts to GitHub shortly. Thanks.
+
+Review the updates here: [GitHub Repository Link]
 
 
 Created a Python script to calculate the total vCPU usage against allocated vCPU check_cpu_capacity.py : Done
