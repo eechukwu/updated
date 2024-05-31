@@ -1,1 +1,33 @@
-kubectl get pods --all-namespaces -o custom-columns='NAMESPACE:.metadata.namespace,NAME:.metadata.name,CPU_REQUESTS:.spec.containers[*].resources.requests.cpu,MEMORY_REQUESTS:.spec.containers[*].resources.requests.memory'
+Based on the report below, I will be creating a new ticket tomorrow to add an extra node to the warehouse cluster because we have currently ran out of CPU’s on it. 
+
+
+Edit
+
+Delete
+
+
+Emmanuel Chukwu 
+17 hours ago
+Edited
+
+So here is a summary of the tasks carried out in this ticket:
+
+Created a Python script to calculate the total vCPU usage against allocated vCPU check_cpu_capacity.py : Done
+
+Created a Python script to calculate the total memory usage against allocated memory check_memory_capacity.py : Done
+
+Created a GCP dashboard to represent the above calculation: Done 
+
+Created a Python script that loops through all clusters and displays pending pods in each cluster job_check.py : Done
+
+Separated the initial cluster_check.py into two different files:
+
+cluster_check.py: Displays cluster-specific information. Done
+
+application_check.py: Displays application-specific information. Done
+
+Updated the daily check documentation.
+
+Updated the daily check Jira tickets.
+
+Informed the daily check team about the latest updates.
