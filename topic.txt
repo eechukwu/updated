@@ -1,3 +1,1 @@
-Good Afternoon All,
-
-We have noticed that this app has been configured with a very large amount of vCPUs. In fact, both of these apps are using half of the total vCPUs configured on the Retail Prod Cluster. Is there a reason for this?
+kubectl get pods --all-namespaces -o custom-columns='NAMESPACE:.metadata.namespace,NAME:.metadata.name,CPU_REQUESTS:.spec.containers[*].resources.requests.cpu,MEMORY_REQUESTS:.spec.containers[*].resources.requests.memory'
