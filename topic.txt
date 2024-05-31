@@ -1,13 +1,1 @@
-Certainly! Here’s a polished and professional version of your message:
-
----
-
-Hi Everyone,
-
-During our routine daily check, we noticed that we have run out of vCPUs on the Non-Prod Warehouse Cluster. As a result, you won't be able to deploy new applications into that cluster. To resolve this issue, I will be increasing the number of worker nodes in the cluster to four to accommodate new applications.
-
-We expect no downtime for existing applications currently running on the cluster and will update the team once the process is completed.
-
----
-
-This version is concise and professional while clearly communicating the necessary information.
+Writing to confirm that the worker nodes have now been scaled from 3 to 4 successfully. Thanks.
