@@ -1,4 +1,5 @@
-Hi Everyone, 
-We noticed some issues with deploying new applications to the non-prod-warehouse-cluster and to resolve this issue , I will be working on increasing the number of nodes on the cluster to accommodate new applications into the non-prod-ecom-internal-cluster.
- 
-We expect no down-time to existing applications currently running on the cluster and will update the team when the process is completed.
+Hi Everyone,
+
+During our routine daily check, we noticed that we have run out of vCPUs on the Non-Prod Warehouse Cluster. As a result, you won’t be able to deploy new applications into that cluster. To resolve this issue, I will be increasing the number of worker nodes in the cluster to four to accommodate new applications.
+
+We expect no downtime for existing applications currently running on the cluster and will update the team once the process is completed.
