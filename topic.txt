@@ -1,5 +1,5 @@
 Hi Everyone,
 
-During our routine daily check, we noticed that we have run out of vCPUs on the Non-Prod Warehouse Cluster. As a result, you won’t be able to deploy new applications into that cluster. To resolve this issue, I will be increasing the number of worker nodes in the cluster to four to accommodate new applications.
+During our routine check, we found that the Non-Prod Warehouse Cluster has run out of vCPUs, preventing new deployments. To resolve this, I will increase the worker nodes to four.
 
-We expect no downtime for existing applications currently running on the cluster and will update the team once the process is completed.
+No downtime is expected for existing applications. I will update the team once the process is complete.
