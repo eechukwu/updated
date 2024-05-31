@@ -1,14 +1,28 @@
-Based on the report below, I will be creating a new ticket tomorrow to add an extra node to the warehouse cluster because we have currently ran out of CPU’s on it. 
+### Ticket Title:
+Add an Extra Node to Warehouse Cluster
 
+### Problem Statement:
+Add an extra node to the warehouse cluster because we have currently run out of CPUs on it.
 
-Edit
+### Work Involved:
+1. Provision a new node with the required specifications.
+2. Add the new node to the warehouse Kubernetes cluster.
+3. Configure the node to match the cluster's existing settings.
+4. Verify that the new node is properly integrated into the cluster.
 
-Delete
+### Test Criteria:
+1. Ensure the new node is recognized and functional within the cluster.
+2. Verify that workloads are successfully distributed to the new node.
+3. Monitor CPU usage to confirm that the additional node alleviates the CPU shortage.
 
+### Dependencies:
+1. Access to the infrastructure to provision a new node.
+2. Permissions to modify the Kubernetes cluster configuration.
+3. Ensure the new node meets the necessary hardware and software requirements.
 
-Emmanuel Chukwu 
-17 hours ago
-Edited
+---
+
+This format keeps the ticket simple and straightforward, providing all the necessary details for implementation.
 
 So here is a summary of the tasks carried out in this ticket:
 
