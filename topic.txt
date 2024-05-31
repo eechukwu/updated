@@ -1,1 +1,3 @@
-Writing to confirm that the worker nodes have now been scaled from 3 to 4 successfully. Thanks.
+Good Afternoon All,
+
+We have noticed that this app has been configured with a very large amount of vCPUs. In fact, both of these apps are using half of the total vCPUs configured on the Retail Prod Cluster. Is there a reason for this?
