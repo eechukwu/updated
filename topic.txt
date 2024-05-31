@@ -1,30 +1,12 @@
-### Ticket Title:
-Add an Extra Node to Warehouse Cluster
 
-### Problem Statement:
-Add an extra node to the warehouse cluster because we have currently run out of CPUs on it.
+Sure! Here are the revised paragraphs with the addition about sample output:
 
-### Work Involved:
-1. Provision a new node with the required specifications.
-2. Add the new node to the warehouse Kubernetes cluster.
-3. Configure the node to match the cluster's existing settings.
-4. Verify that the new node is properly integrated into the cluster.
+### Cluster Capacity Check
+As part of our daily checks, it's important to monitor the CPU and memory usage of our clusters. To do this, simply run the `check_cpu_capacity.py` and `check_memory_capacity.py` scripts. These scripts will give you a clear picture of the current resource utilization, helping us ensure that the clusters are operating efficiently and have enough capacity to handle the workload. See some sample output below.
 
-### Test Criteria:
-1. Ensure the new node is recognized and functional within the cluster.
-2. Verify that workloads are successfully distributed to the new node.
-3. Monitor CPU usage to confirm that the additional node alleviates the CPU shortage.
+### Checked for Pending or Failed Cron Jobs
+Another crucial part of our daily routine is to monitor for any pending or failed cron jobs. This can be done by running the `job_check.py` script. By regularly checking for failed or stuck jobs, we can quickly address any issues and maintain the smooth operation of our scheduled tasks. See some sample output below.
 
-### Dependencies:
-1. Access to the infrastructure to provision a new node.
-2. Permissions to modify the Kubernetes cluster configuration.
-3. Ensure the new node meets the necessary hardware and software requirements.
-
----
-
-This format keeps the ticket simple and straightforward, providing all the necessary details for implementation.
-
-So here is a summary of the tasks carried out in this ticket:
 
 Created a Python script to calculate the total vCPU usage against allocated vCPU check_cpu_capacity.py : Done
 
