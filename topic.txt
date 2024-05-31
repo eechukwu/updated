@@ -1,37 +1,4 @@
-Morning All,
-
-I’ve updated the daily check scripts with new functionality:
-
-	•	check_cpu_capacity.py: Calculates total vCPU usage against allocated vCPUs.
-	•	check_memory_capacity.py: Calculates total memory usage against allocated memory.
-	•	job_check.py: Loops through all clusters and displays pending pods.
-
-The original cluster_check.py script is now split into two:
-
-	•	cluster_check.py: Displays cluster-specific information.
-	•	application_check.py: Displays application-specific information.
-
-I’ll be uploading these updated scripts to GitHub shortly. Thanks.
-
-Review the updates here: [GitHub Repository Link]
-
-
-Created a Python script to calculate the total vCPU usage against allocated vCPU check_cpu_capacity.py : Done
-
-Created a Python script to calculate the total memory usage against allocated memory check_memory_capacity.py : Done
-
-Created a GCP dashboard to represent the above calculation: Done 
-
-Created a Python script that loops through all clusters and displays pending pods in each cluster job_check.py : Done
-
-Separated the initial cluster_check.py into two different files:
-
-cluster_check.py: Displays cluster-specific information. Done
-
-application_check.py: Displays application-specific information. Done
-
-Updated the daily check documentation.
-
-Updated the daily check Jira tickets.
-
-Informed the daily check team about the latest updates.
+Hi Everyone, 
+We noticed some issues with deploying new applications to the non-prod-warehouse-cluster and to resolve this issue , I will be working on increasing the number of nodes on the cluster to accommodate new applications into the non-prod-ecom-internal-cluster.
+ 
+We expect no down-time to existing applications currently running on the cluster and will update the team when the process is completed.
