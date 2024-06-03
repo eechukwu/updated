@@ -1,125 +1,13 @@
-import subprocess
-import json
-import sys
-import os
-
-# Setup the path to the common directory to import clusters.py
-common_dir = os.path.join(os.path.dirname(__file__), '..', 'common')
-sys.path.insert(0, os.path.abspath(common_dir))
-
-from clusters import CLUSTERS, switch_context, ANSIColors
-
-ignore_namespaces = [
-    "anthos-identity-service", "argocd", "argoworkflows", "bigip", "cert-manager",
-    "config-management-system", "external-secrets", "gatekeeper-system", "gke-connect",
-    "gke-managed-metrics-server", "gke-system", "kube-system"
-]
-
-def run_kubectl_command(command):
-    """
-    Runs a kubectl command and returns the JSON output.
-    """
-    result = subprocess.run(command, capture_output=True, text=True, check=True)
-    return json.loads(result.stdout)
-
-def convert_to_m(cpu_str):
-    """
-    Converts CPU string to millicores.
-    """
-    if cpu_str.endswith('m'):
-        return int(cpu_str[:-1])
-    return int(cpu_str) * 1000
-
-def convert_to_mi(memory_str):
-    """
-    Converts memory string to MiB.
-    """
-    if memory_str.endswith('Ki'):
-        return int(memory_str[:-2]) // 1024
-    if memory_str.endswith('Mi'):
-        return int(memory_str[:-2])
-    if memory_str.endswith('Gi'):
-        return int(memory_str[:-2]) * 1024
-    if memory_str.endswith('Ti'):
-        return int(memory_str[:-2]) * 1024 * 1024
-    return int(memory_str) // (1024 * 1024)
-
-def calculate_percentage(usage, request):
-    """
-    Calculates the percentage of utilisation against request.
-    """
-    if usage == 'N/A' or request == 0:
-        return 'N/A'
+PS C:\Users\echukwu\OneDrive - Frasers Group\Desktop\ProjectFiles> & "C:/Program Files/Python311/python.exe" "c:/Users/echukwu/OneDrive - Frasers Group/Desktop/ProjectFiles/te-shared-script/k8s/practise-code/cluster-memory-cpu-usage.py"
+Switched to context connectgateway_corp-test-mgmt-anthos-3578_global_non-prod-warehouse
+Collecting data for cluster: non-prod-warehouse
+Traceback (most recent call last):
+  File "c:\Users\echukwu\OneDrive - Frasers Group\Desktop\ProjectFiles\te-shared-script\k8s\practise-code\cluster-memory-cpu-usage.py", line 125, in <module>
+    get_pods_data()
+  File "c:\Users\echukwu\OneDrive - Frasers Group\Desktop\ProjectFiles\te-shared-script\k8s\practise-code\cluster-memory-cpu-usage.py", line 92, in get_pods_data       
+    memory_utilisation = calculate_percentage(memory_usage, memory_request)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\echukwu\OneDrive - Frasers Group\Desktop\ProjectFiles\te-shared-script\k8s\practise-code\cluster-memory-cpu-usage.py", line 53, in calculate_percentage
     usage_value = int(usage[:-1]) if usage.endswith('m') else int(usage)
-    return f"{(usage_value / request) * 100:.2f}%"
-
-def get_pods_data():
-    # Get pod resource requests
-    pods_json = run_kubectl_command(['kubectl', 'get', 'pods', '--all-namespaces', '-o', 'json'])
-
-    # Get current pod utilisation
-    top_pods_output = subprocess.run(['kubectl', 'top', 'pods', '--all-namespaces'], capture_output=True, text=True, check=True).stdout
-
-    # Parse the utilisation data
-    top_pods_lines = top_pods_output.strip().split('\n')
-    top_pods_data = {}
-    for line in top_pods_lines[1:]:  # Skip the header line
-        parts = line.split()
-        namespace = parts[0]
-        name = parts[1]
-        cpu_usage = parts[2]
-        memory_usage = parts[3]
-        top_pods_data[(namespace, name)] = {'cpu': cpu_usage, 'memory': memory_usage}
-
-    # Combine the data
-    combined_data = []
-    for pod in pods_json['items']:
-        namespace = pod['metadata']['namespace']
-        if namespace in ignore_namespaces:
-            continue
-        name = pod['metadata']['name']
-        cpu_request = sum(
-            convert_to_m(container.get('resources', {}).get('requests', {}).get('cpu', '0'))
-            for container in pod['spec']['containers']
-        )
-        memory_request = sum(
-            convert_to_mi(container.get('resources', {}).get('requests', {}).get('memory', '0'))
-            for container in pod['spec']['containers']
-        )
-        cpu_usage = top_pods_data.get((namespace, name), {}).get('cpu', 'N/A')
-        memory_usage = top_pods_data.get((namespace, name), {}).get('memory', 'N/A')
-        cpu_utilisation = calculate_percentage(cpu_usage, cpu_request)
-        memory_utilisation = calculate_percentage(memory_usage, memory_request)
-        combined_data.append({
-            'namespace': namespace,
-            'name': name,
-            'cpu_request': f'{cpu_request}m',
-            'cpu_usage': cpu_usage,
-            'cpu_utilisation': cpu_utilisation,
-            'memory_request': f'{memory_request}Mi',
-            'memory_usage': memory_usage,
-            'memory_utilisation': memory_utilisation,
-        })
-
-    # Calculate column widths
-    namespace_width = max(len("NAMESPACE"), max(len(data['namespace']) for data in combined_data))
-    name_width = max(len("NAME"), max(len(data['name']) for data in combined_data))
-    cpu_request_width = len("CPU_REQUEST")
-    cpu_usage_width = len("CPU_USAGE")
-    cpu_utilisation_width = len("CPU_UTILISATION")
-    memory_request_width = len("MEMORY_REQUEST")
-    memory_usage_width = len("MEMORY_USAGE")
-    memory_utilisation_width = len("MEMORY_UTILISATION")
-
-    # Print the combined data in a simple table
-    header = f"{'NAMESPACE':<{namespace_width}} {'NAME':<{name_width}} {'CPU_REQUEST':<{cpu_request_width}} {'CPU_USAGE':<{cpu_usage_width}} {'CPU_UTILISATION':<{cpu_utilisation_width}} {'MEMORY_REQUEST':<{memory_request_width}} {'MEMORY_USAGE':<{memory_usage_width}} {'MEMORY_UTILISATION':<{memory_utilisation_width}}"
-    print(header)
-    print("=" * len(header))
-    for data in combined_data:
-        print(f"{data['namespace']:<{namespace_width}} {data['name']:<{name_width}} {data['cpu_request']:<{cpu_request_width}} {data['cpu_usage']:<{cpu_usage_width}} {data['cpu_utilisation']:<{cpu_utilisation_width}} {data['memory_request']:<{memory_request_width}} {data['memory_usage']:<{memory_usage_width}} {data['memory_utilisation']:<{memory_utilisation_width}}")
-
-if __name__ == "__main__":
-    for cluster in CLUSTERS:
-        if switch_context(cluster):
-            print(f"{ANSIColors.CYAN}Collecting data for cluster: {cluster['name']}{ANSIColors.ENDC}")
-            get_pods_data()
+                                                              ^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '35Mi'
