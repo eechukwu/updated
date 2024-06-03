@@ -44,14 +44,23 @@ def convert_to_mi(memory_str):
         return int(memory_str[:-2]) * 1024 * 1024
     return int(memory_str) // (1024 * 1024)
 
+def calculate_percentage(usage, request):
+    """
+    Calculates the percentage of utilisation against request.
+    """
+    if usage == 'N/A' or request == 0:
+        return 'N/A'
+    usage_value = int(usage[:-1]) if usage.endswith('m') else int(usage)
+    return f"{(usage_value / request) * 100:.2f}%"
+
 def get_pods_data():
     # Get pod resource requests
     pods_json = run_kubectl_command(['kubectl', 'get', 'pods', '--all-namespaces', '-o', 'json'])
 
-    # Get current pod utilization
+    # Get current pod utilisation
     top_pods_output = subprocess.run(['kubectl', 'top', 'pods', '--all-namespaces'], capture_output=True, text=True, check=True).stdout
 
-    # Parse the utilization data
+    # Parse the utilisation data
     top_pods_lines = top_pods_output.strip().split('\n')
     top_pods_data = {}
     for line in top_pods_lines[1:]:  # Skip the header line
@@ -79,13 +88,17 @@ def get_pods_data():
         )
         cpu_usage = top_pods_data.get((namespace, name), {}).get('cpu', 'N/A')
         memory_usage = top_pods_data.get((namespace, name), {}).get('memory', 'N/A')
+        cpu_utilisation = calculate_percentage(cpu_usage, cpu_request)
+        memory_utilisation = calculate_percentage(memory_usage, memory_request)
         combined_data.append({
             'namespace': namespace,
             'name': name,
             'cpu_request': f'{cpu_request}m',
             'cpu_usage': cpu_usage,
+            'cpu_utilisation': cpu_utilisation,
             'memory_request': f'{memory_request}Mi',
             'memory_usage': memory_usage,
+            'memory_utilisation': memory_utilisation,
         })
 
     # Calculate column widths
@@ -93,15 +106,17 @@ def get_pods_data():
     name_width = max(len("NAME"), max(len(data['name']) for data in combined_data))
     cpu_request_width = len("CPU_REQUEST")
     cpu_usage_width = len("CPU_USAGE")
+    cpu_utilisation_width = len("CPU_UTILISATION")
     memory_request_width = len("MEMORY_REQUEST")
     memory_usage_width = len("MEMORY_USAGE")
+    memory_utilisation_width = len("MEMORY_UTILISATION")
 
     # Print the combined data in a simple table
-    header = f"{'NAMESPACE':<{namespace_width}} {'NAME':<{name_width}} {'CPU_REQUEST':<{cpu_request_width}} {'CPU_USAGE':<{cpu_usage_width}} {'MEMORY_REQUEST':<{memory_request_width}} {'MEMORY_USAGE':<{memory_usage_width}}"
+    header = f"{'NAMESPACE':<{namespace_width}} {'NAME':<{name_width}} {'CPU_REQUEST':<{cpu_request_width}} {'CPU_USAGE':<{cpu_usage_width}} {'CPU_UTILISATION':<{cpu_utilisation_width}} {'MEMORY_REQUEST':<{memory_request_width}} {'MEMORY_USAGE':<{memory_usage_width}} {'MEMORY_UTILISATION':<{memory_utilisation_width}}"
     print(header)
     print("=" * len(header))
     for data in combined_data:
-        print(f"{data['namespace']:<{namespace_width}} {data['name']:<{name_width}} {data['cpu_request']:<{cpu_request_width}} {data['cpu_usage']:<{cpu_usage_width}} {data['memory_request']:<{memory_request_width}} {data['memory_usage']:<{memory_usage_width}}")
+        print(f"{data['namespace']:<{namespace_width}} {data['name']:<{name_width}} {data['cpu_request']:<{cpu_request_width}} {data['cpu_usage']:<{cpu_usage_width}} {data['cpu_utilisation']:<{cpu_utilisation_width}} {data['memory_request']:<{memory_request_width}} {data['memory_usage']:<{memory_usage_width}} {data['memory_utilisation']:<{memory_utilisation_width}}")
 
 if __name__ == "__main__":
     for cluster in CLUSTERS:
