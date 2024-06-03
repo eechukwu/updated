@@ -57,6 +57,15 @@ def calculate_percentage(usage, request, is_cpu=True):
         usage_value = convert_to_mi(usage)
         return f"{(usage_value / request) * 100:.2f}%"
 
+def sort_by_cpu_percentage(data):
+    """
+    Sorts the data by the highest CPU utilisation percentage.
+    """
+    def get_sort_key(item):
+        return float(item['cpu_utilisation'][:-1]) if item['cpu_utilisation'] != 'N/A' else 0
+
+    return sorted(data, key=get_sort_key, reverse=True)
+
 def get_pods_data():
     # Get pod resource requests
     pods_json = run_kubectl_command(['kubectl', 'get', 'pods', '--all-namespaces', '-o', 'json'])
@@ -104,6 +113,9 @@ def get_pods_data():
             'memory_usage': memory_usage,
             'memory_utilisation': memory_utilisation,
         })
+
+    # Sort data by the highest CPU utilisation percentage
+    combined_data = sort_by_cpu_percentage(combined_data)
 
     # Calculate column widths
     namespace_width = max(len("NAMESPACE"), max(len(data['namespace']) for data in combined_data))
