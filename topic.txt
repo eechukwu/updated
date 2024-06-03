@@ -1,5 +1,33 @@
-Hi Matthew,
+Your message is clear, but it can be slightly refined for better grammar and clarity:
 
-I am currently working on removing “User Created” from meex, and I keep running into this issue. Could you please take a look at it and point me in the right direction?
+---
 
-Thanks,
+### Ticket: Addressing vCPU Capacity Issues in Clusters
+
+#### Problem Statement:
+The following clusters are currently maxing out their vCPU capacity:
+- Prod Warehouse
+- Prod Retail
+- Non-Prod Retail
+
+There is a need to assess and adjust the vCPU requests and utilization for applications running in these clusters to ensure optimal performance and resource allocation.
+
+#### Work Involved:
+- Created a Python script to compare vCPU requests/utilization.
+- Identify and list all applications running in the specified clusters.
+- Review vCPU requests and utilization for all applications.
+- Contact application owners before making changes.
+- Adjust vCPU allocations as needed.
+- Submit change requests for Prod vCPU increases.
+
+#### Test Criteria:
+- Reduced vCPU utilization in some applications.
+- No performance issues post-adjustment.
+- Approved change requests for Prod clusters.
+
+#### Dependencies:
+- Approval from application owners.
+
+---
+
+This version improves readability and ensures proper punctuation and clarity.
