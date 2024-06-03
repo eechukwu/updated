@@ -1,13 +1,5 @@
-Here is my update for today:
+Hi Matthew,
 
-	•	I will be working on the following clusters that are maxing out their vCPU capacity:
-	•	Prod Warehouse
-	•	Prod Retail
-	•	Non-Prod Retail
-	•	I will check all the apps’ vCPU requests/utilisation and contact the team that owns each app before making any changes. If I need to increase any of the Prod ones, then I will have to submit a change request for that as well.
-	•	Work on the CronJob Alerting ticket on my board.
-	•	F5: is still blocked; I will get in touch with the Network team about that.
+I am currently working on removing “User Created” from meex, and I keep running into this issue. Could you please take a look at it and point me in the right direction?
 
-Morning team,
-
-My system is about to restart for an update. I will join the standup once it’s completed.
+Thanks,
