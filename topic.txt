@@ -1,1 +1,4 @@
-Hi Chloe, could you please help me approve this access request or direct me to the right person who can assist with it?
+Hi team, 
+
+In the last few months, I reached out to you to know if health checks have been configured on these apps. 
+Please, have you got any updates on that because the health check section in the deployment files is still commented out:
