@@ -1,1 +1,9 @@
-Unfortunately, we have to scale the warehouse Non Prod Cluster by adding extra nodes to it. We have a lot of applications currently running on the cluster. I have reviewed it with Rob and we both agreed to scale the cluster for now. I need to have a quick chat with you on this at some point today or tomorrow
+We are currently running out of vCPUs on the Prod Warehouse Cluster.
+
+N/A
+
+N/A
+
+This has already been tested and completed on the Non-Prod Warehouse Cluster.
+
+I will notify the warehouse teams via Microsoft Teams.
