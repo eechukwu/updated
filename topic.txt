@@ -1,9 +1,2 @@
-We are currently running out of vCPUs on the Prod Warehouse Cluster.
-
-N/A
-
-N/A
-
-This has already been tested and completed on the Non-Prod Warehouse Cluster.
-
-I will notify the warehouse teams via Microsoft Teams.
+Following our chat on Friday regarding Request/Utilization, I have created a ticket that calculates that. However, the problem with the report below is that some of these apps have peak periods which might not be reflected accurately.
+So, I suggest we create a follow-up ticket on this. The goal of this new ticket will be to compare the results below against the GCP graph within a specified range and identify apps where we can potentially reduce their CPU requests based on their utilization patterns. Does this make sense?
