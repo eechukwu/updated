@@ -1,2 +1,1 @@
-Following our chat on Friday regarding Request/Utilization, I have created a ticket that calculates that. However, the problem with the report below is that some of these apps have peak periods which might not be reflected accurately.
-So, I suggest we create a follow-up ticket on this. The goal of this new ticket will be to compare the results below against the GCP graph within a specified range and identify apps where we can potentially reduce their CPU requests based on their utilization patterns. Does this make sense?
+We expect no downtime for existing applications currently running on the cluster and will update the team once the process is completed.
