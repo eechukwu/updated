@@ -1,2 +1,1 @@
-
-Also, when I described one of the pods, I noticed that some of the ENV variables are still referring to the non-prod cluster. Is that meant to be so?
+Unfortunately, we have to scale the warehouse Non Prod Cluster by adding extra nodes to it. We have a lot of applications currently running on the cluster. I have reviewed it with Rob and we both agreed to scale the cluster for now. I need to have a quick chat with you on this at some point today or tomorrow
