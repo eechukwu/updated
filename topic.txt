@@ -1,1 +1,1 @@
-We expect no downtime for existing applications currently running on the cluster and will update the team once the process is completed.
+Good morning, we will also be scaling your production cluster this afternoon. Here is the change request for that. Just like the non-prod cluster, we expect no downtime for existing applications currently running on the cluster, and we will update the team once the process is completed.
