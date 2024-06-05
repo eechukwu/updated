@@ -13,3 +13,15 @@ We should set the requests to cpu 100m in all base kustomize files to ensure bes
 
 
 BUT PLEASE CHECK EACH SERVICES UTILISATION  FIRST TO MAKE SURE DROPPING THIS WONT CAUSE AN ISSUE
+
+
+    "non-prod-warehouse": 32,
+    "non-prod-ecommerce-internal": 32,
+    "non-prod-retail": 32,
+    "non-prod-tech-enablement": 24,
+    "non-prod-buying": 24,
+    "prod-warehouse": 32,
+    "prod-ecommerce-internal": 24,
+    "prod-retail": 24,
+    "prod-tech-enablement": 24,
+    "prod-buying": 24,
