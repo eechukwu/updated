@@ -1,1 +1,15 @@
-Hi Matthew, Graeme left a comment on the PR. Do you have any idea what he is referring to?
+When building out the initial round of apps we used the following request values:
+
+CPU: 250m
+
+Mem: 256M
+
+
+
+In testing - it was found that the services used very little CPU and these request values left the clusters looking artificially ‘full’
+
+We should set the requests to cpu 100m in all base kustomize files to ensure best utilisation of hardware.
+
+
+
+BUT PLEASE CHECK EACH SERVICES UTILISATION  FIRST TO MAKE SURE DROPPING THIS WONT CAUSE AN ISSUE
