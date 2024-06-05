@@ -1,1 +1,22 @@
-Still waiting for the network team on this. Here is Tom’s current response on the issue:
+Sure, here’s the revised and more professional version of your response:
+
+---
+
+Hello Ademola,
+
+Thank you for your prompt response.
+
+I have reviewed the file you mentioned. Should I change every occurrence of "level" to "Level" in that file?
+
+Additionally, for some reason, I am unable to see the images you attached. Could you please reattach them?
+
+Finally, will this value be overwritten when we upgrade our Anthos to the next version?
+
+Thank you.
+
+Best regards,  
+Emmanuel
+
+---
+
+This version maintains a professional tone while addressing all the points clearly.
