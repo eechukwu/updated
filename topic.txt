@@ -1,33 +1,23 @@
-Certainly! Here's the updated version for the prod-warehouse cluster including raising a change request:
 
-### Cluster: prod-warehouse
+Hello Emmanuel, 
 
-**Title: Adjust CPU and Memory Requests for prod-warehouse Cluster**
+I spoke with a GKE & Anthos Subject Matter Expert (SME) and we think will resolve the issue.
 
-**Problem Statement:**
-The current CPU and memory request values for services in the `prod-warehouse` cluster are set to 250m and 256Mi, respectively. During testing, it was found that these services use very little CPU and memory, leading to clusters appearing inaccurately resource-constrained.
 
-**Work involved:**
-- Review the CPU and memory utilisation for each service in the `prod-warehouse` cluster to ensure that lowering the requests will not cause any issues.
-- Update the CPU request values in all base kustomize files for the `prod-warehouse` cluster from 250m to 100m.
-- Update the memory request values in all base kustomize files for the `prod-warehouse` cluster from 256Mi to 128Mi.
-- Raise a change request to implement the updates in the production environment, ensuring all stakeholders are informed and approvals are obtained.
+ 
 
-**Test Criteria:**
-- Monitor the CPU and memory utilisation of each service after updating the request values.
-- Ensure that the services operate within acceptable utilisation limits and do not experience performance issues.
 
-**Dependencies:**
-- Access to the current utilisation metrics for all services in the `prod-warehouse` cluster.
-- Collaboration with the DevOps and development teams to verify and approve changes.
-- Approval of the change request by relevant stakeholders.
+Next Steps:
 
-**Acceptance Criteria:**
-- All services in the `prod-warehouse` cluster have their CPU request values updated to 100m and memory request values updated to 128Mi in the base kustomize files.
-- No performance issues are observed in the services after the request values are updated.
-- The cluster shows a more accurate utilisation of resources.
-- The change request is successfully implemented and closed.
 
----
+Kindly update level to Level in the configMap file.
 
-This version includes the additional step of raising a change request to ensure the updates are properly documented and approved before implementation.
+
+Once the update is done, please do a rollout restart of any associated stackdriver workloads.
+
+
+Then check again in logs explorer to see if the application log entries show the appropriate severity.
+
+
+
+I look forward to your response.
