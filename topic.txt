@@ -1,23 +1,14 @@
+Hello Ademola,
 
-Hello Emmanuel, 
+Thank you for your prompt response.
 
-I spoke with a GKE & Anthos Subject Matter Expert (SME) and we think will resolve the issue.
+I have reviewed the file you mentioned. Should I change every occurrence of “level” to “Level” in that file?
 
+Additionally, for some reason, I am unable to see the images you attached. Could you please reattach them?
 
- 
+Finally, will this value be overwritten when we upgrade our Anthos to the next version?
 
+Thank you.
 
-Next Steps:
-
-
-Kindly update level to Level in the configMap file.
-
-
-Once the update is done, please do a rollout restart of any associated stackdriver workloads.
-
-
-Then check again in logs explorer to see if the application log entries show the appropriate severity.
-
-
-
-I look forward to your response.
+Best regards,
+Emmanuel
