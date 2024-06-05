@@ -1,14 +1,1 @@
-Hello Ademola,
-
-Thank you for your prompt response.
-
-I have reviewed the file you mentioned. Should I change every occurrence of “level” to “Level” in that file?
-
-Additionally, for some reason, I am unable to see the images you attached. Could you please reattach them?
-
-Finally, will this value be overwritten when we upgrade our Anthos to the next version?
-
-Thank you.
-
-Best regards,
-Emmanuel
+We won’t be scaling either of these clusters because we have reduced the CPU requests on some apps, and the cluster’s available CPU is now looking healthy.
