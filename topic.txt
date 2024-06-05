@@ -1,1 +1,1 @@
-We won’t be scaling either of these clusters because we have reduced the CPU requests on some apps, and the cluster’s available CPU is now looking healthy.
+Still waiting for the network team on this. Here is Tom’s current response on the issue:
