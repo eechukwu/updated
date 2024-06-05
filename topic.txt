@@ -1,17 +1,6 @@
-I have responded to GCP asking for some more clarifications on this. Below is my response to them:
 
-Hello Ademola,
 
-Thank you for your prompt response.
+I have looked into this, and the main reason why the alerts are not reaching the TE Team is that they are configured to be sent only to the application team via the label below.
 
-I have reviewed the file you mentioned. Should I change every occurrence of "level" to "Level" in that file?
-
-Additionally, for some reason, I am unable to see the images you attached. Could you please reattach them?
-
-Finally, will this value be overwritten when we upgrade our Anthos to the next version?
-
-Thank you.
-
-Best regards,  
-Emmanuel
+The solution is to have a chat with Pragith and Sww to see if we can add an extra label to the alerts called `team:platform`.
 
