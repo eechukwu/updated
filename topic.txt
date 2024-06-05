@@ -1,27 +1,167 @@
-When building out the initial round of apps we used the following request values:
+I apologize for that oversight. I'll complete the task for all clusters and include memory adjustments as well. Here’s the updated version:
 
-CPU: 250m
+### Cluster: non-prod-warehouse
 
-Mem: 256M
+**Title: Adjust CPU and Memory Requests for non-prod-warehouse Cluster**
 
+**Problem Statement:**
+The current CPU and memory request values for services in the `non-prod-warehouse` cluster are set to 250m and 256Mi, respectively. During testing, it was found that these services use very little CPU and memory, leading to clusters appearing inaccurately resource-constrained.
 
+**Work involved:**
+- Review the CPU and memory utilisation for each service in the `non-prod-warehouse` cluster to ensure that lowering the requests will not cause any issues.
+- Update the CPU request values in all base kustomize files for the `non-prod-warehouse` cluster from 250m to 100m.
+- Update the memory request values in all base kustomize files for the `non-prod-warehouse` cluster from 256Mi to 128Mi.
 
-In testing - it was found that the services used very little CPU and these request values left the clusters looking artificially ‘full’
+**Test Criteria:**
+- Monitor the CPU and memory utilisation of each service after updating the request values.
+- Ensure that the services operate within acceptable utilisation limits and do not experience performance issues.
 
-We should set the requests to cpu 100m in all base kustomize files to ensure best utilisation of hardware.
+**Dependencies:**
+- Access to the current utilisation metrics for all services in the `non-prod-warehouse` cluster.
+- Collaboration with the DevOps and development teams to verify and approve changes.
 
+**Acceptance Criteria:**
+- All services in the `non-prod-warehouse` cluster have their CPU request values updated to 100m and memory request values updated to 128Mi in the base kustomize files.
+- No performance issues are observed in the services after the request values are updated.
+- The cluster shows a more accurate utilisation of resources.
 
+---
 
-BUT PLEASE CHECK EACH SERVICES UTILISATION  FIRST TO MAKE SURE DROPPING THIS WONT CAUSE AN ISSUE
+### Cluster: non-prod-ecommerce-internal
 
+**Title: Adjust CPU and Memory Requests for non-prod-ecommerce-internal Cluster**
 
-    "non-prod-warehouse": 32,
-    "non-prod-ecommerce-internal": 32,
-    "non-prod-retail": 32,
-    "non-prod-tech-enablement": 24,
-    "non-prod-buying": 24,
-    "prod-warehouse": 32,
-    "prod-ecommerce-internal": 24,
-    "prod-retail": 24,
-    "prod-tech-enablement": 24,
-    "prod-buying": 24,
+**Problem Statement:**
+The current CPU and memory request values for services in the `non-prod-ecommerce-internal` cluster are set to 250m and 256Mi, respectively. During testing, it was found that these services use very little CPU and memory, leading to clusters appearing inaccurately resource-constrained.
+
+**Work involved:**
+- Review the CPU and memory utilisation for each service in the `non-prod-ecommerce-internal` cluster to ensure that lowering the requests will not cause any issues.
+- Update the CPU request values in all base kustomize files for the `non-prod-ecommerce-internal` cluster from 250m to 100m.
+- Update the memory request values in all base kustomize files for the `non-prod-ecommerce-internal` cluster from 256Mi to 128Mi.
+
+**Test Criteria:**
+- Monitor the CPU and memory utilisation of each service after updating the request values.
+- Ensure that the services operate within acceptable utilisation limits and do not experience performance issues.
+
+**Dependencies:**
+- Access to the current utilisation metrics for all services in the `non-prod-ecommerce-internal` cluster.
+- Collaboration with the DevOps and development teams to verify and approve changes.
+
+**Acceptance Criteria:**
+- All services in the `non-prod-ecommerce-internal` cluster have their CPU request values updated to 100m and memory request values updated to 128Mi in the base kustomize files.
+- No performance issues are observed in the services after the request values are updated.
+- The cluster shows a more accurate utilisation of resources.
+
+---
+
+### Cluster: non-prod-retail
+
+**Title: Adjust CPU and Memory Requests for non-prod-retail Cluster**
+
+**Problem Statement:**
+The current CPU and memory request values for services in the `non-prod-retail` cluster are set to 250m and 256Mi, respectively. During testing, it was found that these services use very little CPU and memory, leading to clusters appearing inaccurately resource-constrained.
+
+**Work involved:**
+- Review the CPU and memory utilisation for each service in the `non-prod-retail` cluster to ensure that lowering the requests will not cause any issues.
+- Update the CPU request values in all base kustomize files for the `non-prod-retail` cluster from 250m to 100m.
+- Update the memory request values in all base kustomize files for the `non-prod-retail` cluster from 256Mi to 128Mi.
+
+**Test Criteria:**
+- Monitor the CPU and memory utilisation of each service after updating the request values.
+- Ensure that the services operate within acceptable utilisation limits and do not experience performance issues.
+
+**Dependencies:**
+- Access to the current utilisation metrics for all services in the `non-prod-retail` cluster.
+- Collaboration with the DevOps and development teams to verify and approve changes.
+
+**Acceptance Criteria:**
+- All services in the `non-prod-retail` cluster have their CPU request values updated to 100m and memory request values updated to 128Mi in the base kustomize files.
+- No performance issues are observed in the services after the request values are updated.
+- The cluster shows a more accurate utilisation of resources.
+
+---
+
+### Cluster: non-prod-tech-enablement
+
+**Title: Adjust CPU and Memory Requests for non-prod-tech-enablement Cluster**
+
+**Problem Statement:**
+The current CPU and memory request values for services in the `non-prod-tech-enablement` cluster are set to 250m and 256Mi, respectively. During testing, it was found that these services use very little CPU and memory, leading to clusters appearing inaccurately resource-constrained.
+
+**Work involved:**
+- Review the CPU and memory utilisation for each service in the `non-prod-tech-enablement` cluster to ensure that lowering the requests will not cause any issues.
+- Update the CPU request values in all base kustomize files for the `non-prod-tech-enablement` cluster from 250m to 100m.
+- Update the memory request values in all base kustomize files for the `non-prod-tech-enablement` cluster from 256Mi to 128Mi.
+
+**Test Criteria:**
+- Monitor the CPU and memory utilisation of each service after updating the request values.
+- Ensure that the services operate within acceptable utilisation limits and do not experience performance issues.
+
+**Dependencies:**
+- Access to the current utilisation metrics for all services in the `non-prod-tech-enablement` cluster.
+- Collaboration with the DevOps and development teams to verify and approve changes.
+
+**Acceptance Criteria:**
+- All services in the `non-prod-tech-enablement` cluster have their CPU request values updated to 100m and memory request values updated to 128Mi in the base kustomize files.
+- No performance issues are observed in the services after the request values are updated.
+- The cluster shows a more accurate utilisation of resources.
+
+---
+
+### Cluster: non-prod-buying
+
+**Title: Adjust CPU and Memory Requests for non-prod-buying Cluster**
+
+**Problem Statement:**
+The current CPU and memory request values for services in the `non-prod-buying` cluster are set to 250m and 256Mi, respectively. During testing, it was found that these services use very little CPU and memory, leading to clusters appearing inaccurately resource-constrained.
+
+**Work involved:**
+- Review the CPU and memory utilisation for each service in the `non-prod-buying` cluster to ensure that lowering the requests will not cause any issues.
+- Update the CPU request values in all base kustomize files for the `non-prod-buying` cluster from 250m to 100m.
+- Update the memory request values in all base kustomize files for the `non-prod-buying` cluster from 256Mi to 128Mi.
+
+**Test Criteria:**
+- Monitor the CPU and memory utilisation of each service after updating the request values.
+- Ensure that the services operate within acceptable utilisation limits and do not experience performance issues.
+
+**Dependencies:**
+- Access to the current utilisation metrics for all services in the `non-prod-buying` cluster.
+- Collaboration with the DevOps and development teams to verify and approve changes.
+
+**Acceptance Criteria:**
+- All services in the `non-prod-buying` cluster have their CPU request values updated to 100m and memory request values updated to 128Mi in the base kustomize files.
+- No performance issues are observed in the services after the request values are updated.
+- The cluster shows a more accurate utilisation of resources.
+
+---
+
+### Cluster: prod-warehouse
+
+**Title: Adjust CPU and Memory Requests for prod-warehouse Cluster**
+
+**Problem Statement:**
+The current CPU and memory request values for services in the `prod-warehouse` cluster are set to 250m and 256Mi, respectively. During testing, it was found that these services use very little CPU and memory, leading to clusters appearing inaccurately resource-constrained.
+
+**Work involved:**
+- Review the CPU and memory utilisation for each service in the `prod-warehouse` cluster to ensure that lowering the requests will not cause any issues.
+- Update the CPU request values in all base kustomize files for the `prod-warehouse` cluster from 250m to 100m.
+- Update the memory request values in all base kustomize files for the `prod-warehouse` cluster from 256Mi to 128Mi.
+
+**Test Criteria:**
+- Monitor the CPU and memory utilisation of each service after updating the request values.
+- Ensure that the services operate within acceptable utilisation limits and do not experience performance issues.
+
+**Dependencies:**
+- Access to the current utilisation metrics for all services in the `prod-warehouse` cluster.
+- Collaboration with the DevOps and development teams to verify and approve changes.
+
+**Acceptance Criteria:**
+- All services in the `prod-warehouse` cluster have their CPU request values updated to 100m and memory request values updated to 128Mi in the base kustomize files.
+- No performance issues are observed in the services after the request values are updated.
+- The cluster shows a more accurate utilisation of resources.
+
+---
+
+### Cluster: prod-ecommerce-internal
+
+**Title: Adjust
