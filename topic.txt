@@ -1,4 +1,1 @@
-Hi team, 
-
-In the last few months, I reached out to you to know if health checks have been configured on these apps. 
-Please, have you got any updates on that because the health check section in the deployment files is still commented out:
+Hi Matthew, Graeme left a comment on the PR. Do you have any idea what he is referring to?
