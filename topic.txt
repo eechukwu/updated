@@ -1,6 +1,4 @@
-Sure, here’s the revised and more professional version of your response:
-
----
+I have responded to GCP asking for some more clarifications on this. Below is my response to them:
 
 Hello Ademola,
 
@@ -17,6 +15,3 @@ Thank you.
 Best regards,  
 Emmanuel
 
----
-
-This version maintains a professional tone while addressing all the points clearly.
