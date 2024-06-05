@@ -1,6 +1,2 @@
 
 
-I have looked into this, and the main reason why the alerts are not reaching the TE Team is that they are configured to be sent only to the application team via the label below.
-
-The solution is to have a chat with Pragith and Sww to see if we can add an extra label to the alerts called `team:platform`.
-
