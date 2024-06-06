@@ -1,1 +1,9 @@
-As I mentioned during the standup, I will be closing this ticket because we already have several measures in place to identify similar issues going forward, including the dashboard and the daily check Python code.
+Good Morning Dan,
+
+My focus for today will be on the following tasks:
+
+	•	A guy from the eCommerce team named Ben Maher reached out to me regarding help with Google Data Store (Terraform). I am currently looking into that because we have a meeting scheduled for this afternoon.
+	•	eCommerce on-prem meeting with the rest of the K8S admin team.
+	•	Call with Timmy to work on some sample apps (TE internal app) with him, to get him used to the manifest file and also prepare the communications for that task.
+	•	Call with Vaib to implement the GCP recommendations on the TE Non-Prod Cluster and hand over that ticket to him as well.
+	•	Call with Rob and Vaib to discuss the ongoing F5 task and our progress on it.
