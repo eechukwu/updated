@@ -1,1 +1,2 @@
-As I mentioned during the standup, I will be closing this ticket because we already have several measures in place to identify similar issues going forward, including the dashboard and the daily check Python code.
+Hi Emmanuel, Jonathan's sent me over your way as I'm currently looking at integrating a Google Data Store into an application I've been working on. 
+I need to make a terraform that will spin it up to finish this off. Is that something you'd be able to help with if I put some time in the calendar? 
