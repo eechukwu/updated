@@ -1,1 +1,11 @@
-Vaib will be working on this task while I am on holiday. We have made the required changes to the file and were just about to apply it before we were kicked out of the VM.
+Hi Team,
+
+I’m reaching out to inform you that we will be scaling down the vCPU and memory usage in the following applications. The table below shows the actual requests vs. actual utilisation for each of these apps over a 14-day period.
+
+| Application Name | vCPU Request | Actual vCPU Utilisation | Memory Request | Actual Memory Utilisation |
+|------------------|--------------|-------------------------|----------------|--------------------------|
+| App1             | 500m         | 200m                    | 512Mi          | 256Mi                     |
+| App2             | 1000m        | 300m                    | 1024Mi         | 512Mi                     |
+| App3             | 750m         | 250m                    | 768Mi          | 384Mi                     |
+
+We are scaling down the application requests to optimise resource usage and reduce costs.
