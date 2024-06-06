@@ -1,18 +1,1 @@
-vCPU and Memory Optimisation Task: (Please can you give Timmy the permission to progress this task?)
 
-	•	Walked Timmy through the process of changing deployment files in the dev/test environment.
-	•	Showed Timmy how to use the GCP dashboard and the code to estimate vCPU usage for each application.
-  
-Here is the comms for the task: (A)
-
-Hi Team,
-
-I’m reaching out to inform you that we will be scaling down the vCPU and memory usage in the following applications. The table below shows the actual requests vs. actual utilisation for each of these apps over a 14-day period.
-
-| Application Name | vCPU Request | Actual vCPU Utilisation | Memory Request | Actual Memory Utilisation |
-|------------------|--------------|-------------------------|----------------|--------------------------|
-| App1             | 500m         | 200m                    | 512Mi          | 256Mi                     |
-| App2             | 1000m        | 300m                    | 1024Mi         | 512Mi                     |
-| App3             | 750m         | 250m                    | 768Mi          | 384Mi                     |
-
-We are scaling down the application requests to optimise resource usage and reduce costs.
