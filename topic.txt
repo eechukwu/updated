@@ -1,1 +1,1 @@
-Hi Dan, sorry I forgot to clock in today, 18th June 2024, because I was awake until 5 am due to the migration task.
+This was successfully completed this morning. We started at 1:30 am and finished by 5:30 am. Upon completion, I checked ArgoCD to ensure all the apps were up and running and also checked the clusters to verify that the apps were operational.
