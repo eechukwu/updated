@@ -13,3 +13,112 @@
 [08:29:28 INF] Request starting HTTP/1.1 GET http://wh-courier-sorter-api.anthos.sportski.com/ - null null
 [08:29:28 INF] Request finished HTTP/1.1 GET http://wh-courier-sorter-api.anthos.sportski.com/ - 404 0 null 0.4621ms
 [08:29:28 INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://wh-courier-sorter-api.anthos.sportski.com/, Response status code: 404
+
+
+
+The log messages indicate that your application is starting correctly and listening on port 8080, but it is returning a 404 status code for HTTP GET requests to `http://wh-courier-sorter-api.anthos.sportski.com/`.
+
+Here are the key log entries:
+
+```
+[15:59:03 WRN] Overriding HTTP_PORTS '8080' and HTTPS_PORTS ''. Binding to values defined by URLS instead 'http://*:8080'.
+[15:59:03 INF] Now listening on: http://[::]:8080
+[15:59:03 INF] Application started. Press Ctrl+C to shut down.
+[15:59:03 INF] Hosting environment: Production
+[15:59:03 INF] Content root path: /app
+[08:10:57 INF] Request starting HTTP/1.1 GET http://wh-courier-sorter-api.anthos.sportski.com/ - null null
+[08:10:57 INF] Request finished HTTP/1.1 GET http://wh-courier-sorter-api.anthos.sportski.com/ - 404 0 null 2.3671ms
+[08:10:57 INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://wh-courier-sorter-api.anthos.sportski.com/, Response status code: 404
+```
+
+### Debugging Steps
+
+1. **Verify Application Routes**
+   Ensure that your application has routes defined for the paths you are trying to access. The 404 error indicates that the requested URL does not match any routes defined in your application.
+
+2. **Check Ingress and Service Configuration**
+   Make sure that your Kubernetes Ingress and Service are correctly configured to route traffic to your application.
+
+   **Ingress Configuration:**
+   ```yaml
+   apiVersion: networking.k8s.io/v1
+   kind: Ingress
+   metadata:
+     name: wh-courier-sorter-api-ingress
+     namespace: prod-wh-courier-sorter-api
+   spec:
+     rules:
+     - host: wh-courier-sorter-api.anthos.sportski.com
+       http:
+         paths:
+         - path: /
+           pathType: Prefix
+           backend:
+             service:
+               name: wh-courier-sorter-api
+               port:
+                 number: 8080
+   ```
+
+   **Service Configuration:**
+   ```yaml
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: wh-courier-sorter-api
+     namespace: prod-wh-courier-sorter-api
+   spec:
+     selector:
+       app: wh-courier-sorter-api
+     ports:
+       - protocol: TCP
+         port: 8080
+         targetPort: 8080
+   ```
+
+3. **Check Middleware Configuration**
+   Ensure that your application middleware is correctly configured to handle the routes. In ASP.NET Core, you might have a middleware pipeline configuration that does not route to the correct endpoints.
+
+4. **Check DNS Resolution**
+   Ensure that the DNS is resolving correctly to the service endpoint. You can use a tool like `nslookup` or `dig` to verify DNS resolution.
+
+5. **Test Connectivity Within the Cluster**
+   You can use a test pod to verify that you can reach your service within the cluster.
+
+   ```sh
+   kubectl run -i --tty dnsutils --image=tutum/dnsutils --restart=Never --rm
+   curl http://wh-courier-sorter-api.prod-wh-courier-sorter-api.svc.cluster.local:8080
+   ```
+
+6. **Application Configuration**
+   Ensure that your application is correctly configured to handle the base URL and that there are no issues with the URL routing.
+
+### Example Routes Configuration in ASP.NET Core
+
+Ensure your `Startup.cs` or `Program.cs` file in ASP.NET Core is configured correctly:
+
+```csharp
+public class Startup
+{
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+
+        app.UseRouting();
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+            // or if using Razor Pages:
+            // endpoints.MapRazorPages();
+        });
+    }
+}
+```
+
+If your application is supposed to serve a specific path, ensure that it is correctly set up in your controllers or pages.
+
+By following these steps, you should be able to identify and resolve the issue causing the 404 errors.
