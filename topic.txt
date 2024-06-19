@@ -1,11 +1,7 @@
 Hi Team,
 
-I have lost access to some Jira sites, likely due to the recent email change. Currently, I am unable to access:
+I have a tricky issue here. For some reason, Jay’s App is throwing an SSL certificate error. I have encrypted the certificates myself twice, but it is still failing. I understand that Timmy and Vaib have also done the same in the past without success.
 
-	•	Site A
+Do you have any suggestions on what I should check next?
 
-However, I can still access:
-
-	•	Site B
-
-Could someone please assist me in resolving this issue?
+Thank you,
