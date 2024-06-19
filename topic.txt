@@ -117,7 +117,13 @@ public class Startup
         });
     }
 }
-```
+
+
+Hi Team, I have lost access to Jira and would appreciate your assistance in restoring it.
+
+Hi Jono, I will be handling the ticket related to deploying the Promo Mapper to the Dev environment. Would it be possible for me to shadow you during the deployment to Production?
+
+
 
 If your application is supposed to serve a specific path, ensure that it is correctly set up in your controllers or pages.
 
