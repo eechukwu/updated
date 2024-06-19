@@ -1,2 +1,11 @@
+Hi Team,
 
-Unfortunately, I still don’t have access to our Jira board, which is a bit frustrating. I have reached out to Mari for assistance with this.
+I have lost access to some Jira sites, likely due to the recent email change. Currently, I am unable to access:
+
+	•	Site A
+
+However, I can still access:
+
+	•	Site B
+
+Could someone please assist me in resolving this issue?
