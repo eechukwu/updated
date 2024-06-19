@@ -119,9 +119,7 @@ public class Startup
 }
 
 
-Hi Team, I have lost access to Jira and would appreciate your assistance in restoring it.
-
-Hi Jono, I will be handling the ticket related to deploying the Promo Mapper to the Dev environment. Would it be possible for me to shadow you during the deployment to Production?
+Hi Team, I have lost access to Jira, likely due to the email change. Could someone please guide me on how to restore my access?
 
 
 
