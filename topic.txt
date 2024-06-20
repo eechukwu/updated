@@ -1,7 +1,1 @@
-Hi Team,
-
-I have a tricky issue here. For some reason, Jay’s App is throwing an SSL certificate error. I have encrypted the certificates myself twice, but it is still failing. I understand that Timmy and Vaib have also done the same in the past without success.
-
-Do you have any suggestions on what I should check next?
-
-Thank you,
+Hi Tom, Are we still scheduled to have the meeting with F5 support today? We haven’t received any invite for it yet.
