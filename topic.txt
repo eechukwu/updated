@@ -1,1 +1,28 @@
-Hi Tom, Are we still scheduled to have the meeting with F5 support today? We haven’t received any invite for it yet.
+Setup config sync
+
+Attach
+
+Create subtask
+
+Link issue
+
+
+Create
+
+Description
+Edit Description
+Problem Statement
+What is the problem you are solving, or the feature we are building?
+
+Work Involved
+At a high level what work do you think is involved?
+
+Test Criteria
+How are we going to validate that the problem/feature has been solved?
+
+Dependencies
+What dependencies may affect the delivery of this work?
+
+Acceptance Criteria
+Edit Acceptance Criteria
+What step(s) do we need to complete to consider this work complete?
