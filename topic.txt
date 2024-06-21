@@ -1,60 +1,10 @@
-**Title**: Setup config sync for the GKE Fleet Clusters
-
----
-
-**Description**
-Setup config sync for the GKE Fleet Clusters
-
----
-
-**Problem Statement**
-Ensure configuration synchronization across all GKE Fleet Clusters for consistency.
-
----
-
-**Work Involved**
-- Review current config setup.
-- Implement config sync.
-- Test synchronization.
-- Document the process.
-
----
-
-**Test Criteria**
-- Validate proper synchronization across clusters.
-- Ensure accurate and timely propagation of config changes.
-- Monitor and resolve any sync issues.
-
----
-
-**Dependencies**
-- Access to all GKE Fleet Clusters.
-
-
----
-
-**Acceptance Criteria**
-- Config sync set up and validated.
-- Process documented.
-- No sync issues detected.
-
-
-........................................
-
-
-**Title**: Setup Policy Controller for the GKE Fleet Clusters
-
----
-
 **Description**
 Setup policy controller for the GKE Fleet Clusters to enforce security and compliance policies.
 
----
 
 **Problem Statement**
 Ensure security and compliance policies are enforced across all GKE Fleet Clusters consistently.
 
----
 
 **Work Involved**
 - Review current security and compliance setup.
@@ -62,19 +12,15 @@ Ensure security and compliance policies are enforced across all GKE Fleet Cluste
 - Test policy enforcement.
 - Document the process.
 
----
 
 **Test Criteria**
 - Validate proper policy enforcement across clusters.
 - Ensure accurate and timely propagation of policy changes.
 - Monitor and resolve any enforcement issues.
 
----
 
 **Dependencies**
 - Access to all GKE Fleet Clusters.
-
----
 
 **Acceptance Criteria**
 - Policy controller set up and validated.
