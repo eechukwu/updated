@@ -1,14 +1,5 @@
-echo "Checking for Gatekeeper Pods..."
-kubectl get pods -n gatekeeper-system
+Gary Morley and Paul Carpenter have asked if we can support them in testing pulling kafka consumer metrics into the PoC Kafka cluster so that they can test whether logic monitor can read and parse the metrics we are pushing to the Kafka consumer monitoring topic. The process for populating that topic is out of scope for now, but we want to prove the existing data can be parsed.
 
-echo "Checking for Gatekeeper CRDs..."
-kubectl get crds | grep 'constraints.gatekeeper.sh\|templates.gatekeeper.sh'
+Work Involved
 
-echo "Checking for Gatekeeper Namespace..."
-kubectl get namespace gatekeeper-system
-
-echo "Checking for Gatekeeper Deployment..."
-kubectl get deployment gatekeeper-controller-manager -n gatekeeper-system
-
-echo "Checking for Gatekeeper Configurations..."
-kubectl get configmap gatekeeper-config -n gatekeeper-system
+Implement a python script to act as a kafka consumer and kafka producer to move messages betwene prod/poc Kafka clusters for a given topic
