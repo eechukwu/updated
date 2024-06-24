@@ -1,1 +1,14 @@
-KNV1021: No CustomResourceDefinition is defined for the type "K8sProhibitRoleWildcardAccess.constraints.gatekeeper.sh" in the cluster. Resource types that are not native Kubernetes objects must have a CustomResourceDefinition. Config Sync will retry until a CustomResourceDefinition is defined for the type "K8sProhibitRoleWildcardAccess.constraints.gatekeeper.sh" in the cluster. source: policies/constraints.gatekeeper.sh_v1beta1_k8sprohibitrolewildcardaccess_policy-essentials-v2022-prohibit-role-wildcard-access.yaml metadata.name: policy-essentials-v2022-prohibit-role-wildcard-access group: constraints.gatekeeper.sh version: v1beta1 kind: K8sProhibitRoleWildcardAccess For more information, see https://g.co/cloud/acm-errors#knv1021
+echo "Checking for Gatekeeper Pods..."
+kubectl get pods -n gatekeeper-system
+
+echo "Checking for Gatekeeper CRDs..."
+kubectl get crds | grep 'constraints.gatekeeper.sh\|templates.gatekeeper.sh'
+
+echo "Checking for Gatekeeper Namespace..."
+kubectl get namespace gatekeeper-system
+
+echo "Checking for Gatekeeper Deployment..."
+kubectl get deployment gatekeeper-controller-manager -n gatekeeper-system
+
+echo "Checking for Gatekeeper Configurations..."
+kubectl get configmap gatekeeper-config -n gatekeeper-system
