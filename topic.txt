@@ -1,3 +1,14 @@
 
 Create Fleet host project for prod clusters
 
+Problem Statement
+What is the problem you are solving, or the feature we are building?
+
+Work Involved
+At a high level what work do you think is involved?
+
+Test Criteria
+How are we going to validate that the problem/feature has been solved?
+
+Dependencies
+What dependencies may affect the delivery of this work?
