@@ -1,5 +1,32 @@
-I will need to deploy my first service to k8. I'm reading the below one.
+Here is the updated version with the addition of creating a Kustomize file for Kubernetes resources:
 
-Ersan Ercek
+---
 
-https://github.com/frasers-group/ec-fx-data-on-premise-events/tree/develop/OnPremise.Reconciliation
+**Title**: Assist Ersan Ercek with Deploying First Service to Kubernetes
+
+---
+
+**Problem Statement**:
+Assist Ersan Ercek in deploying the first service `{ec-fx-data-on-premise-events/OnPremise.Reconciliation}` to Kubernetes.
+
+---
+
+**Work Involved**:
+- Create and configure necessary Kubernetes resources (Deployments, Services, ConfigMaps, etc.) for the service.
+- Develop Kustomize files for managing Kubernetes resources.
+- Ensure seamless integration of the service with the existing Kubernetes cluster.
+
+---
+
+**Test Criteria**:
+- Validate the successful deployment and accessibility of the service.
+- Confirm the service is functioning as expected without any errors.
+
+---
+
+**Dependencies**:
+- Access to the Kubernetes cluster.
+
+---
+
+This version adds the necessary details while maintaining a professional tone.
