@@ -1,7 +1,1 @@
-Status: Completed
-
-I am writing to confirm that the migration was successfully completed on 18/06/2024. The process started at 1:30 AM and was concluded by 5:30 AM.
-
-Upon completion, I verified all our applications in ArgoCD to ensure they were running smoothly. I also executed the daily check script, as outlined in our guide, to confirm that all clusters are in a healthy state.
-
-Additionally, I checked vCenter and can confirm that all VMs moved during the migration have been successfully relocated back to their designated hosts.
+KNV1021: No CustomResourceDefinition is defined for the type "K8sProhibitRoleWildcardAccess.constraints.gatekeeper.sh" in the cluster. Resource types that are not native Kubernetes objects must have a CustomResourceDefinition. Config Sync will retry until a CustomResourceDefinition is defined for the type "K8sProhibitRoleWildcardAccess.constraints.gatekeeper.sh" in the cluster. source: policies/constraints.gatekeeper.sh_v1beta1_k8sprohibitrolewildcardaccess_policy-essentials-v2022-prohibit-role-wildcard-access.yaml metadata.name: policy-essentials-v2022-prohibit-role-wildcard-access group: constraints.gatekeeper.sh version: v1beta1 kind: K8sProhibitRoleWildcardAccess For more information, see https://g.co/cloud/acm-errors#knv1021
