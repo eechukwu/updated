@@ -1,33 +1,5 @@
-Sure, here is the corrected and more professional version:
+I will need to deploy my first service to k8. I'm reading the below one.
 
----
+Ersan Ercek
 
-**Title**: Create Fleet Host Project for Production Clusters
-
----
-
-**Problem Statement**:
-Establish a dedicated Fleet host project for managing GKE clusters in the production environment.
-
----
-
-**Work Involved**:
-- Create a new Google Cloud project designated as the Fleet host.
-- Allocate and configure necessary IAM roles and permissions.
-
----
-
-**Test Criteria**:
-- Validate the creation and accessibility of the new Fleet host project.
-- Confirm proper allocation and configuration of IAM roles and permissions.
-
----
-
-**Dependencies**:
-- Access to Google Cloud Console.
-- Existing production GKE clusters.
-- Appropriate IAM roles for management.
-
----
-
-This version retains the essential information while being more concise.
+https://github.com/frasers-group/ec-fx-data-on-premise-events/tree/develop/OnPremise.Reconciliation
