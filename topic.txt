@@ -23,4 +23,6 @@ kubectl logs -l app=easiestapp
 # Check events related to the pods to see if there are any memory-related issues
 kubectl get events --sort-by='.lastTimestamp'
 
-bd-inbound-source-producer-app-4
+Good morning team,
+
+Did anyone work on the bd-inbound-source-producer-app-4 recently? It is currently experiencing memory issues, and I’ve received over 80 PagerDuty alerts about it since last night.
