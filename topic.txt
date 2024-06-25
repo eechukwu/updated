@@ -22,3 +22,5 @@ kubectl logs -l app=easiestapp
 
 # Check events related to the pods to see if there are any memory-related issues
 kubectl get events --sort-by='.lastTimestamp'
+
+bd-inbound-source-producer-app-4
