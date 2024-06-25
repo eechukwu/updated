@@ -1,4 +1,11 @@
+# Existing API key resource
+resource "aws_api_gateway_api_key" "apikey1" {
+  name        = "apikey1"
+  description = "API key for realtime and scheduled endpoints"
+  enabled     = true
+}
 
+# Existing REST API
 resource "aws_api_gateway_rest_api" "optimapper_listener_api" {
   name        = "optimapper_listener_api"
   description = "Provides an interface to the OptiMapper service to allow Optimove to send selected promotions"
@@ -7,13 +14,37 @@ resource "aws_api_gateway_rest_api" "optimapper_listener_api" {
   }
 }
 
-resource "aws_api_gateway_request_validator" "optimapper_listener_api_request_validator" {
-  name                        = "Optimapper Listener API Request Validator"
-  rest_api_id                 = aws_api_gateway_rest_api.optimapper_listener_api.id
-  validate_request_body       = true
-  validate_request_parameters = true
+# Existing resources for realtime and scheduled endpoints
+resource "aws_api_gateway_resource" "realtime" {
+  rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
+  parent_id   = aws_api_gateway_rest_api.optimapper_listener_api.root_resource_id
+  path_part   = "realtime"
 }
 
+resource "aws_api_gateway_resource" "scheduled" {
+  rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
+  parent_id   = aws_api_gateway_rest_api.optimapper_listener_api.root_resource_id
+  path_part   = "scheduled"
+}
+
+# Existing methods for realtime and scheduled endpoints
+resource "aws_api_gateway_method" "method_realtime" {
+  rest_api_id   = aws_api_gateway_rest_api.optimapper_listener_api.id
+  resource_id   = aws_api_gateway_resource.realtime.id
+  http_method   = "POST"
+  authorization = "NONE"
+  api_key_required = true
+}
+
+resource "aws_api_gateway_method" "method_scheduled" {
+  rest_api_id   = aws_api_gateway_rest_api.optimapper_listener_api.id
+  resource_id   = aws_api_gateway_resource.scheduled.id
+  http_method   = "POST"
+  authorization = "NONE"
+  api_key_required = true
+}
+
+# Existing deployment and stage
 resource "aws_api_gateway_deployment" "optimapper_listener_api_deployment" {
   rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
 
@@ -35,7 +66,7 @@ resource "aws_api_gateway_stage" "api" {
   stage_name    = "api"
 }
 
-
+# Usage plan for the API
 resource "aws_api_gateway_usage_plan" "optimapper_listener_plan" {
   name = "optimapper_listener_usage_plan"
 
@@ -45,25 +76,19 @@ resource "aws_api_gateway_usage_plan" "optimapper_listener_plan" {
   }
 }
 
-resource "aws_api_gateway_method_settings" "optimapper_scheduled_campaign_method_settings" {
-  rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
-  stage_name  = aws_api_gateway_stage.api.stage_name
-  method_path = join("", [
-    trimprefix(aws_api_gateway_resource.optimapper_listener_api_resource_scheduled_campaign.path, "/"),
-    "/POST"
-  ])
-
-  settings {
-    metrics_enabled = true
-    logging_level   = "INFO"
-  }
+# Associate the API key with the usage plan
+resource "aws_api_gateway_usage_plan_key" "optimapper_listener_usage_plan_key" {
+  key_id        = aws_api_gateway_api_key.apikey1.id
+  key_type      = "API_KEY"
+  usage_plan_id = aws_api_gateway_usage_plan.optimapper_listener_plan.id
 }
 
+# Method settings for realtime endpoint
 resource "aws_api_gateway_method_settings" "optimapper_realtime_campaign_method_settings" {
   rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
   stage_name  = aws_api_gateway_stage.api.stage_name
   method_path = join("", [
-    trimprefix(aws_api_gateway_resource.optimapper_listener_api_resource_realtime_campaign.path, "/"),
+    trimprefix(aws_api_gateway_resource.realtime.path, "/"),
     "/POST"
   ])
 
@@ -73,6 +98,22 @@ resource "aws_api_gateway_method_settings" "optimapper_realtime_campaign_method_
   }
 }
 
+# Method settings for scheduled endpoint
+resource "aws_api_gateway_method_settings" "optimapper_scheduled_campaign_method_settings" {
+  rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
+  stage_name  = aws_api_gateway_stage.api.stage_name
+  method_path = join("", [
+    trimprefix(aws_api_gateway_resource.scheduled.path, "/"),
+    "/POST"
+  ])
+
+  settings {
+    metrics_enabled = true
+    logging_level   = "INFO"
+  }
+}
+
+# Policy for allowing access from specific IPs
 data "aws_iam_policy_document" "om_ips_allowlist" {
   statement {
     effect = "Allow"
