@@ -1,20 +1,22 @@
-# Existing API key resource
-resource "aws_api_gateway_api_key" "apikey1" {
-  name        = "apikey1"
-  description = "API key for realtime and scheduled endpoints"
-  enabled     = true
-}
-
-# Existing REST API
+# Define the REST API resource
 resource "aws_api_gateway_rest_api" "optimapper_listener_api" {
   name        = "optimapper_listener_api"
   description = "Provides an interface to the OptiMapper service to allow Optimove to send selected promotions"
+
   endpoint_configuration {
     types = ["REGIONAL"]
   }
 }
 
-# Existing resources for realtime and scheduled endpoints
+# Define the request validator for the API
+resource "aws_api_gateway_request_validator" "optimapper_listener_api_request_validator" {
+  name                        = "Optimapper Listener API Request Validator"
+  rest_api_id                 = aws_api_gateway_rest_api.optimapper_listener_api.id
+  validate_request_body       = true
+  validate_request_parameters = true
+}
+
+# Define the resources for the endpoints
 resource "aws_api_gateway_resource" "realtime" {
   rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
   parent_id   = aws_api_gateway_rest_api.optimapper_listener_api.root_resource_id
@@ -27,7 +29,7 @@ resource "aws_api_gateway_resource" "scheduled" {
   path_part   = "scheduled"
 }
 
-# Existing methods for realtime and scheduled endpoints
+# Define the HTTP method for the realtime endpoint
 resource "aws_api_gateway_method" "method_realtime" {
   rest_api_id   = aws_api_gateway_rest_api.optimapper_listener_api.id
   resource_id   = aws_api_gateway_resource.realtime.id
@@ -36,6 +38,7 @@ resource "aws_api_gateway_method" "method_realtime" {
   api_key_required = true
 }
 
+# Define the HTTP method for the scheduled endpoint
 resource "aws_api_gateway_method" "method_scheduled" {
   rest_api_id   = aws_api_gateway_rest_api.optimapper_listener_api.id
   resource_id   = aws_api_gateway_resource.scheduled.id
@@ -44,14 +47,14 @@ resource "aws_api_gateway_method" "method_scheduled" {
   api_key_required = true
 }
 
-# Existing deployment and stage
+# Deploy the API and create a new deployment whenever the integration resources change
 resource "aws_api_gateway_deployment" "optimapper_listener_api_deployment" {
   rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
 
   triggers = {
     redeployment = sha1(jsonencode([
-      aws_api_gateway_integration.optimapper_listener_api_integration_scheduled_campaign,
-      aws_api_gateway_integration.optimapper_listener_api_integration_realtime_campaign,
+      aws_api_gateway_method.method_realtime,
+      aws_api_gateway_method.method_scheduled,
     ]))
   }
 
@@ -60,13 +63,14 @@ resource "aws_api_gateway_deployment" "optimapper_listener_api_deployment" {
   }
 }
 
+# Define the stage for the deployment
 resource "aws_api_gateway_stage" "api" {
   deployment_id = aws_api_gateway_deployment.optimapper_listener_api_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.optimapper_listener_api.id
   stage_name    = "api"
 }
 
-# Usage plan for the API
+# Create a usage plan to manage access to the API
 resource "aws_api_gateway_usage_plan" "optimapper_listener_plan" {
   name = "optimapper_listener_usage_plan"
 
@@ -76,29 +80,7 @@ resource "aws_api_gateway_usage_plan" "optimapper_listener_plan" {
   }
 }
 
-# Associate the API key with the usage plan
-resource "aws_api_gateway_usage_plan_key" "optimapper_listener_usage_plan_key" {
-  key_id        = aws_api_gateway_api_key.apikey1.id
-  key_type      = "API_KEY"
-  usage_plan_id = aws_api_gateway_usage_plan.optimapper_listener_plan.id
-}
-
-# Method settings for realtime endpoint
-resource "aws_api_gateway_method_settings" "optimapper_realtime_campaign_method_settings" {
-  rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
-  stage_name  = aws_api_gateway_stage.api.stage_name
-  method_path = join("", [
-    trimprefix(aws_api_gateway_resource.realtime.path, "/"),
-    "/POST"
-  ])
-
-  settings {
-    metrics_enabled = true
-    logging_level   = "INFO"
-  }
-}
-
-# Method settings for scheduled endpoint
+# Define method settings for the scheduled campaign endpoint
 resource "aws_api_gateway_method_settings" "optimapper_scheduled_campaign_method_settings" {
   rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
   stage_name  = aws_api_gateway_stage.api.stage_name
@@ -113,7 +95,22 @@ resource "aws_api_gateway_method_settings" "optimapper_scheduled_campaign_method
   }
 }
 
-# Policy for allowing access from specific IPs
+# Define method settings for the realtime campaign endpoint
+resource "aws_api_gateway_method_settings" "optimapper_realtime_campaign_method_settings" {
+  rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
+  stage_name  = aws_api_gateway_stage.api.stage_name
+  method_path = join("", [
+    trimprefix(aws_api_gateway_resource.realtime.path, "/"),
+    "/POST"
+  ])
+
+  settings {
+    metrics_enabled = true
+    logging_level   = "INFO"
+  }
+}
+
+# Create an IAM policy document to allow access based on IP address
 data "aws_iam_policy_document" "om_ips_allowlist" {
   statement {
     effect = "Allow"
@@ -134,7 +131,22 @@ data "aws_iam_policy_document" "om_ips_allowlist" {
   }
 }
 
+# Attach the policy to the REST API
 resource "aws_api_gateway_rest_api_policy" "om_listener_api_policy" {
   rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
   policy      = data.aws_iam_policy_document.om_ips_allowlist.json
+}
+
+# Define the API key
+resource "aws_api_gateway_api_key" "apikey1" {
+  name        = "apikey1"
+  description = "API Key for Optimapper Listener API"
+  enabled     = true
+}
+
+# Associate the API key with the usage plan
+resource "aws_api_gateway_usage_plan_key" "optimapper_listener_usage_plan_key" {
+  key_id        = aws_api_gateway_api_key.apikey1.id
+  key_type      = "API_KEY"
+  usage_plan_id = aws_api_gateway_usage_plan.optimapper_listener_plan.id
 }
