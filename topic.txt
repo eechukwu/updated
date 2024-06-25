@@ -1,28 +1,99 @@
-# Check the current memory usage of the pods
-kubectl top pod -l app=easiestapp
 
-# Describe the pod to get more details about memory requests and limits
-kubectl describe pod -l app=easiestapp
+resource "aws_api_gateway_rest_api" "optimapper_listener_api" {
+  name        = "optimapper_listener_api"
+  description = "Provides an interface to the OptiMapper service to allow Optimove to send selected promotions"
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
+}
 
-# Check the pod logs for any errors or issues
-kubectl logs -l app=easiestapp
+resource "aws_api_gateway_request_validator" "optimapper_listener_api_request_validator" {
+  name                        = "Optimapper Listener API Request Validator"
+  rest_api_id                 = aws_api_gateway_rest_api.optimapper_listener_api.id
+  validate_request_body       = true
+  validate_request_parameters = true
+}
 
-# Check events related to the pods to see if there are any memory-related issues
-kubectl get events --namespace=<your-namespace> --sort-by='.lastTimestamp'
+resource "aws_api_gateway_deployment" "optimapper_listener_api_deployment" {
+  rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
+
+  triggers = {
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_integration.optimapper_listener_api_integration_scheduled_campaign,
+      aws_api_gateway_integration.optimapper_listener_api_integration_realtime_campaign,
+    ]))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_api_gateway_stage" "api" {
+  deployment_id = aws_api_gateway_deployment.optimapper_listener_api_deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.optimapper_listener_api.id
+  stage_name    = "api"
+}
 
 
-# Check the current memory usage of the pods
-kubectl top pod -l app=easiestapp
+resource "aws_api_gateway_usage_plan" "optimapper_listener_plan" {
+  name = "optimapper_listener_usage_plan"
 
-# Describe the pod to get more details about memory requests and limits
-kubectl describe pod -l app=easiestapp
+  api_stages {
+    api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
+    stage  = aws_api_gateway_stage.api.stage_name
+  }
+}
 
-# Check the pod logs for any errors or issues
-kubectl logs -l app=easiestapp
+resource "aws_api_gateway_method_settings" "optimapper_scheduled_campaign_method_settings" {
+  rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
+  stage_name  = aws_api_gateway_stage.api.stage_name
+  method_path = join("", [
+    trimprefix(aws_api_gateway_resource.optimapper_listener_api_resource_scheduled_campaign.path, "/"),
+    "/POST"
+  ])
 
-# Check events related to the pods to see if there are any memory-related issues
-kubectl get events --sort-by='.lastTimestamp'
+  settings {
+    metrics_enabled = true
+    logging_level   = "INFO"
+  }
+}
 
-Good morning team,
+resource "aws_api_gateway_method_settings" "optimapper_realtime_campaign_method_settings" {
+  rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
+  stage_name  = aws_api_gateway_stage.api.stage_name
+  method_path = join("", [
+    trimprefix(aws_api_gateway_resource.optimapper_listener_api_resource_realtime_campaign.path, "/"),
+    "/POST"
+  ])
 
-Did anyone work on the bd-inbound-source-producer-app-4 recently? It is currently experiencing memory issues, and I’ve received over 80 PagerDuty alerts about it since last night.
+  settings {
+    metrics_enabled = true
+    logging_level   = "INFO"
+  }
+}
+
+data "aws_iam_policy_document" "om_ips_allowlist" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    actions   = ["execute-api:Invoke"]
+    resources = [aws_api_gateway_rest_api.optimapper_listener_api.execution_arn]
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+      values   = var.om_permitted_ips
+    }
+  }
+}
+
+resource "aws_api_gateway_rest_api_policy" "om_listener_api_policy" {
+  rest_api_id = aws_api_gateway_rest_api.optimapper_listener_api.id
+  policy      = data.aws_iam_policy_document.om_ips_allowlist.json
+}
