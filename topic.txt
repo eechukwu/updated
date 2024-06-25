@@ -1,32 +1,24 @@
-Here is the updated version with the addition of creating a Kustomize file for Kubernetes resources:
+# Check the current memory usage of the pods
+kubectl top pod -l app=easiestapp
 
----
+# Describe the pod to get more details about memory requests and limits
+kubectl describe pod -l app=easiestapp
 
-**Title**: Assist Ersan Ercek with Deploying First Service to Kubernetes
+# Check the pod logs for any errors or issues
+kubectl logs -l app=easiestapp
 
----
+# Check events related to the pods to see if there are any memory-related issues
+kubectl get events --namespace=<your-namespace> --sort-by='.lastTimestamp'
 
-**Problem Statement**:
-Assist Ersan Ercek in deploying the first service `{ec-fx-data-on-premise-events/OnPremise.Reconciliation}` to Kubernetes.
 
----
+# Check the current memory usage of the pods
+kubectl top pod -l app=easiestapp
 
-**Work Involved**:
-- Create and configure necessary Kubernetes resources (Deployments, Services, ConfigMaps, etc.) for the service.
-- Develop Kustomize files for managing Kubernetes resources.
-- Ensure seamless integration of the service with the existing Kubernetes cluster.
+# Describe the pod to get more details about memory requests and limits
+kubectl describe pod -l app=easiestapp
 
----
+# Check the pod logs for any errors or issues
+kubectl logs -l app=easiestapp
 
-**Test Criteria**:
-- Validate the successful deployment and accessibility of the service.
-- Confirm the service is functioning as expected without any errors.
-
----
-
-**Dependencies**:
-- Access to the Kubernetes cluster.
-
----
-
-This version adds the necessary details while maintaining a professional tone.
+# Check events related to the pods to see if there are any memory-related issues
+kubectl get events --sort-by='.lastTimestamp'
