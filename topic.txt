@@ -1,1 +1,24 @@
 Investigate using policy controller to restrict deployment of Gateway and Ingress objects
+
+Attach
+
+Create subtask
+
+Link issue
+
+
+Create
+
+Description
+Edit Description
+Problem Statement
+Application teams should be prevented from deploying kubernetes objects of kind Ingress and Gateway. These result in Application Load Balancers being created in GCP see ingress behaviour for example GKE Ingress for Application Load Balancers  |  Google Kubernetes Engine (GKE)  |  Google Cloud .  We should investigate if we can restrict the deployment of these resources through Policy controller
+
+Work Involved
+Investigate if its possible to restrict the deployment of these resource types to specific namespaces.  If so create such a policy and deploy it in audit only mode.
+
+Test Criteria
+Check for policy violations when deploying such object types
+
+Dependencies
+None
