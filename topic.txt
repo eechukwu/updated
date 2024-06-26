@@ -210,51 +210,11 @@ spec:
     namespaces:
       - "*"  # Apply to all namespaces
 ```
+# List all ConstraintTemplates in the cluster
+kubectl get constrainttemplates
 
-By following these steps and using the provided YAML files, you can effectively restrict the deployment of Ingress and Gateway objects to specific namespaces in your GKE clusters using GCP Policy Controller.
+# List all ConstraintTemplates with detailed YAML output
+kubectl get constrainttemplates -o yaml
 
-
-Here is a professional and concise ticket for the request:
-
----
-
-**Title:** Add User to eCom Viewer Role
-
----
-
-**Description:**
-Request to add user **ersan.ercek@frasers.group** to the eCom Viewer role.
-
----
-
-**Problem Statement:**
-A user requires access to the eCom Viewer role to perform necessary tasks within the eCom environment.
-
----
-
-**Work Involved:**
-- Verify the user's current access level.
-- Add **ersan.ercek@frasers.group** to the eCom Viewer role.
-- Confirm that the user has the appropriate permissions.
-
----
-
-**Test Criteria:**
-- Validate that **ersan.ercek@frasers.group** has the required access to the eCom environment.
-- Ensure no unintended permissions are granted.
-
----
-
-**Dependencies:**
-- None
-
----
-
-**Acceptance Criteria:**
-- User **ersan.ercek@frasers.group** is successfully added to the eCom Viewer role.
-- User confirms access to required resources within the eCom environment.
-
----
-
-Feel free to adjust any details as necessary.
-
+# List all ConstraintTemplates with detailed JSON output
+kubectl get constrainttemplates -o json
