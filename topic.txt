@@ -1,14 +1,1 @@
-Subject: Logs and Command Output Following Our Meeting Yesterday
-
-Hi [Recipient’s Name],
-
-Following up on our meeting yesterday, below are the logs you requested:
-
-I have added the extra argument as you requested (see image 1). Additionally, I have attached the output from the following command:
-
-[Insert Command]
-
-Please let me know if there is anything else you need.
-
-Best regards,
-[Your Name]
+I have sent the log output to F5 and have CC’d everyone on this email for visibility.
