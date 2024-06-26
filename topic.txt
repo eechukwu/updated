@@ -1,24 +1,214 @@
-Investigate using policy controller to restrict deployment of Gateway and Ingress objects
+Sure, I'll provide a detailed step-by-step guide along with comments in the code for easy understanding and copying.
 
-Attach
+### Step-by-Step Guide to Restrict Deployment to Specific Namespaces
 
-Create subtask
+#### A. Prerequisites
+1. **Google Cloud SDK**: Ensure you have the Google Cloud SDK installed and configured.
+2. **kubectl**: Make sure `kubectl` is installed and configured to interact with your GKE cluster.
+3. **Policy Controller**: Policy Controller should be installed on your GKE cluster. Follow the [Policy Controller installation guide](https://cloud.google.com/anthos-config-management/docs/how-to/installing-policy-controller) if it's not installed.
 
-Link issue
+#### B. Define the Constraint Template
 
+**Step 1: Create the Constraint Template**
+   - Create a YAML file named `constraint-template.yaml` with the following content:
 
-Create
+     ```yaml
+     apiVersion: templates.gatekeeper.sh/v1
+     kind: ConstraintTemplate
+     metadata:
+       name: k8sdisallow
+     spec:
+       crd:
+         spec:
+           names:
+             kind: K8sDisallow
+           validation:
+             openAPIV3Schema:
+               properties:
+                 message:
+                   type: string
+       targets:
+         - target: admission.k8s.gatekeeper.sh
+           rego: |
+             package k8sdisallow
 
-Description
-Edit Description
-Problem Statement
-Application teams should be prevented from deploying kubernetes objects of kind Ingress and Gateway. These result in Application Load Balancers being created in GCP see ingress behaviour for example GKE Ingress for Application Load Balancers  |  Google Kubernetes Engine (GKE)  |  Google Cloud .  We should investigate if we can restrict the deployment of these resources through Policy controller
+             # Deny deployment of Ingress objects outside specified namespaces
+             deny[msg] {
+               input.review.kind.kind == "Ingress"
+               not input.review.object.metadata.namespace in {"namespace1", "namespace2", "namespace3"}  # <-- Replace with your allowed namespaces
+               msg = "Deployment of Ingress objects is not allowed in this namespace."
+             }
 
-Work Involved
-Investigate if its possible to restrict the deployment of these resource types to specific namespaces.  If so create such a policy and deploy it in audit only mode.
+             # Deny deployment of Gateway objects outside specified namespaces
+             deny[msg] {
+               input.review.kind.kind == "Gateway"
+               not input.review.object.metadata.namespace in {"namespace1", "namespace2", "namespace3"}  # <-- Replace with your allowed namespaces
+               msg = "Deployment of Gateway objects is not allowed in this namespace."
+             }
+     ```
 
-Test Criteria
-Check for policy violations when deploying such object types
+#### C. Deploy the Constraint Template
 
-Dependencies
-None
+**Step 2: Apply the Constraint Template**
+   - Apply the constraint template using `kubectl`:
+
+     ```bash
+     kubectl apply -f constraint-template.yaml
+     ```
+
+#### D. Define the Constraint
+
+**Step 3: Create the Constraint**
+   - Create a YAML file named `constraint.yaml` with the following content:
+
+     ```yaml
+     apiVersion: constraints.gatekeeper.sh/v1beta1
+     kind: K8sDisallow
+     metadata:
+       name: disallow-ingress-gateway
+     spec:
+       enforcementAction: dryrun
+       match:
+         kinds:
+           - apiGroups: [""]
+             kinds: ["Ingress"]
+           - apiGroups: ["networking.k8s.io"]
+             kinds: ["Gateway"]
+         namespaces:
+           - "*"
+     ```
+
+#### E. Deploy the Constraint
+
+**Step 4: Apply the Constraint**
+   - Apply the constraint using `kubectl`:
+
+     ```bash
+     kubectl apply -f constraint.yaml
+     ```
+
+#### F. Testing the Solution
+
+**Step 1: Deploy a Test Ingress Object**
+   - Create a YAML file named `test-ingress.yaml`:
+
+     ```yaml
+     apiVersion: networking.k8s.io/v1
+     kind: Ingress
+     metadata:
+       name: test-ingress
+       namespace: restricted-namespace  # <-- Ensure this is a namespace restricted by the policy
+     spec:
+       rules:
+       - host: test.example.com
+         http:
+           paths:
+           - path: /
+             pathType: Prefix
+             backend:
+               service:
+                 name: test-service
+                 port:
+                   number: 80
+     ```
+
+   - Try to apply the test Ingress:
+
+     ```bash
+     kubectl apply -f test-ingress.yaml
+     ```
+
+   - You should see a denial message based on the constraint if the namespace is not `namespace1`, `namespace2`, or `namespace3`.
+
+**Step 2: Deploy a Test Gateway Object**
+   - Create a YAML file named `test-gateway.yaml`:
+
+     ```yaml
+     apiVersion: networking.k8s.io/v1beta1
+     kind: Gateway
+     metadata:
+       name: test-gateway
+       namespace: restricted-namespace  # <-- Ensure this is a namespace restricted by the policy
+     spec:
+       selector:
+         app: test-gateway
+       servers:
+       - port:
+           number: 80
+           protocol: HTTP
+         hosts:
+         - "*"
+     ```
+
+   - Try to apply the test Gateway:
+
+     ```bash
+     kubectl apply -f test-gateway.yaml
+     ```
+
+   - You should see a denial message based on the constraint if the namespace is not `namespace1`, `namespace2`, or `namespace3`.
+
+#### References:
+- [Policy Controller Installation Guide](https://cloud.google.com/anthos-config-management/docs/how-to/installing-policy-controller)
+- [Constraint Template Documentation](https://cloud.google.com/anthos-config-management/docs/reference/constraint-template)
+- [Policy Controller Overview](https://cloud.google.com/anthos-config-management/docs/concepts/policy-controller)
+
+### Complete YAML Files with Detailed Comments
+
+#### constraint-template.yaml
+
+```yaml
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8sdisallow
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sDisallow
+      validation:
+        openAPIV3Schema:
+          properties:
+            message:
+              type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8sdisallow
+
+        # Deny deployment of Ingress objects outside specified namespaces
+        deny[msg] {
+          input.review.kind.kind == "Ingress"
+          not input.review.object.metadata.namespace in {"namespace1", "namespace2", "namespace3"}  # <-- Replace with your allowed namespaces
+          msg = "Deployment of Ingress objects is not allowed in this namespace."
+        }
+
+        # Deny deployment of Gateway objects outside specified namespaces
+        deny[msg] {
+          input.review.kind.kind == "Gateway"
+          not input.review.object.metadata.namespace in {"namespace1", "namespace2", "namespace3"}  # <-- Replace with your allowed namespaces
+          msg = "Deployment of Gateway objects is not allowed in this namespace."
+        }
+```
+
+#### constraint.yaml
+
+```yaml
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sDisallow
+metadata:
+  name: disallow-ingress-gateway
+spec:
+  enforcementAction: dryrun  # Set to 'dryrun' for audit mode
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Ingress"]
+      - apiGroups: ["networking.k8s.io"]
+        kinds: ["Gateway"]
+    namespaces:
+      - "*"  # Apply to all namespaces
+```
+
+By following these steps and using the provided YAML files, you can effectively restrict the deployment of Ingress and Gateway objects to specific namespaces in your GKE clusters using GCP Policy Controller.
