@@ -218,3 +218,6 @@ kubectl get constrainttemplates -o yaml
 
 # List all ConstraintTemplates with detailed JSON output
 kubectl get constrainttemplates -o json
+
+
+This is still ongoing. I have been collaborating with Ersan on it, and the app migration is progressing well.
