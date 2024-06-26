@@ -1,1 +1,6 @@
-I have sent the log output to F5 and have CC’d everyone on this email for visibility.
+Regarding this matter, we are still experiencing a blockage. We had a meeting with F5 on June 25th to discuss the issue. Following the meeting, they requested some logs, which I provided on June 26th.
+
+During the meeting, F5 mentioned that they would add the issue to their next sprint. This is the current update on the situation.
+
+
+I have been working with Rob on this. Here are some of the tickets that I have worked on
