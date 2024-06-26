@@ -212,3 +212,7 @@ spec:
 ```
 
 By following these steps and using the provided YAML files, you can effectively restrict the deployment of Ingress and Gateway objects to specific namespaces in your GKE clusters using GCP Policy Controller.
+
+
+Hi Jonathan, A user called bla bla is asking for permission to have access to eCom AD group because he is trying to deploy an application 
+to the eCom Prod internal Cluster. Am I okay to give him the permission he is requesting? 
