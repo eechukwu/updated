@@ -221,3 +221,5 @@ kubectl get constrainttemplates -o json
 
 
 This is still ongoing. I have been collaborating with Ersan on it, and the app migration is progressing well.
+
+https://cloud.google.com/kubernetes-engine/enterprise/policy-controller/docs/latest/reference/constraint-template-library#k8sallowedrepos
