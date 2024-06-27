@@ -1,3 +1,17 @@
-❯ kubectl apply -f compliant-gateway.yaml                                                                                                                                                                                                                  ─╯
-error: resource mapping not found for name: "external-gateway" namespace: "default" from "compliant-gateway.yaml": no matches for kind "Gateway" in version "gateway.networking.k8s.io/v1alpha2"
-ensure CRDs are installed first
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test-ingress
+  namespace: default
+spec:
+  rules:
+    - host: test.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: test-service
+                port:
+                  number: 80
