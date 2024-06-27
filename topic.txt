@@ -1,1 +1,126 @@
-Task has been completed. The apps was successfully deployed into the eCom Prod Cluster. 
+Here's the complete code for blocking all Ingress and Gateway objects except for `external-ingress` in any namespace using the GCP default constraint template.
+
+### Constraint YAML
+
+**Constraint YAML (`block-all-ingress-gateway.yaml`):**
+
+```yaml
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sBlockAllIngress
+metadata:
+  name: block-all-ingress-and-gateway
+spec:
+  enforcementAction: dryrun
+  match:
+    kinds:
+      - apiGroups: ["networking.k8s.io"]
+        kinds: ["Ingress"]
+      - apiGroups: ["gateway.networking.k8s.io"]
+        kinds: ["Gateway"]
+    namespaces:
+      - "*"
+  parameters:
+    allowList:
+      - "external-ingress"
+```
+
+### Apply the YAML File
+
+Apply the YAML file to your cluster:
+
+```sh
+kubectl apply -f block-all-ingress-gateway.yaml
+```
+
+### Test the Policy
+
+**Non-Compliant Ingress Example (`non-compliant-ingress.yaml`):**
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test-ingress
+  namespace: default
+spec:
+  rules:
+    - host: example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```
+
+**Non-Compliant Gateway Example (`non-compliant-gateway.yaml`):**
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: Gateway
+metadata:
+  name: test-gateway
+  namespace: default
+spec:
+  gatewayClassName: example-gateway-class
+  listeners:
+    - name: http
+      port: 80
+      protocol: HTTP
+      routes:
+        kind: HTTPRoute
+        selector:
+          matchLabels:
+            app: example
+```
+
+**Compliant Ingress Example (`compliant-ingress.yaml`):**
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: external-ingress
+  namespace: default
+spec:
+  rules:
+    - host: example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```
+
+### Apply Resources
+
+Apply the non-compliant resources and observe the violations:
+
+```sh
+kubectl apply -f non-compliant-ingress.yaml
+kubectl apply -f non-compliant-gateway.yaml
+```
+
+Apply the compliant resource and ensure it is successfully created:
+
+```sh
+kubectl apply -f compliant-ingress.yaml
+```
+
+### Check for Violations
+
+To check for violations, you can use the following commands:
+
+```sh
+kubectl get constraints
+kubectl get k8sblockallingress
+```
+
+This setup uses the GCP default constraint template to achieve your requirements, allowing only the specified Ingress and Gateway names and blocking all others.
