@@ -17,3 +17,6 @@ spec:
   parameters:
     allowList:
       - "external-gateway"  # Allow specific gateway
+
+
+This task has now been completed. Here is the pull request for it. I created some dummy resources to test the policies, and they worked as expected.
