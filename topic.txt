@@ -1,1 +1,1 @@
-I also noticed that you sent me some meeting invites. Could you please share the agenda for these meetings? Should I prepare anything in advance?
+Task has been completed. The apps was successfully deployed into the eCom Prod Cluster. 
