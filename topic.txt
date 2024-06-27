@@ -223,3 +223,153 @@ kubectl get constrainttemplates -o json
 This is still ongoing. I have been collaborating with Ersan on it, and the app migration is progressing well.
 
 https://cloud.google.com/kubernetes-engine/enterprise/policy-controller/docs/latest/reference/constraint-template-library#k8sallowedrepos
+
+
+Sure, I can add more detailed comments to the script, explaining the functions and methods used more comprehensively.
+
+Here's the enhanced script with additional comments:
+
+```python
+from confluent_kafka import Consumer, Producer, KafkaError
+
+# Configuration for the production Kafka cluster consumer
+prod_consumer_conf = {
+    'bootstrap.servers': 'prod_kafka_broker:9092',  # List of broker addresses for the production cluster
+    'group.id': 'prod_consumer_group',  # Consumer group ID for coordinating the consumers
+    'auto.offset.reset': 'earliest'  # Policy for resetting offsets if no valid offset is found
+}
+
+# Configuration for the PoC Kafka cluster producer
+poc_producer_conf = {
+    'bootstrap.servers': 'poc_kafka_broker:9092'  # List of broker addresses for the PoC cluster
+}
+
+# Topic to consume from in the production cluster and produce to in the PoC cluster
+source_topic = 'source_topic_name'
+destination_topic = 'destination_topic_name'
+
+# Create the consumer instance for the production cluster
+consumer = Consumer(prod_consumer_conf)
+
+# Create the producer instance for the PoC cluster
+producer = Producer(poc_producer_conf)
+
+# Subscribe the consumer to the source topic in the production cluster
+consumer.subscribe([source_topic])
+
+def delivery_report(err, msg):
+    """Delivery report callback function.
+    
+    This function is called once for each message produced to indicate the delivery result.
+    It is triggered by the `poll()` or `flush()` methods of the producer.
+    
+    Args:
+        err (KafkaError): The error (if any) that occurred during message delivery.
+        msg (Message): The message that was delivered (or failed to deliver).
+    """
+    if err is not None:
+        print('Message delivery failed: {}'.format(err))  # Print an error message if delivery failed
+    else:
+        print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))  # Print success message
+
+try:
+    while True:
+        # Poll for a message from the production cluster
+        msg = consumer.poll(1.0)  # Timeout in seconds. This waits for a message or times out after 1 second
+        if msg is None:
+            continue  # No message was received, continue polling
+        if msg.error():
+            if msg.error().code() == KafkaError._PARTITION_EOF:
+                # Reached end of partition event, which is not an error but a state
+                print('Reached end of partition for topic {} [{}] at offset {}'
+                      .format(msg.topic(), msg.partition(), msg.offset()))
+            elif msg.error():
+                # Handle other types of errors
+                print('Error: {}'.format(msg.error()))
+                break  # Exit the loop if there's an error
+        else:
+            # Successfully received a message
+            print('Received message: {}'.format(msg.value().decode('utf-8')))
+            
+            # Produce the message to the PoC Kafka cluster
+            producer.produce(destination_topic, msg.value(), callback=delivery_report)
+            # `producer.poll(0)` serves to trigger the delivery report callback
+            producer.poll(0)
+except KeyboardInterrupt:
+    # Handle clean shutdown on keyboard interrupt (Ctrl+C)
+    pass
+finally:
+    # Close the consumer to commit final offsets and release resources
+    consumer.close()
+    # Flush the producer to ensure all messages are delivered
+    producer.flush()
+
+# Explanation of Functions and Methods Used:
+# 
+# `from confluent_kafka import Consumer, Producer, KafkaError`
+# - Imports the necessary classes from the `confluent_kafka` library. `Consumer` is used to create a Kafka consumer, `Producer` is used to create a Kafka producer, and `KafkaError` is used to handle Kafka-specific errors.
+# 
+# `Consumer(prod_consumer_conf)`
+# - Creates a Kafka consumer instance with the configuration specified in `prod_consumer_conf`.
+# 
+# `Producer(poc_producer_conf)`
+# - Creates a Kafka producer instance with the configuration specified in `poc_producer_conf`.
+# 
+# `consumer.subscribe([source_topic])`
+# - Subscribes the consumer to the specified topic (`source_topic`). This means the consumer will start receiving messages from this topic.
+# 
+# `consumer.poll(1.0)`
+# - Polls the Kafka broker for new messages. The parameter `1.0` specifies the timeout in seconds. If no messages are received within this time, it returns `None`.
+# 
+# `msg.error()`
+# - Checks if the received message has any errors. If it does, further error handling is done based on the type of error.
+# 
+# `msg.error().code() == KafkaError._PARTITION_EOF`
+# - Checks if the error code is `_PARTITION_EOF`, which indicates the end of a partition. This is not an actual error but a state indicating there are no more messages in this partition.
+# 
+# `producer.produce(destination_topic, msg.value(), callback=delivery_report)`
+# - Produces (sends) the received message to the `destination_topic` in the PoC Kafka cluster. The `delivery_report` function is set as the callback to handle delivery reports.
+# 
+# `producer.poll(0)`
+# - Triggers the delivery report callbacks. The parameter `0` means it returns immediately after calling the callbacks.
+# 
+# `consumer.close()`
+# - Closes the consumer gracefully, committing the final offsets and releasing any resources held by the consumer.
+# 
+# `producer.flush()`
+# - Waits for all messages in the producer's queue to be delivered. This ensures that all messages are sent before the producer is closed.
+
+```
+
+### Additional Detailed Comments
+
+1. **Imports**:
+    - `from confluent_kafka import Consumer, Producer, KafkaError`: These are the necessary imports from the `confluent_kafka` library. `Consumer` and `Producer` are used to create Kafka consumers and producers, respectively. `KafkaError` is used to handle Kafka-specific errors.
+
+2. **Configuration Dictionaries**:
+    - `prod_consumer_conf`: This dictionary holds the configuration for the production Kafka consumer, including the Kafka broker addresses (`bootstrap.servers`), the consumer group ID (`group.id`), and the offset reset policy (`auto.offset.reset`).
+    - `poc_producer_conf`: This dictionary holds the configuration for the PoC Kafka producer, including the Kafka broker addresses (`bootstrap.servers`).
+
+3. **Creating Consumer and Producer Instances**:
+    - `consumer = Consumer(prod_consumer_conf)`: This line creates a consumer instance using the production cluster configuration.
+    - `producer = Producer(poc_producer_conf)`: This line creates a producer instance using the PoC cluster configuration.
+
+4. **Subscribing to the Topic**:
+    - `consumer.subscribe([source_topic])`: This line subscribes the consumer to the source topic in the production cluster.
+
+5. **Polling for Messages**:
+    - `msg = consumer.poll(1.0)`: This method polls the Kafka broker for new messages. The parameter `1.0` specifies the timeout in seconds. If no messages are received within this time, it returns `None`.
+
+6. **Error Handling**:
+    - `if msg.error()`: This checks if the received message has any errors. If it does, further error handling is done based on the type of error.
+    - `if msg.error().code() == KafkaError._PARTITION_EOF`: This checks if the error code is `_PARTITION_EOF`, which indicates the end of a partition. This is not an actual error but a state indicating there are no more messages in this partition.
+
+7. **Producing Messages**:
+    - `producer.produce(destination_topic, msg.value(), callback=delivery_report)`: This method produces (sends) the received message to the `destination_topic` in the PoC Kafka cluster. The `delivery_report` function is set as the callback to handle delivery reports.
+    - `producer.poll(0)`: This method triggers the delivery report callbacks. The parameter `0` means it returns immediately after calling the callbacks.
+
+8. **Graceful Shutdown**:
+    - `consumer.close()`: This method closes the consumer gracefully, committing the final offsets and releasing any resources held by the consumer.
+    - `producer.flush()`: This method waits for all messages in the producer's queue to be delivered. This ensures that all messages are sent before the producer is closed.
+
+These detailed comments should help you understand the workings of the script better. If you encounter any issues, you can use these comments to debug and adjust the script as needed for your specific environment.
