@@ -7,6 +7,14 @@ spec:
   match:
     excludedNamespaces:
       - "gateway"  # Exclude the 'gateway' namespace from the policy
+    kinds:
+      - apiGroups: ["networking.k8s.io"]
+        kinds: ["Ingress"]
+      - apiGroups: ["gateway.networking.k8s.io"]
+        kinds: ["Gateway"]
+  parameters:
+    allowList:
+      - "external-gateway"  # Allow specific gateway
 
 
 apiVersion: networking.k8s.io/v1
