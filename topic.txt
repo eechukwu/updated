@@ -1,7 +1,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sBlockAllIngress
 metadata:
-  name: block-all-ingress-and-gateway
+  name: block-all-ingress-gateway-service
 spec:
   enforcementAction: deny
   match:
@@ -12,41 +12,8 @@ spec:
         kinds: ["Ingress"]
       - apiGroups: ["gateway.networking.k8s.io"]
         kinds: ["Gateway"]
+      - apiGroups: [""]
+        kinds: ["Service"]
   parameters:
     allowList:
       - "external-gateway"  # Allow specific gateway
-
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: test-ingress
-  namespace: default
-spec:
-  rules:
-    - host: test.example.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: test-service
-                port:
-                  number: 80
-
-kind: Gateway
-apiVersion: gateway.networking.k8s.io/v1beta1
-metadata:
-  name: external-gateway-2
-spec:
-  gatewayClassName: gke-l7-global-external-managed
-  listeners:
-    - name: http
-      protocol: HTTP
-      port: 80
-      allowedRoutes:
-        kinds:
-        - kind: HTTPRoute
-        namespaces:
-          from: All
