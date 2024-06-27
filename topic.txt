@@ -1,8 +1,6 @@
-Here's the complete code for blocking all Ingress and Gateway objects except for `external-ingress` in any namespace using the GCP default constraint template.
+Here is the complete policy YAML with the specified changes:
 
-### Constraint YAML
-
-**Constraint YAML (`block-all-ingress-gateway.yaml`):**
+### Policy YAML
 
 ```yaml
 apiVersion: constraints.gatekeeper.sh/v1beta1
@@ -12,27 +10,39 @@ metadata:
 spec:
   enforcementAction: dryrun
   match:
-    kinds:
-      - apiGroups: ["networking.k8s.io"]
-        kinds: ["Ingress"]
-      - apiGroups: ["gateway.networking.k8s.io"]
-        kinds: ["Gateway"]
+    kinds: []
     namespaces:
       - "*"
+    excludedNamespaces:
+      - "gateway"  # Exclude the 'gateway' namespace from the policy
   parameters:
     allowList:
-      - "external-ingress"
+      - "external-gateway"  # Allow specific gateway
 ```
 
-### Apply the YAML File
+### Detailed Comments
+
+- **apiVersion**: Specifies the API version for the constraint template.
+- **kind**: Specifies the type of constraint template, `K8sBlockAllIngress`.
+- **metadata**: Contains metadata, including the name of the constraint.
+- **spec**: Defines the specification of the constraint.
+  - **enforcementAction**: Set to `dryrun` to enable audit mode.
+  - **match**: Defines the resources the constraint applies to.
+    - **kinds**: An empty list to apply the constraint to all kinds.
+    - **namespaces**: Specifies that the constraint applies to all namespaces.
+    - **excludedNamespaces**: Specifies that the constraint does not apply to the `gateway` namespace.
+  - **parameters**: Additional parameters for the constraint.
+    - **allowList**: Lists the names of Ingress and Gateway resources exempt from the constraint (`external-gateway`).
+
+### Applying the YAML File
 
 Apply the YAML file to your cluster:
 
 ```sh
-kubectl apply -f block-all-ingress-gateway.yaml
+kubectl apply -f block-all-ingress-and-gateway.yaml
 ```
 
-### Test the Policy
+### Testing the Policy
 
 **Non-Compliant Ingress Example (`non-compliant-ingress.yaml`):**
 
@@ -77,52 +87,54 @@ spec:
             app: example
 ```
 
-**Compliant Ingress Example (`compliant-ingress.yaml`):**
+**Compliant Gateway Example (`compliant-gateway.yaml`):**
 
 ```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: Gateway
 metadata:
-  name: external-ingress
+  name: external-gateway
   namespace: default
 spec:
-  rules:
-    - host: example.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: example-service
-                port:
-                  number: 80
+  gatewayClassName: example-gateway-class
+  listeners:
+    - name: http
+      port: 80
+      protocol: HTTP
+      routes:
+        kind: HTTPRoute
+        selector:
+          matchLabels:
+            app: example
 ```
 
-### Apply Resources
-
-Apply the non-compliant resources and observe the violations:
+### Command to List All Constraint Templates
 
 ```sh
-kubectl apply -f non-compliant-ingress.yaml
-kubectl apply -f non-compliant-gateway.yaml
+kubectl get constrainttemplates
 ```
 
-Apply the compliant resource and ensure it is successfully created:
+### Applying and Testing the Policy
 
-```sh
-kubectl apply -f compliant-ingress.yaml
-```
+1. **Apply the policy**:
 
-### Check for Violations
+    ```sh
+    kubectl apply -f block-all-ingress-and-gateway.yaml
+    ```
 
-To check for violations, you can use the following commands:
+2. **Test the policy with non-compliant resources**:
 
-```sh
-kubectl get constraints
-kubectl get k8sblockallingress
-```
+    ```sh
+    kubectl apply -f non-compliant-ingress.yaml
+    kubectl apply -f non-compliant-gateway.yaml
+    ```
 
-This setup uses the GCP default constraint template to achieve your requirements, allowing only the specified Ingress and Gateway names and blocking all others.
-https://cloud.google.com/kubernetes-engine/enterprise/policy-controller/docs/reference/match
+    These should be denied due to the constraint.
 
+3. **Test the policy with compliant resources**:
+
+    ```sh
+    kubectl apply -f compliant-gateway.yaml
+    ```
+
+    This should be allowed due to the allow list exemption.
