@@ -1,46 +1,7 @@
-Certainly! Here are the commands you can run to set Python 3.9 as your default version using `pyenv`:
+Below is the PR for this task:
 
-### Step-by-Step Command Instructions:
+All tasks have been completed except for the following:
 
-```bash
-# Install pyenv (if not already installed)
-brew update && brew install pyenv
+	•	Encrypt a new RDS master password: The documentation does not specify which particular key to use.
 
-# Add pyenv to your shell startup file and source the file
-echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bash_profile
-echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
-echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
-source ~/.bash_profile
-
-# Install Python 3.9 using pyenv
-pyenv install 3.9.19
-
-# Set Python 3.9 as the global default version
-pyenv global 3.9.19
-
-# Verify that Python 3.9 is set as the default version
-python --version
-python3 --version
-```
-
-### Manual Method (without `pyenv`):
-
-```bash
-# Locate the Python 3.9 installation path
-which python3.9
-
-# Create symlinks to ensure python3 points to Python 3.9
-sudo ln -sf /usr/local/bin/python3.9 /usr/local/bin/python3
-sudo ln -sf /usr/local/bin/pip3.9 /usr/local/bin/pip3
-
-# Update your shell profile and source the file
-echo 'alias python=/usr/local/bin/python3.9' >> ~/.bash_profile
-echo 'alias python3=/usr/local/bin/python3.9' >> ~/.bash_profile
-source ~/.bash_profile
-
-# Verify that Python 3.9 is set as the default version
-python --version
-python3 --version
-```
-
-Copy and paste the commands as needed based on your preference for using `pyenv` or manually setting the Python version.
+Additionally, I have not been able to identify some of these segment components.
