@@ -1,7 +1,1 @@
-Below is the PR for this task:
-
-All tasks have been completed except for the following:
-
-	•	Encrypt a new RDS master password: The documentation does not specify which particular key to use.
-
-Additionally, I have not been able to identify some of these segment components.
+Investigate using Spot VMs in dev cluster to reduce costs
