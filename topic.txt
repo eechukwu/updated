@@ -70,3 +70,5 @@ module "microsites_cluster" {
   ]
 }
 
+
+Cluster has autoscaled out to 5 nodes already.  Better to use e2 instance type? https://cloud.google.com/architecture/best-practices-for-running-cost-effective-kubernetes-applications-on-gke#choose_the_right_machine_type ....https://cloud.google.com/architecture/best-practices-for-running-cost-effective-kubernetes-applications-on-gke#choose_the_right_machine_type
