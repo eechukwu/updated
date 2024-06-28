@@ -1,91 +1,11 @@
-module "microsites_cluster" {
-  source                  = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                 = "~> 30.0"
-  project_id              = local.project_id
-  name                    = "microsites-dev-cluster"
-  description             = "Terraform managed microsites cluster"
-  region                  = "europe-west2"
-  regional                = true
-  zones                   = ["europe-west2-a", "europe-west2-b", "europe-west2-c"]
-  deletion_protection     = false
-  enable_shielded_nodes   = true
-  enable_private_nodes    = true
-  enable_private_endpoint = false
-  kubernetes_version       = "1.29.5-gke.1091000"
-  release_channel          = "UNSPECIFIED"
-  remove_default_node_pool = true
-  fleet_project            = "corp-test-gke-fleet-9323"
-  network                = module.vpc.network_name
-  subnetwork             = google_compute_subnetwork.node_network.name
-  master_ipv4_cidr_block = "10.0.10.0/28"
-  ip_range_pods          = "gke-pods"
-  ip_range_services      = "gke-services"
-  # master_global_access_enabled = false
-  master_authorized_networks = [
-    {
-      cidr_block   = "77.86.28.68/32"
-      display_name = "FG access"
-    },
-    {
-      cidr_block   = "217.155.115.8/32"
-      display_name = "Rob home"
-    },
-    {
-      cidr_block   = "81.154.23.203/32"
-      display_name = "Paul home"
-    }
-  ]
+Problem Statement
+We can save costs by using spot VMs in the dev cluster
 
-  create_service_account = false # SA created in sy-gcp-core-iac
-  service_account        = local.gke_service_account
-  grant_registry_access  = true
+Work Involved
+Investigate pros cons of using spot VMs.  What are potential savings?  How long does it take for a replacement node to be created?  Whats the availability of spot VMs.  Is there any risk of all nodes being preempted?  Should be have a mix of allocated and spot VMs?  Should we just try it?
 
-  http_load_balancing                  = true
-  network_policy                       = false
-  horizontal_pod_autoscaling           = true
-  filestore_csi_driver                 = false
-  monitoring_enabled_components        = ["SYSTEM_COMPONENTS", "POD", "DEPLOYMENT"]
-  monitoring_enable_managed_prometheus = true
-  logging_enabled_components           = ["SYSTEM_COMPONENTS", "WORKLOADS"]
-  gateway_api_channel                  = "CHANNEL_STANDARD"
-  identity_namespace                   = "enabled"
+Test Criteria
+How are we going to validate that the problem/feature has been solved?
 
-  node_pools = [
-    {
-      name               = "microsites-dev-node-pool-1"
-      machine_type       = "n1-standard-1"
-      min_count          = 1
-      max_count          = 2
-      local_ssd_count    = 0
-      disk_size_gb       = 30
-      disk_type          = "pd-standard"
-      auto_repair        = true
-      auto_upgrade       = false
-      autoscaling        = true
-      preemptible        = false
-      initial_node_count = 1
-      service_account    = local.gke_service_account
-      enable_secure_boot = true
-    }
-  ]
-}
-
-
-# Install pyenv (if not already installed)
-brew update && brew install pyenv
-
-# Add pyenv to your shell startup file and source the file
-echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bash_profile
-echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
-echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
-source ~/.bash_profile
-
-# Install Python 3.9 using pyenv
-pyenv install 3.9.19
-
-# Set Python 3.9 as the global default version
-pyenv global 3.9.19
-
-# Verify that Python 3.9 is set as the default version
-python --version
-python3 --version
+Dependencies
+What dependencies may affect the delivery of this work?
