@@ -1,70 +1,72 @@
-Problem Statement
-We can save costs by using spot VMs in the dev cluster
+module "microsites_cluster" {
+  source                  = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
+  version                 = "~> 30.0"
+  project_id              = local.project_id
+  name                    = "microsites-dev-cluster"
+  description             = "Terraform managed microsites cluster"
+  region                  = "europe-west2"
+  regional                = true
+  zones                   = ["europe-west2-a", "europe-west2-b", "europe-west2-c"]
+  deletion_protection     = false
+  enable_shielded_nodes   = true
+  enable_private_nodes    = true
+  enable_private_endpoint = false
+  kubernetes_version       = "1.29.5-gke.1091000"
+  release_channel          = "UNSPECIFIED"
+  remove_default_node_pool = true
+  fleet_project            = "corp-test-gke-fleet-9323"
+  network                = module.vpc.network_name
+  subnetwork             = google_compute_subnetwork.node_network.name
+  master_ipv4_cidr_block = "10.0.10.0/28"
+  ip_range_pods          = "gke-pods"
+  ip_range_services      = "gke-services"
+  # master_global_access_enabled = false
+  master_authorized_networks = [
+    {
+      cidr_block   = "77.86.28.68/32"
+      display_name = "FG access"
+    },
+    {
+      cidr_block   = "217.155.115.8/32"
+      display_name = "Rob home"
+    },
+    {
+      cidr_block   = "81.154.23.203/32"
+      display_name = "Paul home"
+    }
+  ]
 
-Work Involved
-Investigate pros cons of using spot VMs.  What are potential savings?  How long does it take for a replacement node to be created?  Whats the availability of spot VMs.  Is there any risk of all nodes being preempted?  Should be have a mix of allocated and spot VMs?  Should we just try it?
+  create_service_account = false # SA created in sy-gcp-core-iac
+  service_account        = local.gke_service_account
+  grant_registry_access  = true
 
-Test Criteria
-How are we going to validate that the problem/feature has been solved?
+  http_load_balancing                  = true
+  network_policy                       = false
+  horizontal_pod_autoscaling           = true
+  filestore_csi_driver                 = false
+  monitoring_enabled_components        = ["SYSTEM_COMPONENTS", "POD", "DEPLOYMENT"]
+  monitoring_enable_managed_prometheus = true
+  logging_enabled_components           = ["SYSTEM_COMPONENTS", "WORKLOADS"]
+  gateway_api_channel                  = "CHANNEL_STANDARD"
+  identity_namespace                   = "enabled"
 
-Dependencies
-What dependencies may affect the delivery of this work?
+  node_pools = [
+    {
+      name               = "microsites-dev-node-pool-1"
+      machine_type       = "n1-standard-1"
+      min_count          = 1
+      max_count          = 2
+      local_ssd_count    = 0
+      disk_size_gb       = 30
+      disk_type          = "pd-standard"
+      auto_repair        = true
+      auto_upgrade       = false
+      autoscaling        = true
+      preemptible        = false
+      initial_node_count = 1
+      service_account    = local.gke_service_account
+      enable_secure_boot = true
+    }
+  ]
+}
 
-
-### Investigating the Use of Spot VMs in GKE Clusters
-
-**Pros of Using Spot VMs:**
-1. **Cost Savings:** Spot VMs can be up to 90% cheaper than regular on-demand VMs, significantly reducing operational costs.
-2. **Scalability:** They allow for scaling the cluster at a lower cost, especially useful for non-critical workloads.
-
-**Cons of Using Spot VMs:**
-1. **Interruption Risk:** Spot VMs can be terminated by Google Cloud with a 30-second warning if the resources are needed elsewhere.
-2. **Availability:** There is no guarantee of availability for Spot VMs, which can affect cluster stability.
-
-**Potential Savings:**
-- Savings can vary but generally, Spot VMs are significantly cheaper than regular VMs. Using Google Cloud’s pricing calculator, you can estimate the potential savings for your specific workloads.
-
-**Node Replacement Time:**
-- The time to replace a preempted Spot VM varies based on current resource availability and demand but generally takes a few minutes. It’s important to test this within your environment to get a precise measure.
-
-**Availability of Spot VMs:**
-- Spot VM availability is not guaranteed and fluctuates based on current demand and resource allocation in Google Cloud. It’s advisable to monitor availability metrics provided by Google Cloud.
-
-**Risk of All Nodes Being Preempted:**
-- There is a risk of all Spot VMs being preempted simultaneously, especially during peak demand periods. It’s crucial to ensure that critical workloads are not solely reliant on Spot VMs.
-
-**Mix of Allocated and Spot VMs:**
-- Using a mix of allocated and Spot VMs can provide a balance between cost savings and stability. Critical workloads should run on allocated VMs, while less critical, interruptible workloads can run on Spot VMs.
-
-**Trial Implementation:**
-- Conduct a trial run to evaluate the performance, cost savings, and risk of using Spot VMs in your GKE cluster. Monitor the trial closely to gather data and insights.
-
-**Conclusion:**
-- Spot VMs offer significant cost savings but come with risks related to availability and preemption. A hybrid approach, using both Spot and allocated VMs, is recommended to balance cost efficiency with reliability.
-
----
-
-**Implementation Steps:**
-
-1. **Create Node Pool for Spot VMs:**
-   ```bash
-   gcloud container node-pools create spot-pool \
-   --cluster=your-cluster-name \
-   --zone=your-zone \
-   --machine-type=e2-standard-4 \
-   --preemptible
-   ```
-
-2. **Assign Workloads to Spot VM Node Pool:**
-   - Use node affinity and tolerations in your Kubernetes manifests to direct non-critical workloads to the Spot VM node pool.
-
-3. **Monitoring and Alerts:**
-   - Set up monitoring and alerts to track the availability and performance of Spot VMs.
-   ```bash
-   kubectl apply -f monitoring-config.yaml
-   ```
-
-4. **Documentation and Review:**
-   - Document the implementation process, findings, and recommendations. Share this documentation with relevant teams for feedback and review.
-
-By following these steps, you can effectively investigate and implement Spot VMs in your GKE clusters to achieve cost savings while managing associated risks.
