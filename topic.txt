@@ -69,3 +69,23 @@ module "microsites_cluster" {
     }
   ]
 }
+
+
+# Install pyenv (if not already installed)
+brew update && brew install pyenv
+
+# Add pyenv to your shell startup file and source the file
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bash_profile
+echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
+echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
+source ~/.bash_profile
+
+# Install Python 3.9 using pyenv
+pyenv install 3.9.19
+
+# Set Python 3.9 as the global default version
+pyenv global 3.9.19
+
+# Verify that Python 3.9 is set as the default version
+python --version
+python3 --version
