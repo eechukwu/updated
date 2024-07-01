@@ -50,3 +50,5 @@ To compare the current `n1-standard-1` instance type against the available E2 in
 - **Specific needs:** Choose based on whether you need more memory (e.g., e2-highmem) or more balanced configurations (e.g., e2-standard).
 
 This should help you decide on the best E2 instance type for your needs. Let me know if you need any further details!
+
+https://cloud.google.com/compute/vm-instance-pricing#e2_machine_types
