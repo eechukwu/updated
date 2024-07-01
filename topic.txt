@@ -1,1 +1,1 @@
-For now, I will be moving these tickets back into the backlog until the Network team and F5 resolve the ongoing network issue.
+This task has now been completed. We decided to try out the spot VMs in the dev clusters. I will create a follow-up ticket for that.
