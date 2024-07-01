@@ -1,2 +1,1 @@
-All good. I have been mainly working with Rob mostly on the Fleet tasks.
-And picking up any other tasks that comes along such as assisting developers, etc
+For now, I will be moving these tickets back into the backlog until the Network team and F5 resolve the ongoing network issue.
