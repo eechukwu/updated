@@ -1,1 +1,16 @@
+
 This task has now been completed. We decided to try out the spot VMs in the dev clusters. I will create a follow-up ticket for that.
+
+
+Problem Statement
+We can save costs by using spot VMs in the dev cluster
+
+Work Involved
+Investigate pros cons of using spot VMs.  What are potential savings?  How long does it take for a replacement node to be created?  Whats the availability of spot VMs.  Is there any risk of all nodes being preempted?  Should be have a mix of allocated and spot VMs?  Should we just try it?
+
+Test Criteria
+How are we going to validate that the problem/feature has been solved?
+
+Dependencies
+What dependencies may affect the delivery of this work?
+
