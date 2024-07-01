@@ -11,15 +11,15 @@ module "microsites_cluster" {
   enable_shielded_nodes   = true
   enable_private_nodes    = true
   enable_private_endpoint = false
-  kubernetes_version       = "1.29.5-gke.1091000"
-  release_channel          = "UNSPECIFIED"
+  kubernetes_version      = "1.29.5-gke.1091000"
+  release_channel         = "UNSPECIFIED"
   remove_default_node_pool = true
-  fleet_project            = "corp-test-gke-fleet-9323"
-  network                = module.vpc.network_name
-  subnetwork             = google_compute_subnetwork.node_network.name
-  master_ipv4_cidr_block = "10.0.10.0/28"
-  ip_range_pods          = "gke-pods"
-  ip_range_services      = "gke-services"
+  fleet_project           = "corp-test-gke-fleet-9323"
+  network                 = module.vpc.network_name
+  subnetwork              = google_compute_subnetwork.node_network.name
+  master_ipv4_cidr_block  = "10.0.10.0/28"
+  ip_range_pods           = "gke-pods"
+  ip_range_services       = "gke-services"
   # master_global_access_enabled = false
   master_authorized_networks = [
     {
@@ -53,7 +53,7 @@ module "microsites_cluster" {
   node_pools = [
     {
       name               = "microsites-dev-node-pool-1"
-      machine_type       = "n1-standard-1"
+      machine_type       = "e2-standard-2"
       min_count          = 1
       max_count          = 2
       local_ssd_count    = 0
@@ -62,7 +62,7 @@ module "microsites_cluster" {
       auto_repair        = true
       auto_upgrade       = false
       autoscaling        = true
-      preemptible        = false
+      preemptible        = true
       initial_node_count = 1
       service_account    = local.gke_service_account
       enable_secure_boot = true
