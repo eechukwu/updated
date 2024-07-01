@@ -1,1 +1,2 @@
-Could someone kindly review and approve this PR? It’s for creating the Canada Dev Promo Mapper environment in Terraform.
+All good. I have been mainly working with Rob mostly on the Fleet tasks.
+And picking up any other tasks that comes along such as assisting developers, etc
