@@ -1,5 +1,1 @@
-	1.	Week in Review: I’m feeling really positive about the progress we’re making on the project. The team’s collaboration has been excellent, and it’s satisfying to see our efforts paying off. Looking forward to what we can achieve next week.
-	2.	Weekly Update: This week has been fulfilling as we’re hitting our milestones consistently. I feel supported by the team and appreciated for my contributions. It’s great to be part of such a dedicated and hardworking group.
-	3.	Progress Summary: I’m happy with how things are going on the project. The challenges we face are motivating, and it’s rewarding to overcome them. I feel more confident in our direction and excited about our future plans.
-	4.	This Week’s Achievements: I feel a sense of accomplishment with what we’ve done this week. The project is progressing smoothly, and I’m enjoying the work and learning a lot. It’s great to see our hard work reflected in the project’s success.
-	5.	Weekly Highlights: I’m pleased with the way the project is shaping up. There’s a lot of positive energy in the team, and it feels good to be making steady progress. I’m looking forward to continuing our momentum and achieving even more.
+Could someone kindly review and approve this PR? It’s for creating the Canada Dev Promo Mapper environment in Terraform.
