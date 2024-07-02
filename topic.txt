@@ -11,3 +11,11 @@ How are we going to validate that the problem/feature has been solved?
 
 Dependencies
 What dependencies may affect the delivery of this work?
+
+
+
+Hi [Recipient’s Name],
+
+I need some guidance regarding this ticket. I was informed by the DevOps team that we do not have an AWS Dev Canada account, and instead, we use the awsdevelopment account.
+
+Should I modify the code to deploy it into the awsdevelopment account, or is there another preferred approach you would recommend?
