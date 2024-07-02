@@ -39,7 +39,7 @@ module "microsites_cluster" {
   node_pools = [
     {
       name               = "microsites-dev-node-pool-1"
-      machine_type       = "n1-standard-1"
+      machine_type       = "e2-standard-2"
       min_count          = 1
       max_count          = 2
       local_ssd_count    = 0
@@ -48,11 +48,10 @@ module "microsites_cluster" {
       auto_repair        = true
       auto_upgrade       = false
       autoscaling        = true
-      preemptible        = false
+      preemptible        = true
       initial_node_count = 1
       service_account    = local.gke_service_account
       enable_secure_boot = true
     }
   ]
 }
-
