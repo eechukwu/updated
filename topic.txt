@@ -1,111 +1,19 @@
-Centralize Logging from Cluster-1 and Cluster-2 to Fleet-Account Using Terraform
+Certainly! Here's the complete guide with all the necessary steps and configurations to centralize logging from `cluster-1` and `cluster-2` into the `Fleet-Account` project using Terraform:
 
-module "microsites_cluster" {
-  source                   = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                  = "~> 30.0"
-  project_id               = local.project_id
-  name                     = "microsites-dev-cluster"
-  description              = "Terraform managed microsites cluster"
-  region                   = "europe-west2"
-  regional                 = true
-  zones                    = ["europe-west2-a", "europe-west2-b", "europe-west2-c"]
-  deletion_protection      = true
-  enable_shielded_nodes    = true
-  enable_private_nodes     = true
-  enable_private_endpoint  = true
-  kubernetes_version       = "1.29.5-gke.1091000"
-  release_channel          = "UNSPECIFIED"
-  remove_default_node_pool = true
-  fleet_project            = local.fleet_project_id
-  network                  = module.vpc.network_name
-  subnetwork               = google_compute_subnetwork.node_network.name
-  master_ipv4_cidr_block   = "10.0.10.0/28"
-  ip_range_pods            = "gke-pods"
-  ip_range_services        = "gke-services"
+### Complete Guide for Centralizing Logging
 
-  create_service_account = false # SA created in sy-gcp-core-iac
-  service_account        = local.gke_service_account
-  grant_registry_access  = true
+#### 1. Enable Required APIs
 
-  http_load_balancing                  = true
-  network_policy                       = false
-  horizontal_pod_autoscaling           = true
-  filestore_csi_driver                 = false
-  monitoring_enabled_components        = ["SYSTEM_COMPONENTS", "POD", "DEPLOYMENT"]
-  monitoring_enable_managed_prometheus = true
-  logging_enabled_components           = ["SYSTEM_COMPONENTS", "WORKLOADS"]
-  gateway_api_channel                  = "CHANNEL_STANDARD"
-  identity_namespace                   = "enabled"
-  authenticator_security_group         = local.gke_security_group
-
-  node_pools = [
-    {
-      name               = "microsites-dev-node-pool-1"
-      machine_type       = "e2-standard-2"
-      min_count          = 1
-      max_count          = 2
-      local_ssd_count    = 0
-      disk_size_gb       = 30
-      disk_type          = "pd-standard"
-      auto_repair        = true
-      auto_upgrade       = false
-      autoscaling        = true
-      preemptible        = true
-      initial_node_count = 1
-      service_account    = local.gke_service_account
-      enable_secure_boot = true
-    }
-  ]
-}
-
-
-
-
-
-
-
-
-Certainly! Here’s the concise ticket along with the solution:
-
----
-
-**Problem Statement:**
-We need to centralize logging from `cluster-1` and `cluster-2` into the `Fleet-Account` for easier log management and analysis.
-
-**Work Involved:**
-1. Enable Cloud Logging API and Cloud Resource Manager API in all projects.
-2. Create a logging sink in `Fleet-Account` to receive logs from all clusters.
-3. Assign IAM roles to the logging service account in `Fleet-Account` for log receiving.
-4. Create logging sinks in `cluster-1` and `cluster-2` to route logs to `Fleet-Account`.
-5. Assign IAM roles in `cluster-1` and `cluster-2` for log sending.
-6. Apply Terraform configuration to set up logging sinks and permissions.
-
-**Test Criteria:**
-1. APIs are enabled in all projects.
-2. Logging sinks are created and configured correctly.
-3. IAM roles are assigned as needed.
-4. Logs from `cluster-1` and `cluster-2` are received in `Fleet-Account`.
-
-**Dependencies:**
-1. Access to `Fleet-Account`, `cluster-1`, and `cluster-2` with necessary permissions.
-2. Enabled APIs in all relevant projects.
-3. Accurate Terraform configuration files.
-4. Appropriate IAM roles assigned.
-
----
-
-### Solution:
-
-#### Step 1: Enable APIs
-Ensure Cloud Logging API and Cloud Resource Manager API are enabled in all projects:
+Enable Cloud Logging API and Cloud Resource Manager API in all projects (`Fleet-Account`, `cluster-1`, and `cluster-2`):
 
 ```bash
 gcloud services enable logging.googleapis.com
 gcloud services enable cloudresourcemanager.googleapis.com
 ```
 
-#### Step 2: Create Logging Sink in Fleet Account
-Create a logging sink in the `Fleet-Account` project to receive logs from all clusters:
+#### 2. Fleet Account Configuration
+
+Create a logging sink in the `Fleet-Account` project and grant necessary IAM roles:
 
 ```hcl
 provider "google" {
@@ -127,10 +35,9 @@ resource "google_project_iam_member" "logging_writer" {
 }
 ```
 
-#### Step 3: Create Logging Sinks in Cluster Projects
-Create logging sinks in `cluster-1` and `cluster-2` projects to route their logs to the `Fleet-Account` project:
+#### 3. Cluster 1 Configuration
 
-**Cluster 1 Configuration:**
+Create a logging sink in the `cluster-1` project and grant necessary IAM roles:
 
 ```hcl
 provider "google" {
@@ -155,7 +62,9 @@ resource "google_project_iam_member" "cluster_1_logging_writer" {
 }
 ```
 
-**Cluster 2 Configuration:**
+#### 4. Cluster 2 Configuration
+
+Create a logging sink in the `cluster-2` project and grant necessary IAM roles:
 
 ```hcl
 provider "google" {
@@ -180,12 +89,52 @@ resource "google_project_iam_member" "cluster_2_logging_writer" {
 }
 ```
 
-#### Step 4: Apply the Terraform Configuration
-Initialize Terraform and apply the configuration:
+#### 5. Applying the Terraform Configuration
+
+Initialize and apply the Terraform configuration:
 
 ```bash
 terraform init
 terraform apply
 ```
 
-By following these steps and using the provided Terraform configurations, logs from `cluster-1` and `cluster-2` will be centralized into the `Fleet-Account`, simplifying log management and analysis.
+#### 6. Verification
+
+1. **API Enablement:** Verify that the Cloud Logging API and Cloud Resource Manager API are enabled in all projects.
+2. **Logging Sinks:** Confirm that the logging sinks are created and configured correctly in all projects.
+3. **IAM Roles:** Ensure that the IAM roles (`roles/logging.logWriter`) are properly assigned to the logging service accounts.
+4. **Log Routing:** Generate logs in `cluster-1` and `cluster-2` and verify that they appear in the `Fleet-Account` project.
+
+### Summary
+
+**Title: Centralize Logging from Cluster-1 and Cluster-2 to Fleet-Account Using Terraform**
+
+**Problem Statement:**
+We need to centralize logging from `cluster-1` and `cluster-2` into the `Fleet-Account` for easier log management and analysis.
+
+**Work Involved:**
+1. Enable Cloud Logging API and Cloud Resource Manager API in all projects.
+2. Create a logging sink in `Fleet-Account` to receive logs from all clusters.
+3. Assign IAM roles to the logging service account in `Fleet-Account` for log receiving.
+4. Create logging sinks in `cluster-1` and `cluster-2` to route logs to `Fleet-Account`.
+5. Assign IAM roles in `cluster-1` and `cluster-2` for log sending.
+6. Apply Terraform configuration to set up logging sinks and permissions.
+
+**Test Criteria:**
+1. APIs are enabled in all projects.
+2. Logging sinks are created and configured correctly.
+3. IAM roles are assigned as needed.
+4. Logs from `cluster-1` and `cluster-2` are received in `Fleet-Account`.
+
+**Dependencies:**
+1. Access to `Fleet-Account`, `cluster-1`, and `cluster-2` with necessary permissions.
+2. Enabled APIs in all relevant projects.
+3. Accurate Terraform configuration files.
+4. Appropriate IAM roles assigned.
+
+### References
+- [Cloud Logging Documentation](https://cloud.google.com/logging/docs)
+- [Managing GKE Fleets](https://cloud.google.com/anthos/fleets/docs/manage-fleets)
+- [Terraform Google Provider Documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs)
+
+By following these steps and ensuring the necessary IAM roles are granted, you can successfully centralize logging from multiple GKE clusters into a single Fleet project, simplifying log management and analysis.
