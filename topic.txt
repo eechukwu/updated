@@ -55,3 +55,135 @@ module "microsites_cluster" {
     }
   ]
 }
+
+
+
+
+
+
+
+
+Certainly! Here’s the concise ticket along with the solution:
+
+---
+
+**Problem Statement:**
+We need to centralize logging from `cluster-1` and `cluster-2` into the `Fleet-Account` for easier log management and analysis.
+
+**Work Involved:**
+1. Enable Cloud Logging API and Cloud Resource Manager API in all projects.
+2. Create a logging sink in `Fleet-Account` to receive logs from all clusters.
+3. Assign IAM roles to the logging service account in `Fleet-Account` for log receiving.
+4. Create logging sinks in `cluster-1` and `cluster-2` to route logs to `Fleet-Account`.
+5. Assign IAM roles in `cluster-1` and `cluster-2` for log sending.
+6. Apply Terraform configuration to set up logging sinks and permissions.
+
+**Test Criteria:**
+1. APIs are enabled in all projects.
+2. Logging sinks are created and configured correctly.
+3. IAM roles are assigned as needed.
+4. Logs from `cluster-1` and `cluster-2` are received in `Fleet-Account`.
+
+**Dependencies:**
+1. Access to `Fleet-Account`, `cluster-1`, and `cluster-2` with necessary permissions.
+2. Enabled APIs in all relevant projects.
+3. Accurate Terraform configuration files.
+4. Appropriate IAM roles assigned.
+
+---
+
+### Solution:
+
+#### Step 1: Enable APIs
+Ensure Cloud Logging API and Cloud Resource Manager API are enabled in all projects:
+
+```bash
+gcloud services enable logging.googleapis.com
+gcloud services enable cloudresourcemanager.googleapis.com
+```
+
+#### Step 2: Create Logging Sink in Fleet Account
+Create a logging sink in the `Fleet-Account` project to receive logs from all clusters:
+
+```hcl
+provider "google" {
+  project = "Fleet-Account"
+  region  = "europe-west2"
+}
+
+resource "google_logging_project_sink" "fleet_sink" {
+  name        = "fleet-sink"
+  project     = "Fleet-Account"
+  destination = "logging.googleapis.com/projects/Fleet-Account"
+  filter      = "resource.type=k8s_cluster"
+}
+
+resource "google_project_iam_member" "logging_writer" {
+  project = "Fleet-Account"
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:service-<Fleet-Account-ID>@gcp-sa-logging.iam.gserviceaccount.com"
+}
+```
+
+#### Step 3: Create Logging Sinks in Cluster Projects
+Create logging sinks in `cluster-1` and `cluster-2` projects to route their logs to the `Fleet-Account` project:
+
+**Cluster 1 Configuration:**
+
+```hcl
+provider "google" {
+  alias   = "cluster1"
+  project = "cluster-1"
+  region  = "europe-west2"
+}
+
+resource "google_logging_project_sink" "cluster_1_sink" {
+  provider    = google.cluster1
+  name        = "cluster-1-sink"
+  project     = "cluster-1"
+  destination = "logging.googleapis.com/projects/Fleet-Account"
+  filter      = "resource.type=k8s_container"
+}
+
+resource "google_project_iam_member" "cluster_1_logging_writer" {
+  provider = google.cluster1
+  project  = "cluster-1"
+  role     = "roles/logging.logWriter"
+  member   = "serviceAccount:service-<Fleet-Account-ID>@gcp-sa-logging.iam.gserviceaccount.com"
+}
+```
+
+**Cluster 2 Configuration:**
+
+```hcl
+provider "google" {
+  alias   = "cluster2"
+  project = "cluster-2"
+  region  = "europe-west2"
+}
+
+resource "google_logging_project_sink" "cluster_2_sink" {
+  provider    = google.cluster2
+  name        = "cluster-2-sink"
+  project     = "cluster-2"
+  destination = "logging.googleapis.com/projects/Fleet-Account"
+  filter      = "resource.type=k8s_container"
+}
+
+resource "google_project_iam_member" "cluster_2_logging_writer" {
+  provider = google.cluster2
+  project  = "cluster-2"
+  role     = "roles/logging.logWriter"
+  member   = "serviceAccount:service-<Fleet-Account-ID>@gcp-sa-logging.iam.gserviceaccount.com"
+}
+```
+
+#### Step 4: Apply the Terraform Configuration
+Initialize Terraform and apply the configuration:
+
+```bash
+terraform init
+terraform apply
+```
+
+By following these steps and using the provided Terraform configurations, logs from `cluster-1` and `cluster-2` will be centralized into the `Fleet-Account`, simplifying log management and analysis.
